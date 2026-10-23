@@ -12,19 +12,55 @@ export const loginSchema = z.object({
 
 export type LoginForm = z.infer<typeof loginSchema>
 
+/** Mirrors the sign-up rules in `src/mocks/handlers/auth.ts`; the API stays the authority. */
+export const signupSchema = z
+  .object({
+    username: z
+      .string()
+      .trim()
+      .min(1, 'Informe um nome de usuário')
+      .regex(/^[a-z0-9_]{3,20}$/i, 'Use de 3 a 20 letras, números ou _'),
+    email: z.string().trim().min(1, 'Informe seu e-mail').email('Informe um e-mail válido'),
+    password: z
+      .string()
+      .min(1, 'Crie uma senha')
+      .refine(
+        (value) => value.length >= 8 && /[a-z]/i.test(value) && /\d/.test(value),
+        'Use ao menos 8 caracteres, com letras e números',
+      ),
+    confirmPassword: z.string().min(1, 'Confirme sua senha'),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'As senhas não coincidem',
+  })
+
+export type SignupForm = z.infer<typeof signupSchema>
+
 /** Only same-origin paths are accepted as a post-login destination (no open redirects). */
 export function safeRedirect(target: string | undefined): string {
   return target && target.startsWith('/') && !target.startsWith('//') ? target : '/'
 }
 
-export function useLogin() {
+function useStartSession<TInput>(request: (input: TInput) => Promise<AuthResponse>) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (input: LoginForm) => api.post<AuthResponse>('/auth/login', input),
+    mutationFn: request,
     onSuccess: ({ token }) => {
       setToken(token)
       // Cached data was fetched as a visitor (or another user): refetch it for this session.
       void queryClient.invalidateQueries()
     },
   })
+}
+
+export function useLogin() {
+  return useStartSession((input: LoginForm) => api.post<AuthResponse>('/auth/login', input))
+}
+
+export function useSignup() {
+  // The confirmation is checked on the client only; the API receives the chosen password once.
+  return useStartSession(({ username, email, password }: SignupForm) =>
+    api.post<AuthResponse>('/auth/signup', { username, email, password }),
+  )
 }

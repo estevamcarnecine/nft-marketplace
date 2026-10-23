@@ -28,7 +28,7 @@ function LoginPage() {
       <AuthDialog
         mode="login"
         description="Entre para gerenciar sua carteira, coleção e perfil de criador."
-        minHeight="min-h-[600px]"
+        redirect={redirect}
         onClose={close}
       >
         <LoginForm onSuccess={() => router.history.replace(safeRedirect(redirect))} />

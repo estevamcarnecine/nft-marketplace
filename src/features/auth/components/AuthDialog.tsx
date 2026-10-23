@@ -1,29 +1,47 @@
 import type { ReactNode } from 'react'
+import { Link } from '@tanstack/react-router'
 import { Dialog } from 'radix-ui'
+import { cn } from 'cn'
 
-import { ComingSoon } from '@/components/common/ComingSoon'
 import closeIcon from '@/assets/auth/close.svg'
 
 const TAB = 'text-[20px] leading-[16px] font-medium whitespace-nowrap'
 
+/** Geometry of the two Figma frames ("Sign In Modal" 9:115 and "Sign Up Modal" 9:1022). */
+const FRAMES = {
+  login: { box: 'my-[160px] min-h-[600px]', close: 'top-[11px] right-[12px]' },
+  signup: { box: 'my-[158px] min-h-[656px] overflow-clip rounded-[8px]', close: 'top-[13px] right-[13px]' },
+} as const
+
+export type AuthMode = keyof typeof FRAMES
+
 /**
- * Shell of the Figma "Sign In Modal" / "Sign Up Modal": a real modal dialog (focus trap,
- * Escape, labelled) over the page, which stays visible because the frame's scrim is clear.
+ * Shell of the auth modals: a real modal dialog (focus trap, Escape, labelled) over the page,
+ * which stays visible because the frames' scrim is clear.
  */
 export function AuthDialog({
   mode,
   description,
-  minHeight,
+  redirect,
   onClose,
   children,
 }: {
-  mode: 'login' | 'signup'
+  mode: AuthMode
   description: string
-  /** Frame height from the Figma (600 for login, 656 for sign up); content may grow past it. */
-  minHeight: string
+  redirect?: string
   onClose: () => void
   children: ReactNode
 }) {
+  const frame = FRAMES[mode]
+  const tab = (target: AuthMode, label: string) =>
+    target === mode ? (
+      <Dialog.Title className={`${TAB} text-text-accent`}>{label}</Dialog.Title>
+    ) : (
+      <Link to={target === 'login' ? '/login' : '/signup'} search={{ redirect }} replace className={`${TAB} text-foreground`}>
+        {label}
+      </Link>
+    )
+
   return (
     <Dialog.Root open onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
@@ -37,23 +55,18 @@ export function AuthDialog({
                 field.focus()
               }
             }}
-            className={`relative mx-auto my-[160px] flex w-[500px] max-w-[calc(100vw-32px)] flex-col items-start bg-surface-card pb-[10px] outline-none ${minHeight}`}>
+            className={cn(
+              'relative mx-auto flex w-[500px] max-w-[calc(100vw-32px)] flex-col items-start bg-surface-card pb-[10px] outline-none',
+              frame.box,
+            )}
+          >
             <div className="flex w-full flex-col items-center overflow-clip pt-[48px]">
               <div className="flex w-full flex-col items-center gap-[40px] px-[48px]">
-                <div className="flex h-[20px] items-center justify-center gap-[8px]">
-                  {mode === 'login' ? (
-                    <Dialog.Title className={`${TAB} text-text-accent`}>Entrar</Dialog.Title>
-                  ) : (
-                    <span className={`${TAB} text-foreground`}>Entrar</span>
-                  )}
+                <nav aria-label="Acesso" className="flex h-[20px] items-center justify-center gap-[8px]">
+                  {tab('login', 'Entrar')}
                   <span aria-hidden className="w-px self-stretch bg-text-coral" />
-                  {mode === 'signup' ? (
-                    <Dialog.Title className={`${TAB} text-text-accent`}>Criar conta</Dialog.Title>
-                  ) : (
-                    // The sign-up tab is wired with the Cadastro frame.
-                    <ComingSoon className={`${TAB} text-foreground`}>Criar conta</ComingSoon>
-                  )}
-                </div>
+                  {tab('signup', 'Criar conta')}
+                </nav>
                 <Dialog.Description className="w-full text-center text-[13px] leading-[16px] text-foreground">
                   {description}
                 </Dialog.Description>
@@ -63,7 +76,7 @@ export function AuthDialog({
             {children}
 
             <span aria-hidden className="absolute bottom-0 left-0 h-[10px] w-full bg-primary" />
-            <Dialog.Close aria-label="Fechar" className="absolute top-[11px] right-[12px] size-[18px]">
+            <Dialog.Close aria-label="Fechar" className={cn('absolute size-[18px]', frame.close)}>
               <img alt="" src={closeIcon} className="absolute inset-0 block size-full max-w-none" />
             </Dialog.Close>
           </Dialog.Content>

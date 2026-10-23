@@ -60,9 +60,11 @@ function SocialButton({ icon, label }: { icon: ReactNode; label: string }) {
   )
 }
 
-export function SocialButtons() {
+/** Login uses 12px gaps, sign up 16px (Figma frames 9:115 and 9:1022). */
+export function SocialButtons({ gap = 12 }: { gap?: 12 | 16 }) {
+  const spacing = gap === 16 ? 'gap-[16px]' : 'gap-[12px]'
   return (
-    <div className="flex w-full flex-col items-start gap-[12px] overflow-clip pt-[24px]">
+    <div className={`flex w-full flex-col items-start overflow-clip pt-[24px] ${spacing}`}>
       <div className="flex w-full items-center gap-[12px] overflow-clip">
         <span aria-hidden className="relative h-0 min-w-px flex-1">
           <span className="absolute inset-[-1px_0_0_0]">
@@ -76,7 +78,7 @@ export function SocialButtons() {
           </span>
         </span>
       </div>
-      <div className="flex w-full flex-col items-start gap-[12px] px-[80px]">
+      <div className={`flex w-full flex-col items-start px-[80px] ${spacing}`}>
         <SocialButton icon={<GoogleMark />} label="Continuar com Google" />
         <SocialButton
           icon={<img alt="" src={facebook} className="block size-[20px] max-w-none shrink-0" />}
