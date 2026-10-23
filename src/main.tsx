@@ -19,10 +19,28 @@ declare module '@tanstack/react-router' {
   }
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  </StrictMode>,
-)
+async function enableMocking(): Promise<void> {
+  if (import.meta.env.VITE_ENABLE_MOCKS !== 'false') {
+    try {
+      const { startMocks } = await import('./mocks/browser')
+      await startMocks()
+    } catch (error) {
+      console.error('[mocks] failed to start', error)
+    }
+  }
+
+  if (import.meta.env.DEV) {
+    const { exposeDevtools } = await import('./lib/devtools')
+    exposeDevtools()
+  }
+}
+
+enableMocking().then(() => {
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </StrictMode>,
+  )
+})

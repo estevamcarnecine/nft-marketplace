@@ -1,1 +1,59 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-ink: #140d0a;
+  --color-background: #140d0a;
+  --color-surface-card: #241612;
+  --color-card: #241612;
+  --color-surface-dark: #38220f;
+  --color-border: #3f2319;
+  --color-border-soft: #55321f;
+  --color-foreground: #f5f1eb;
+  --color-text-primary: #f7f3ec;
+  --color-text-secondary: #cfb28c;
+  --color-text-accent: #e89b55;
+  --color-text-coral: #f0805f;
+  --color-primary: #d28a4c;
+  --color-primary-foreground: #140d0a;
+  --color-secondary: #b39463;
+  --color-muted-foreground: #cfb28c;
+  --color-input: #3f2319;
+  --color-ring: #d28a4c;
+
+  --radius-input: 3px;
+  --radius-button: 6px;
+  --radius-thumb: 8px;
+  --radius-art: 15px;
+
+  --breakpoint-md: 768px;
+  --breakpoint-xl: 1440px;
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+
+  html {
+    background-color: var(--color-background);
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+}
