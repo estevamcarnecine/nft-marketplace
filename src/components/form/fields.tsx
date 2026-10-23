@@ -63,12 +63,17 @@ export function SelectField<T extends string>({
   value,
   options,
   error,
+  icon = { src: arrowDown, size: 'size-[18px]' },
+  className,
   onChange,
   onBlur,
 }: {
   id: string
   label: string
   placeholder: string
+  /** The checkout uses an 18px arrow, the account screens a 20px one. */
+  icon?: { src: string; size: string }
+  className?: string
   value: T | ''
   options: readonly { id: T; label: string }[]
   error?: string
@@ -76,7 +81,7 @@ export function SelectField<T extends string>({
   onBlur?: () => void
 }) {
   return (
-    <div className="flex w-full flex-col items-start">
+    <div className={cn('flex w-full flex-col items-start', className)}>
       <FieldLabel id={`${id}-label`} required>
         {label}
       </FieldLabel>
@@ -98,7 +103,7 @@ export function SelectField<T extends string>({
         >
           <Select.Value placeholder={placeholder} />
           <Select.Icon asChild>
-            <img alt="" src={arrowDown} className="block size-[18px] max-w-none" />
+            <img alt="" src={icon.src} className={cn('block max-w-none', icon.size)} />
           </Select.Icon>
         </Select.Trigger>
         <Select.Portal>

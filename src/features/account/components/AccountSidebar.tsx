@@ -15,6 +15,8 @@ import locationIcon from '@/assets/account/location.svg'
 import logoutIcon from '@/assets/account/logout.svg'
 import shoppingIcon from '@/assets/account/shopping.svg'
 import userIcon from '@/assets/account/user.svg'
+import userIconInactive from '@/assets/account/user-inactive.svg'
+import locationIconActive from '@/assets/account/location-active.svg'
 
 export type AccountSection = 'profile' | 'wallets'
 
@@ -31,9 +33,15 @@ function Icon({ src, box, inset }: { src: string; box: string; inset?: string })
   )
 }
 
+// The two account frames swap the icon of the active item for its highlighted variant.
+const SECTION_ICONS: Record<AccountSection, (active: boolean) => ReactNode> = {
+  profile: (active) => <Icon src={active ? userIcon : userIconInactive} box="size-[18px]" />,
+  wallets: (active) => (
+    <Icon src={active ? locationIconActive : locationIcon} box="size-[20px]" inset="inset-[8.33%_14.59%_10.42%_16.67%]" />
+  ),
+}
+
 const ICONS = {
-  profile: <Icon src={userIcon} box="size-[18px]" />,
-  wallets: <Icon src={locationIcon} box="size-[20px]" inset="inset-[8.33%_14.59%_10.42%_16.67%]" />,
   activity: <Icon src={shoppingIcon} box="size-[18px]" />,
   interests: <Icon src={heartIcon} box="size-[16px]" />,
   offers: <Icon src={activityIcon} box="size-[18px]" inset="inset-[9.79%_10.05%_10.2%_10.21%]" />,
@@ -41,13 +49,15 @@ const ICONS = {
   support: <Icon src={dangerIcon} box="size-[18px]" inset="inset-[12.5%_10.42%]" />,
 }
 
-function Row({ active, icon, children }: { active?: boolean; icon: ReactNode; children: ReactNode }) {
+function Row({ active, wide, icon, children }: { active?: boolean; wide?: boolean; icon: ReactNode; children: ReactNode }) {
   return (
     <span
       className={cn(
         'flex w-full items-center',
+        // "Dados do perfil" is spaced wider than the other items in both frames.
+        wide ? 'gap-[16px]' : 'gap-[12px]',
         // Figma strokes inside: the 6px marker does not push the content, so it eats into the padding.
-        active ? 'gap-[16px] border-l-6 border-primary pr-[16px] pl-[10px]' : 'gap-[12px] px-[16px]',
+        active ? 'border-l-6 border-primary pr-[16px] pl-[10px]' : 'px-[16px]',
       )}
     >
       {icon}
@@ -75,12 +85,12 @@ export function AccountSidebar({ active }: { active: AccountSection }) {
       aria-current={active === section ? 'page' : undefined}
       className="block w-full"
     >
-      <Row active={active === section} icon={ICONS[section]}>
+      <Row active={active === section} wide={section === 'profile'} icon={SECTION_ICONS[section](active === section)}>
         <span className={LABEL}>{label}</span>
       </Row>
     </Link>
   )
-  const soon = (key: Exclude<keyof typeof ICONS, AccountSection>, label: string) => (
+  const soon = (key: keyof typeof ICONS, label: string) => (
     <ComingSoon className="block w-full">
       <Row icon={ICONS[key]}>
         <span className={LABEL}>{label}</span>
