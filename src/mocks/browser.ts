@@ -3,7 +3,7 @@ import { resumePendingOrders } from './domain'
 import { handlers } from './handlers'
 import { loadPersisted, resetMockData } from './persistence'
 import { applyScenarioFromUrl, resetScenario, scenario, setScenario } from './scenario'
-import { startRealtime } from './socket'
+import { realtimeControls, startRealtime } from './socket'
 
 declare global {
   interface Window {
@@ -12,6 +12,8 @@ declare global {
       set: typeof setScenario
       /** Restores the fixture baseline and clears the scenario. */
       reset: () => void
+      /** Server-side price/stock changes and socket drops, delivered to the page over Socket.IO. */
+      realtime: typeof realtimeControls
     }
   }
 }
@@ -40,6 +42,7 @@ export async function startMocks(): Promise<void> {
       resetScenario()
       resetMockData()
     },
+    realtime: realtimeControls,
   }
 
   const worker = setupWorker(...handlers)

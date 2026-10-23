@@ -10,14 +10,13 @@ import {
   parseCartKey,
   serializeNft,
   syncAvailability,
-  toNftUpdated,
   userCartKey,
   type StoredCart,
 } from './db'
 import { getCart, peekCart, type CartOwner } from './carts'
 import { schedulePersist } from './persistence'
 import { scenario } from './scenario'
-import { broadcast } from './socket'
+import { emitNftUpdated, emitOrderUpdated } from './socket'
 
 export const NETWORK_FEE = '0.016'
 interface CouponRule {
@@ -182,7 +181,7 @@ function settleOrder(orderId: string): void {
       if (!nft || !edition) continue
       edition.available -= line.quantity
       syncAvailability(nft)
-      broadcast('nft.updated', toNftUpdated(nft))
+      emitNftUpdated(nft)
     }
     removePurchasedFromCart(stored.userId, order.lines)
     order.txHash = simulatedTxHash(order.id)
@@ -193,7 +192,8 @@ function settleOrder(orderId: string): void {
   order.status = status
   order.rejectionReason = reason
   order.updatedAt = new Date().toISOString()
-  broadcast('order.updated', { id: order.id, status, updatedAt: order.updatedAt })
+  order.version += 1
+  emitOrderUpdated(stored.userId, order)
   schedulePersist()
 }
 

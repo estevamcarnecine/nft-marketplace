@@ -25,6 +25,12 @@ export interface Scenario {
   walletReject: boolean
   /** Sessions opened before this instant are expired (scenario `session:expire[:ms]`). */
   sessionDeadline: number | null
+  /** The server closes every socket this long after the first connection (`socket:drop[:ms]`). */
+  socketDropAfterMs: number | null
+  /** Every event is delivered twice with the same eventId (`event:dup`). */
+  duplicateEvents: boolean
+  /** Every nft.updated is followed by an older copy that must be ignored (`event:stale`). */
+  staleEvents: boolean
   failures: Record<string, { status: number; times: number }>
 }
 
@@ -46,6 +52,9 @@ const defaults = (): Scenario => ({
   orderSettleMs: 3000,
   walletReject: false,
   sessionDeadline: null,
+  socketDropAfterMs: null,
+  duplicateEvents: false,
+  staleEvents: false,
   failures: {},
 })
 
@@ -165,6 +174,16 @@ function apply(raw: string): void {
         if (a === 'expireat' && Number.isFinite(value)) scenario.sessionDeadline = value
         break
       }
+      case 'socket':
+        if (a === 'drop') {
+          const ms = Number(b ?? 4000)
+          scenario.socketDropAfterMs = Number.isFinite(ms) ? ms : 4000
+        }
+        break
+      case 'event':
+        if (a === 'dup') scenario.duplicateEvents = true
+        if (a === 'stale') scenario.staleEvents = true
+        break
       case 'fail': {
         const status = Number(b)
         const times = c ? Number(c) : 1

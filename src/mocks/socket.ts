@@ -1,30 +1,134 @@
 import { ws } from 'msw'
 import { toSocketIo } from '@mswjs/socket.io-binding'
 import { REALTIME_URL } from '@/lib/config'
-import type { NftUpdatedEvent, OrderUpdatedEvent } from '@/types'
-import { adjustNftPrice, db, toNftUpdated } from './db'
+import type { EditionId, NftUpdatedEvent, Order, OrderUpdatedEvent } from '@/types'
+import { adjustNftPrice, db, findEdition, findNft, syncAvailability, type NftRecord } from './db'
 import { schedulePersist } from './persistence'
 import { scenario } from './scenario'
+import { userIdForToken } from './session'
 
+/**
+ * Socket.IO server simulated with MSW (`ws.link` + @mswjs/socket.io-binding): the page's
+ * socket.io-client talks the real Socket.IO protocol over an intercepted WebSocket.
+ * - `nft.updated` is public and goes to every connected client.
+ * - `order.updated` goes only to sockets subscribed with the owner's session, so an event never
+ *   reaches another user (or the previous user of the same tab after logout).
+ */
 type SocketIo = ReturnType<typeof toSocketIo>
 
+interface Client {
+  io: SocketIo
+  userId: string | null
+}
+
 const link = ws.link(REALTIME_URL)
-const clients = new Set<SocketIo>()
+const clients = new Set<Client>()
+let dropScheduled = false
+
+function scheduleDrop(): void {
+  if (dropScheduled || scenario.socketDropAfterMs === null) return
+  dropScheduled = true
+  setTimeout(() => dropAllSockets(), scenario.socketDropAfterMs)
+}
 
 export const realtimeHandler = link.addEventListener('connection', (connection) => {
   const io = toSocketIo(connection)
-  clients.add(io)
-  connection.client.addEventListener('close', () => {
-    clients.delete(io)
+  const client: Client = { io, userId: null }
+  clients.add(client)
+
+  io.client.on('session.subscribe', (_event, payload: unknown) => {
+    const token = typeof payload === 'object' && payload !== null ? (payload as { token?: unknown }).token : undefined
+    client.userId = typeof token === 'string' ? userIdForToken(token) : null
+    io.client.emit('session.ready', { authenticated: client.userId !== null })
   })
+  io.client.on('session.unsubscribe', () => {
+    client.userId = null
+  })
+  connection.client.addEventListener('close', () => {
+    clients.delete(client)
+  })
+  scheduleDrop()
 })
 
-export function broadcast(event: 'nft.updated', payload: NftUpdatedEvent): void
-export function broadcast(event: 'order.updated', payload: OrderUpdatedEvent): void
-export function broadcast(event: string, payload: unknown): void {
-  for (const io of clients) {
-    io.client.emit(event, payload)
+/** Closes every socket as a network drop would; socket.io-client reconnects on its own. */
+export function dropAllSockets(): void {
+  // Copied first: each close removes its client from the set.
+  for (const client of [...clients]) client.io.rawClient.close(4000, 'simulated drop')
+  clients.clear()
+}
+
+function deliver(targets: Iterable<Client>, event: NftUpdatedEvent | OrderUpdatedEvent): void {
+  for (const client of targets) {
+    client.io.client.emit(event.type, event)
+    // Scenario event:dup — the same event (same eventId) arrives twice.
+    if (scenario.duplicateEvents) client.io.client.emit(event.type, event)
   }
+}
+
+function nftEvent(nft: NftRecord, version = nft.version): NftUpdatedEvent {
+  return {
+    eventId: crypto.randomUUID(),
+    type: 'nft.updated',
+    resource: { kind: 'nft', id: nft.id },
+    version,
+    occurredAt: new Date().toISOString(),
+    data: {
+      price: nft.price,
+      available: nft.available,
+      editions: nft.editions.map((edition) => ({ id: edition.id, available: edition.available })),
+    },
+  }
+}
+
+export function emitNftUpdated(nft: NftRecord): void {
+  const event = nftEvent(nft)
+  deliver(clients, event)
+  if (scenario.staleEvents) {
+    // Scenario event:stale — an older version arrives late, with outdated data.
+    const stale: NftUpdatedEvent = {
+      ...nftEvent(nft, nft.version - 1),
+      data: { ...event.data, price: '0.01', available: 999 },
+    }
+    setTimeout(() => deliver(clients, stale), 300)
+  }
+}
+
+export function emitOrderUpdated(userId: string, order: Order): void {
+  const event: OrderUpdatedEvent = {
+    eventId: crypto.randomUUID(),
+    type: 'order.updated',
+    resource: { kind: 'order', id: order.id },
+    version: order.version,
+    occurredAt: order.updatedAt,
+    data: { status: order.status, txHash: order.txHash, rejectionReason: order.rejectionReason },
+  }
+  deliver(
+    [...clients].filter((client) => client.userId === userId),
+    event,
+  )
+}
+
+/** Server-side changes used by demos and tests; the client learns about them only through the socket. */
+export const realtimeControls = {
+  changePrice(nftId: string, percent: number): boolean {
+    const nft = adjustNftPrice(nftId, percent)
+    if (!nft) return false
+    emitNftUpdated(nft)
+    schedulePersist()
+    return true
+  },
+  setStock(nftId: string, editionId: EditionId, available: number): boolean {
+    const nft = findNft(nftId)
+    const edition = nft && findEdition(nft, editionId)
+    if (!nft || !edition) return false
+    edition.available = Math.max(0, Math.floor(available))
+    syncAvailability(nft)
+    emitNftUpdated(nft)
+    schedulePersist()
+    return true
+  },
+  dropSockets: dropAllSockets,
+  connectedSockets: () => [...clients].map((client) => ({ userId: client.userId })),
 }
 
 let tickerId: ReturnType<typeof setInterval> | undefined
@@ -36,10 +140,6 @@ export function startRealtime(): void {
     const nft = db.nfts[Math.floor(Math.random() * db.nfts.length)]
     if (!nft) return
     const direction = Math.random() < 0.5 ? -1 : 1
-    const updated = adjustNftPrice(nft.id, direction * (1 + Math.floor(Math.random() * 5)))
-    if (updated) {
-      broadcast('nft.updated', toNftUpdated(updated))
-      schedulePersist()
-    }
+    realtimeControls.changePrice(nft.id, direction * (1 + Math.floor(Math.random() * 5)))
   }, 6000)
 }

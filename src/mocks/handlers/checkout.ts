@@ -8,14 +8,13 @@ import {
   findNft,
   nextId,
   syncAvailability,
-  toNftUpdated,
   userCartKey,
 } from '../db'
 import { buildCart, checkCoupon, createQuote, quoteFingerprint, scheduleOrderProgress } from '../domain'
 import { schedulePersist } from '../persistence'
 import { validateCollector } from '../validation'
 import { TIMEOUT_DELAY_MS, scenario } from '../scenario'
-import { broadcast } from '../socket'
+import { emitNftUpdated } from '../socket'
 import {
   authenticate,
   errorResponse,
@@ -114,7 +113,7 @@ export const checkoutHandlers = [
         scenario.priceChangeOnNextOrder = false
         for (const line of buildCart(owner).items) {
           const updated = adjustNftPrice(line.nft.id, 5)
-          if (updated) broadcast('nft.updated', toNftUpdated(updated))
+          if (updated) emitNftUpdated(updated)
         }
       }
       if (scenario.soldOutOnNextOrder) {
@@ -126,7 +125,7 @@ export const checkoutHandlers = [
         if (nft && edition) {
           edition.available = 0
           syncAvailability(nft)
-          broadcast('nft.updated', toNftUpdated(nft))
+          emitNftUpdated(nft)
         }
       }
 
@@ -161,6 +160,7 @@ export const checkoutHandlers = [
       const order: Order = {
         id: nextId('order'),
         status: 'pending',
+        version: 1,
         quoteId: stored.quote.id,
         lines: stored.quote.lines,
         subtotal: stored.quote.subtotal,

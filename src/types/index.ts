@@ -50,6 +50,8 @@ export interface Nft {
   favorites: number
   views: number
   favorited: boolean
+  /** Grows on every price or stock change; real-time events carry the same counter. */
+  version: number
 }
 
 export const EDITION_IDS = ['1-1', '1-10', '1-50', 'open'] as const
@@ -183,6 +185,8 @@ export interface CreateOrderInput {
 export interface Order {
   id: string
   status: OrderStatus
+  /** 1 while pending, 2 once settled; matches the version of order.updated events. */
+  version: number
   quoteId: string
   lines: QuoteLine[]
   subtotal: string
@@ -269,15 +273,28 @@ export interface ApiErrorBody {
   quote?: Quote
 }
 
-export interface NftUpdatedEvent {
-  id: string
-  price: string
-  available: number
-  updatedAt: string
+/**
+ * Every Socket.IO event uses one envelope: a stable `eventId` (duplicates carry the same id), the
+ * affected resource and its `version`, which only grows. REST responses carry the same version, so
+ * the client can drop an event that is older than what it already has.
+ */
+export interface RealtimeEvent<TType extends string, TKind extends string, TData> {
+  eventId: string
+  type: TType
+  resource: { kind: TKind; id: string }
+  version: number
+  occurredAt: string
+  data: TData
 }
 
-export interface OrderUpdatedEvent {
-  id: string
-  status: OrderStatus
-  updatedAt: string
-}
+export type NftUpdatedEvent = RealtimeEvent<
+  'nft.updated',
+  'nft',
+  { price: string; available: number; editions: { id: EditionId; available: number }[] }
+>
+
+export type OrderUpdatedEvent = RealtimeEvent<
+  'order.updated',
+  'order',
+  { status: OrderStatus; txHash: string | null; rejectionReason: string | null }
+>

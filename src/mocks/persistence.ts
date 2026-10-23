@@ -15,7 +15,7 @@ import {
  * Bump the version whenever fixtures or the snapshot shape change: older snapshots are discarded.
  */
 const STORAGE_KEY = 'kurio.mockdb'
-const VERSION = 4
+const VERSION = 5
 
 interface Snapshot {
   version: number
@@ -31,7 +31,7 @@ interface Snapshot {
   idempotency: [string, { fingerprint: string; orderId: string }][]
   walletSessions: [string, StoredWalletSession][]
   /** Catalog fixtures are deterministic; only what changes over time is stored. */
-  nfts: { id: string; price: string; favorites: number; editions: [EditionId, number][] }[]
+  nfts: { id: string; price: string; favorites: number; version: number; editions: [EditionId, number][] }[]
 }
 
 function snapshot(): Snapshot {
@@ -52,6 +52,7 @@ function snapshot(): Snapshot {
       id: nft.id,
       price: nft.price,
       favorites: nft.favorites,
+      version: nft.version,
       editions: nft.editions.map((edition) => [edition.id, edition.available]),
     })),
   }
@@ -109,6 +110,7 @@ export function loadPersisted(): boolean {
     if (!patch) continue
     nft.price = patch.price
     nft.favorites = patch.favorites
+    nft.version = patch.version
     const stock = new Map(patch.editions)
     for (const edition of nft.editions) edition.available = stock.get(edition.id) ?? edition.available
     nft.available = nft.editions.reduce((total, edition) => total + edition.available, 0)

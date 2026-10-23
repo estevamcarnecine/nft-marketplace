@@ -50,6 +50,13 @@ function isExpired(createdAt: number, expiresAt: number, now: number): boolean {
   return scenario.sessionDeadline !== null && now >= scenario.sessionDeadline && createdAt < scenario.sessionDeadline
 }
 
+/** Same rules as REST, for the Socket.IO `session.subscribe` handshake. */
+export function userIdForToken(token: string): string | null {
+  const session = db.sessions.get(token)
+  if (!session || isExpired(session.createdAt, session.expiresAt, Date.now())) return null
+  return db.users.some((user) => user.id === session.userId) ? session.userId : null
+}
+
 export function checkSession(request: Request): SessionCheck {
   const token = bearerToken(request)
   if (!token) return { status: 'missing' }

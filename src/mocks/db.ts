@@ -6,7 +6,6 @@ import type {
   Nft,
   NftDetail,
   NftEdition,
-  NftUpdatedEvent,
   NetworkId,
   Order,
   Profile,
@@ -252,6 +251,7 @@ function createNfts(): NftRecord[] {
       listedAt: new Date(FIXTURE_EPOCH - index * 2 * 3_600_000 - Math.floor(rng() * 3_600_000)).toISOString(),
       favorites: Math.floor(rng() * 500),
       views: 200 + Math.floor(rng() * 9800),
+      version: 1,
     }
   })
 }
@@ -412,6 +412,7 @@ export function defaultEdition(nft: NftRecord): NftEdition | undefined {
 /** Keeps the NFT-level stock equal to the sum of its editions after a change. */
 export function syncAvailability(nft: NftRecord): void {
   nft.available = nft.editions.reduce((total, edition) => total + edition.available, 0)
+  nft.version += 1
 }
 
 function isFavorited(nft: NftRecord, userId?: string): boolean {
@@ -436,6 +437,7 @@ export function serializeNft(nft: NftRecord, userId?: string): Nft {
     favorites: nft.favorites,
     views: nft.views,
     favorited: isFavorited(nft, userId),
+    version: nft.version,
   }
 }
 
@@ -450,15 +452,12 @@ export function serializeNftDetail(nft: NftRecord, userId?: string): NftDetail {
   }
 }
 
-export function toNftUpdated(nft: NftRecord): NftUpdatedEvent {
-  return { id: nft.id, price: nft.price, available: nft.available, updatedAt: new Date().toISOString() }
-}
-
 export function adjustNftPrice(id: string, percent: number): NftRecord | undefined {
   const nft = findNft(id)
   if (!nft) return undefined
   const next = (toWei(nft.price) * BigInt(100 + percent)) / 100n
   nft.price = fromWei(next)
+  nft.version += 1
   return nft
 }
 
