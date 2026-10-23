@@ -2,7 +2,7 @@ import { http } from 'msw'
 import { compareEth, isValidEth } from '@/lib/eth'
 import { CATALOG_SORTS, CATALOG_TABS, COLLECTIONS, NETWORKS } from '@/types'
 import type { CatalogSort, CatalogTab, Facets, Nft, Paginated } from '@/types'
-import { FIXTURE_EPOCH, db, findNft, serializeNft, serializeNftDetail, type NftRecord } from '../db'
+import { FEATURED_NFT_ID, FIXTURE_EPOCH, db, findNft, serializeNft, serializeNftDetail, type NftRecord } from '../db'
 import { scenario } from '../scenario'
 import {
   authenticate,
@@ -117,6 +117,16 @@ export const catalogHandlers = [
         totalPages: Math.max(1, Math.ceil(total / pageSize)),
       }
       return json({ ...result })
+    }),
+  ),
+
+  // Registered before /api/nfts/:id so "featured" is not read as an NFT id.
+  http.get(
+    '/api/nfts/featured',
+    withScenario('catalog.featured', ({ request }) => {
+      const nft = findNft(FEATURED_NFT_ID)
+      if (!nft) return errorResponse(404, 'NFT_NOT_FOUND', 'NFT não encontrado')
+      return json({ ...serializeNft(nft, authenticate(request)?.id) })
     }),
   ),
 

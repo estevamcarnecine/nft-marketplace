@@ -2,7 +2,7 @@ import { http } from 'msw'
 import { EDITION_IDS } from '@/types'
 import type { EditionId, NftEdition } from '@/types'
 import { MAX_PER_LINE, cartOwner, getCart, type CartOwner } from '../carts'
-import { cartKey, findEdition, findNft, parseCartKey } from '../db'
+import { cartKey, defaultEdition, findEdition, findNft, parseCartKey } from '../db'
 import { buildCart, checkCoupon } from '../domain'
 import { errorResponse, json, readJson, str, validationError, withScenario } from '../utils'
 
@@ -55,21 +55,24 @@ export const cartHandlers = [
 
       const body = await readJson(request)
       const nftId = str(body.nftId)
-      const editionId = parseEditionId(body.editionId)
+      // Quick add from a catalog card sends no edition: the default one is used.
+      const editionId = body.editionId === undefined ? null : parseEditionId(body.editionId)
       const quantity = parseQuantity(body.quantity, 1)
 
       const errors: Record<string, string> = {}
       if (!nftId) errors.nftId = 'Informe o NFT'
-      if (!editionId) errors.editionId = 'Selecione uma edição'
+      if (body.editionId !== undefined && !editionId) errors.editionId = 'Selecione uma edição'
       if (quantity === null) errors.quantity = 'Quantidade inválida'
-      if (!editionId || quantity === null || Object.keys(errors).length > 0) {
-        return validationError(errors)
-      }
+      if (quantity === null || Object.keys(errors).length > 0) return validationError(errors)
 
       const nft = findNft(nftId)
       if (!nft) return errorResponse(404, 'NFT_NOT_FOUND', 'NFT não encontrado')
-      const edition = findEdition(nft, editionId)
-      if (!edition) return errorResponse(404, 'EDITION_NOT_FOUND', 'Edição não encontrada')
+      const edition = editionId ? findEdition(nft, editionId) : defaultEdition(nft)
+      if (!edition) {
+        return editionId
+          ? errorResponse(404, 'EDITION_NOT_FOUND', 'Edição não encontrada')
+          : errorResponse(409, 'INSUFFICIENT_SUPPLY', `${nft.name} está esgotado`, { available: 0 })
+      }
 
       const cart = getCart(owner.key)
       const key = cartKey(nft.id, edition.id)

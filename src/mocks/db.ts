@@ -61,8 +61,9 @@ interface SpecialNft {
   noun: string
   number: number
   price: string
+  /** Price before the current markdown, shown struck through (Neon Vessel in the Figma). */
+  compareAtPrice?: string
   image: string
-  collection: CollectionId
   collectionName: string
   creator: string
   attributes: string[]
@@ -74,13 +75,24 @@ interface SpecialNft {
 }
 
 const KURIO_APES = {
-  collection: 'colecionaveis',
   collectionName: 'Kurio Apes',
   creator: 'Nova Sato',
   contractAddress: '0x7A42c3F1d9B0e85A6d4f2C1b3E9a07D5c8f219E8',
 } as const
 
-// Content of the NFTs shown in the Figma file (Detalhes do NFT and "Mais desta coleção").
+const KURIO_LEGENDS = {
+  collectionName: 'Kurio Legends',
+  creator: 'Studio Ônix',
+  contractAddress: '0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD',
+} as const
+
+export const ARTWORKS = ['/nft/emerald-ape.png', '/nft/cosmic-bloom.png', '/nft/ivory-baron.png', '/nft/golden-beat.png']
+
+/**
+ * The NFTs shown in the Figma file, in the home grid order: they are listed first, so the default
+ * "Listados recentemente" sort reproduces the frame. Their category comes from the shuffled slots,
+ * which keeps the collection counts of the Filters panel.
+ */
 const SPECIAL_NFTS: SpecialNft[] = [
   {
     ...KURIO_APES,
@@ -99,20 +111,26 @@ const SPECIAL_NFTS: SpecialNft[] = [
       'A propriedade inclui a arte em alta resolução, lançamentos exclusivos para colecionadores e um registro permanente de procedência registrada na rede. Nova Sato recebe 5% de direitos autorais nas vendas secundárias, apoiando novos trabalhos e lançamentos da comunidade.',
     ],
   },
+  { ...KURIO_LEGENDS, adjective: 'Sage', noun: 'Nomad', number: 9, price: '1.69', image: '/nft/cosmic-bloom.png', attributes: ['Chapéu', 'Sálvia', 'Incomum'], rating: 4.3, reviewCount: 9 },
+  { ...KURIO_LEGENDS, adjective: 'Neon', noun: 'Vessel', number: 552, price: '1.99', compareAtPrice: '2.29', image: '/nft/ivory-baron.png', attributes: ['Gola alta', 'Neon', 'Raro'], rating: 4.7, reviewCount: 15 },
   { ...KURIO_APES, adjective: 'Cosmic', noun: 'Bloom', number: 118, price: '1.29', image: '/nft/cosmic-bloom.png', attributes: ['Chapéu', 'Moletom', 'Comum'], rating: 4.6, reviewCount: 12 },
   { ...KURIO_APES, adjective: 'Violet', noun: 'Nomad', number: 314, price: '1.39', image: '/nft/cosmic-bloom.png', attributes: ['Chapéu', 'Violeta', 'Incomum'], rating: 4.1, reviewCount: 8 },
   { ...KURIO_APES, adjective: 'Ivory', noun: 'Baron', number: 88, price: '1.79', image: '/nft/ivory-baron.png', attributes: ['Gola alta', 'Marfim', 'Raro'], rating: 4.8, reviewCount: 27 },
   { ...KURIO_APES, adjective: 'Golden', noun: 'Beat', number: 207, price: '0.99', image: '/nft/golden-beat.png', attributes: ['Fones', 'Dourado', 'Comum'], rating: 3.9, reviewCount: 6 },
+  { ...KURIO_LEGENDS, adjective: 'Golden', noun: 'Frequency', number: 71, price: '0.59', image: '/nft/golden-beat.png', attributes: ['Fones', 'Dourado', 'Lendário'], rating: 4.4, reviewCount: 11 },
   { ...KURIO_APES, adjective: 'Golden', noun: 'Signal', number: 160, price: '0.39', image: '/nft/golden-beat.png', attributes: ['Fones', 'Dourado', 'Incomum'], rating: 4.0, reviewCount: 4 },
 ]
 
-const PRICE_OVERRIDES: Record<number, string> = { 6: '0.02', 7: '12.30' }
+/** The cheapest and the most expensive listing: the price range of the Filters panel (0,02 – 12,30). */
+const PRICE_OVERRIDES: Record<number, string> = { 9: '0.02', 10: '12.30' }
+
+/** The NFT promoted in the "NFT EM DESTAQUE" banner (its artwork is the one in the frame). */
+export const FEATURED_NFT_ID = 'nft-0009'
 
 const ADJECTIVES = ['Amber', 'Crimson', 'Cobalt', 'Onyx', 'Golden', 'Silver', 'Rustic', 'Neon', 'Velvet', 'Copper']
 const NOUNS = ['Fox', 'Oracle', 'Totem', 'Drifter', 'Specter', 'Pilgrim', 'Warden', 'Mirage', 'Cipher', 'Sentinel']
 const CREATORS = ['Lia Monteiro', 'Caio Andrade', 'Studio Ônix', 'Maya Ferraz', 'Rafa Linhares', 'Nina Duarte']
 const ATTRIBUTES = ['Holográfico', 'Neon', 'Dourado', 'Animado', 'Minimalista', 'Raro', 'Comum', 'Lendário', 'Texturizado']
-const PALETTE = ['#D28A4C', '#E89B55', '#B39463', '#F0805F', '#55321F', '#38220F', '#CFB28C']
 
 const EDITION_SPECS: { id: EditionId; label: string; supply: number }[] = [
   { id: '1-1', label: '1/1', supply: 1 },
@@ -157,26 +175,6 @@ function hexAddress(rng: () => number): string {
   return `0x${Array.from({ length: 40 }, () => Math.floor(rng() * 16).toString(16)).join('')}`
 }
 
-function artwork(seed: number): string {
-  const rng = mulberry32(seed)
-  const c1 = pick(PALETTE, rng)
-  const c2 = pick(PALETTE, rng)
-  const c3 = pick(PALETTE, rng)
-  const shapes = Array.from({ length: 5 }, () => {
-    const cx = Math.round(rng() * 600)
-    const cy = Math.round(rng() * 600)
-    const r = 40 + Math.round(rng() * 160)
-    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${pick(PALETTE, rng)}" fill-opacity="0.55"/>`
-  }).join('')
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">` +
-    `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">` +
-    `<stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>` +
-    `<rect width="600" height="600" fill="url(#g)"/>${shapes}` +
-    `<rect x="150" y="150" width="300" height="300" rx="15" fill="${c3}" fill-opacity="0.35"/></svg>`
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
-}
-
 function createEditions(special: boolean, rng: () => number): NftEdition[] {
   if (special) {
     return EDITION_SPECS.map((spec) => ({
@@ -209,7 +207,7 @@ function createNfts(): NftRecord[] {
 
   return slots.map((slot, index) => {
     const special = SPECIAL_NFTS[index]
-    const collection = special?.collection ?? slot
+    const collection = slot
     const number = special ? special.number : 1000 + index
     const adjective = special ? special.adjective : pick(ADJECTIVES, rng)
     const noun = special ? special.noun : pick(NOUNS, rng)
@@ -220,7 +218,8 @@ function createNfts(): NftRecord[] {
     const collectionLabel = COLLECTIONS.find((c) => c.id === collection)?.label ?? collection
     const networkLabel = NETWORKS.find((n) => n.id === network)?.label ?? network
     const name = `${adjective} ${noun} #${String(number % 1000).padStart(3, '0')}`
-    const image = special?.image ?? artwork(number)
+    // Real Figma artwork everywhere: the listed NFTs cycle through the four exported images.
+    const image = special?.image ?? ARTWORKS[number % ARTWORKS.length]
     const collectionName = special?.collectionName ?? `Kurio ${collectionLabel}`
     const creator = special?.creator ?? pick(CREATORS, rng)
     const royaltyPercent = special ? 5 : pick([5, 5, 7, 10], rng)
@@ -238,6 +237,7 @@ function createNfts(): NftRecord[] {
       collectionName,
       network,
       price,
+      compareAtPrice: special?.compareAtPrice ?? null,
       supply: editions.reduce((total, edition) => total + edition.supply, 0),
       available: editions.reduce((total, edition) => total + edition.available, 0),
       editions,
@@ -402,6 +402,13 @@ export function findEdition(nft: NftRecord, editionId: EditionId): NftEdition | 
   return nft.editions.find((edition) => edition.id === editionId)
 }
 
+/** Edition used by quick actions: the largest limited edition in stock, else any in stock. */
+export function defaultEdition(nft: NftRecord): NftEdition | undefined {
+  const inStock = nft.editions.filter((edition) => edition.available > 0)
+  const limited = inStock.filter((edition) => edition.id !== 'open').sort((a, b) => b.supply - a.supply)
+  return limited[0] ?? inStock[0]
+}
+
 /** Keeps the NFT-level stock equal to the sum of its editions after a change. */
 export function syncAvailability(nft: NftRecord): void {
   nft.available = nft.editions.reduce((total, edition) => total + edition.available, 0)
@@ -421,6 +428,7 @@ export function serializeNft(nft: NftRecord, userId?: string): Nft {
     collection: nft.collection,
     network: nft.network,
     price: nft.price,
+    compareAtPrice: nft.compareAtPrice,
     supply: nft.supply,
     available: nft.available,
     creator: nft.creator,

@@ -41,6 +41,8 @@ export interface Nft {
   collection: CollectionId
   network: NetworkId
   price: string
+  /** Price before a markdown, shown struck through next to the current price. */
+  compareAtPrice: string | null
   supply: number
   available: number
   creator: string

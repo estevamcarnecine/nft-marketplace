@@ -15,7 +15,7 @@ import {
  * Bump the version whenever fixtures or the snapshot shape change: older snapshots are discarded.
  */
 const STORAGE_KEY = 'kurio.mockdb'
-const VERSION = 3
+const VERSION = 4
 
 interface Snapshot {
   version: number
