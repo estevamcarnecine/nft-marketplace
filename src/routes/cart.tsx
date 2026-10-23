@@ -5,8 +5,10 @@ import { PageShell } from '@/components/layout/PageShell'
 import { cartQuery } from '@/features/cart/api'
 import { CartSummary } from '@/features/cart/components/CartSummary'
 import { CartTable } from '@/features/cart/components/CartTable'
+import { MobileCart } from '@/features/cart/components/MobileCart'
 import { RelatedNfts } from '@/features/nft/components/RelatedNfts'
 import { CartNotices } from '@/features/realtime/components/CartNotices'
+import { useIsDesktop } from '@/lib/use-media-query'
 
 export const Route = createFileRoute('/cart')({
   component: CartPage,
@@ -15,6 +17,9 @@ export const Route = createFileRoute('/cart')({
 function CartPage() {
   const cart = useQuery(cartQuery)
   const lines = cart.data?.items ?? []
+  const desktop = useIsDesktop()
+
+  if (!desktop) return <MobileCart cart={cart.data} status={cart.status} onRetry={() => void cart.refetch()} />
 
   return (
     <PageShell active="market">
