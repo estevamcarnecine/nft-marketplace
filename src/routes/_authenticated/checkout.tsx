@@ -112,11 +112,9 @@ function CheckoutPage() {
     })
   }, [quote])
 
+  /** SessionWatcher sends the buyer to sign in and back here; the draft is already saved. */
   function handleAuthError(error: ApiError) {
-    if (error.status !== 401) return false
-    toast.error('Sua sessão expirou. Entre novamente para continuar a compra.')
-    void navigate({ to: '/login', search: { redirect: '/checkout' } })
-    return true
+    return error.status === 401
   }
 
   function applyFieldErrors(error: ApiError) {

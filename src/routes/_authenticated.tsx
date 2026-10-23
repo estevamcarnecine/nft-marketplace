@@ -14,7 +14,7 @@ export const Route = createFileRoute('/_authenticated')({
       await queryClient.ensureQueryData(sessionQuery)
     } catch (error) {
       if (isApiError(error) && error.status === 401) {
-        clearToken()
+        clearToken('expired')
         queryClient.clear()
         throw toLogin()
       }

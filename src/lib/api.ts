@@ -47,7 +47,10 @@ http.interceptors.response.use(
     if (axios.isAxiosError<ApiErrorBody>(error)) {
       const status = error.response?.status ?? 0
       const data = error.response?.data
-      if (status === 401) clearToken()
+      // Only a 401 for the current token ends the session; a late answer to a request sent with an
+      // older token (previous user) must not log out whoever is signed in now.
+      const sentToken = error.config?.headers.get('Authorization')
+      if (status === 401 && sentToken && sentToken === `Bearer ${getToken()}`) clearToken('expired')
 
       const body: ApiErrorBody =
         data && typeof data.code === 'string'

@@ -1,6 +1,7 @@
 import { Link, Outlet, createRootRoute } from '@tanstack/react-router'
 
 import { PageShell } from '@/components/layout/PageShell'
+import { SessionWatcher } from '@/features/auth/components/SessionWatcher'
 import { RealtimeProvider } from '@/features/realtime/RealtimeProvider'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -13,6 +14,7 @@ export const Route = createRootRoute({
       </div>
       <Toaster position="bottom-right" />
       <RealtimeProvider />
+      <SessionWatcher />
     </TooltipProvider>
   ),
   notFoundComponent: () => (

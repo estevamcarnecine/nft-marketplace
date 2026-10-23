@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query'
 import { ComingSoon } from '@/components/common/ComingSoon'
 import { Hairline } from '@/components/common/Hairline'
 import { cartQuery } from '@/features/cart/api'
+import { useToken } from '@/lib/auth'
+import { AccountMenu } from './AccountMenu'
 import { SearchDialog } from './SearchDialog'
 import activeUnderline from '@/assets/header/active-underline-home.svg'
 import activeUnderlineMarket from '@/assets/header/active-underline-market.svg'
@@ -58,6 +60,7 @@ function CartButton() {
  */
 export function Header({ active, divider: withDivider = true }: { active: HeaderSection; divider?: boolean }) {
   const location = useLocation()
+  const signedIn = useToken() !== null
   const search = useSearch({ strict: false })
   // Return to the current page after signing in; on /login itself keep its own target.
   const loginRedirect = location.pathname === '/login' ? search.redirect : location.href
@@ -85,22 +88,26 @@ export function Header({ active, divider: withDivider = true }: { active: Header
         <div className="flex items-center gap-[28px]">
           <SearchDialog />
           <CartButton />
-          <Link
-            to="/login"
-            search={{ redirect: loginRedirect }}
-            className="flex h-[35px] w-[100px] items-center justify-center rounded-button bg-primary"
-          >
-            <span className="flex items-start gap-[4px]">
-              <span className="relative size-[20px]">
-                <span className="absolute inset-[11.46%_9.2%_11.46%_9.41%]">
-                  <span className="absolute inset-[-4.86%_-4.61%]">
-                    <img alt="" src={logoutIcon} className="block size-full max-w-none" />
+          {signedIn ? (
+            <AccountMenu />
+          ) : (
+            <Link
+              to="/login"
+              search={{ redirect: loginRedirect }}
+              className="flex h-[35px] w-[100px] items-center justify-center rounded-button bg-primary"
+            >
+              <span className="flex items-start gap-[4px]">
+                <span className="relative size-[20px]">
+                  <span className="absolute inset-[11.46%_9.2%_11.46%_9.41%]">
+                    <span className="absolute inset-[-4.86%_-4.61%]">
+                      <img alt="" src={logoutIcon} className="block size-full max-w-none" />
+                    </span>
                   </span>
                 </span>
+                <span className="text-[16px] leading-[normal] font-medium whitespace-nowrap text-ink">Entrar</span>
               </span>
-              <span className="text-[16px] leading-[normal] font-medium whitespace-nowrap text-ink">Entrar</span>
-            </span>
-          </Link>
+            </Link>
+          )}
         </div>
       </div>
 
