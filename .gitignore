@@ -30,3 +30,5 @@ dist-ssr
 # Playwright
 playwright-report/
 test-results/
+# TanStack Router plugin temp files
+.tanstack/
