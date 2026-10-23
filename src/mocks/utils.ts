@@ -4,7 +4,7 @@ import type { NetworkId, User, WalletType } from '@/types'
 import { type StoredUser } from './db'
 import { schedulePersist } from './persistence'
 import { TIMEOUT_DELAY_MS, isOffline, isTimedOut, latencyFor, takeFailure } from './scenario'
-import { checkSession } from './session'
+import { bearerToken, checkSession } from './session'
 
 type JsonBody = Parameters<typeof HttpResponse.json>[0]
 type ResolverInfo = Parameters<HttpResponseResolver>[0]
@@ -31,6 +31,8 @@ export function validationError(errors: Record<string, string>) {
  * Every handler runs through the active scenario (latency, jitter, offline, timeout, injected
  * HTTP failures), and every mutation is persisted afterwards so a reload keeps the data.
  */
+const SESSIONLESS_KEYS = new Set(['auth.login', 'auth.signup', 'auth.logout'])
+
 export function withScenario(key: string, resolver: Resolver): HttpResponseResolver {
   return async (info) => {
     await delay(latencyFor(key))
@@ -43,6 +45,11 @@ export function withScenario(key: string, resolver: Resolver): HttpResponseResol
         status >= 500 ? 'SERVICE_UNAVAILABLE' : 'SCENARIO_FAILURE',
         status >= 500 ? 'O serviço está temporariamente indisponível. Tente novamente.' : `Falha simulada em ${key}`,
       )
+    }
+    // A bearer token that is expired, revoked or forged is rejected on public endpoints too, so a
+    // stale session never silently falls back to visitor data. Signing in and out stay open.
+    if (!SESSIONLESS_KEYS.has(key) && bearerToken(info.request) && checkSession(info.request).status !== 'valid') {
+      return unauthorized(info.request)
     }
     const response = await resolver(info)
     if (info.request.method !== 'GET') schedulePersist()
