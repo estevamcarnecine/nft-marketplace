@@ -3,9 +3,14 @@ import { Eye } from 'lucide-react'
 import { cn } from 'cn'
 
 import hideIcon from '@/assets/auth/hide.svg'
+import hideIconPage from '@/assets/mobile/auth/hide.svg'
 
 const INPUT =
-  'h-[40px] w-full overflow-clip rounded-[5px] border border-border bg-transparent px-[16px] py-[12px] leading-[16px] text-foreground outline-none placeholder:text-secondary focus:border-primary aria-invalid:border-destructive'
+  'w-full overflow-clip border border-border bg-transparent px-[16px] py-[12px] leading-[16px] text-foreground outline-none placeholder:text-secondary focus:border-primary aria-invalid:border-destructive'
+
+/** `dialog`: the desktop auth modals; `page`: the full-screen mobile frames (16:1022, 16:1228). */
+export type AuthVariant = 'dialog' | 'page'
+const SIZE: Record<AuthVariant, string> = { dialog: 'h-[40px] rounded-[5px]', page: 'h-[50px] rounded-[10px]' }
 
 export function FieldError({ id, message }: { id: string; message?: string }) {
   return message ? (
@@ -15,11 +20,11 @@ export function FieldError({ id, message }: { id: string; message?: string }) {
   ) : null
 }
 
-type AuthInputProps = ComponentProps<'input'> & { id: string; label: string; error?: string }
+type AuthInputProps = ComponentProps<'input'> & { id: string; label: string; error?: string; variant?: AuthVariant }
 
 /** Figma auth input: the label is the placeholder visually, and stays available to screen readers. */
 export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(function AuthInput(
-  { id, label, error, className, ...input },
+  { id, label, error, className, variant = 'dialog', ...input },
   ref,
 ) {
   return (
@@ -32,7 +37,7 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(function A
         id={id}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
-        className={cn(INPUT, 'text-[14px]', className)}
+        className={cn(INPUT, SIZE[variant], 'text-[14px]', className)}
         {...input}
       />
       <FieldError id={`${id}-error`} message={error} />
@@ -42,7 +47,7 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(function A
 
 /** Password input with the Figma "Hide" toggle; the shown state uses the same stroke weight. */
 export const PasswordInput = forwardRef<HTMLInputElement, AuthInputProps & { toggle?: boolean }>(
-  function PasswordInput({ id, label, error, toggle = true, ...input }, ref) {
+  function PasswordInput({ id, label, error, toggle = true, variant = 'dialog', ...input }, ref) {
     const [visible, setVisible] = useState(false)
     return (
       <>
@@ -56,7 +61,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, AuthInputProps & { tog
             type={visible ? 'text' : 'password'}
             aria-invalid={Boolean(error)}
             aria-describedby={error ? `${id}-error` : undefined}
-            className={cn(INPUT, toggle && 'pr-[44px]', 'text-[16px] placeholder:text-[14px]')}
+            className={cn(INPUT, SIZE[variant], toggle && 'pr-[44px]', 'text-[16px] placeholder:text-[14px]')}
             {...input}
           />
           {toggle && (
@@ -66,10 +71,12 @@ export const PasswordInput = forwardRef<HTMLInputElement, AuthInputProps & { tog
               aria-label={visible ? 'Ocultar senha' : 'Mostrar senha'}
               aria-pressed={visible}
               aria-controls={id}
-              className="absolute top-1/2 right-[10px] flex size-[24px] -translate-y-1/2 items-center justify-center"
+              className={cn('absolute top-1/2 flex size-[24px] -translate-y-1/2 items-center justify-center', variant === 'page' ? 'right-[13px]' : 'right-[10px]')}
             >
               {visible ? (
-                <Eye aria-hidden strokeWidth={1.5} className="size-[20px] text-secondary" />
+                <Eye aria-hidden strokeWidth={1.5} className={cn('text-secondary', variant === 'page' ? 'size-[18px]' : 'size-[20px]')} />
+              ) : variant === 'page' ? (
+                <img alt="" src={hideIconPage} className="block h-[13.33px] w-[15.382px] max-w-none" />
               ) : (
                 <img alt="" src={hideIcon} className="block h-[14.645px] w-[18.981px] max-w-none" />
               )}

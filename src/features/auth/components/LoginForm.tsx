@@ -1,12 +1,14 @@
 import { useForm } from 'react-hook-form'
+import { cn } from 'cn'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { ComingSoon } from '@/components/common/ComingSoon'
 import { isApiError } from '@/lib/api'
 import { loginSchema, useLogin, type LoginForm as LoginValues } from '../api'
-import { AuthInput, PasswordInput } from './fields'
+import { AuthInput, PasswordInput, type AuthVariant } from './fields'
 
-export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
+export function LoginForm({ onSuccess, variant = 'dialog' }: { onSuccess: () => void; variant?: AuthVariant }) {
+  const page = variant === 'page'
   const login = useLogin()
   const {
     register,
@@ -30,13 +32,14 @@ export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <form noValidate onSubmit={submit} aria-label="Entrar" className="flex w-full flex-col items-start">
-      <div className="flex w-full flex-col items-start gap-[12px] overflow-clip px-[80px] pt-[24px]">
+      <div className={page ? 'flex w-full flex-col items-start gap-[12px]' : 'flex w-full flex-col items-start gap-[12px] overflow-clip px-[80px] pt-[24px]'}>
         <AuthInput
           id="login-email"
           type="email"
           label="E-mail"
           placeholder="contato@email.com"
           autoComplete="email"
+          variant={variant}
           error={errors.email?.message}
           {...register('email')}
         />
@@ -45,6 +48,7 @@ export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
           label="Senha"
           placeholder="Senha"
           autoComplete="current-password"
+          variant={variant}
           error={errors.password?.message}
           {...register('password')}
         />
@@ -53,7 +57,7 @@ export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
         </div>
       </div>
 
-      <div className="flex w-full flex-col items-start gap-[12px] overflow-clip px-[80px] pt-[24px]">
+      <div className={page ? 'flex w-full flex-col items-start gap-[12px] pt-[40px]' : 'flex w-full flex-col items-start gap-[12px] overflow-clip px-[80px] pt-[24px]'}>
         {errors.root && (
           <p role="alert" className="w-full text-center text-[13px] leading-[16px] text-destructive">
             {errors.root.message}
@@ -63,7 +67,7 @@ export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
           type="submit"
           disabled={login.isPending}
           aria-busy={login.isPending}
-          className="flex h-[45px] w-full items-center justify-center overflow-clip rounded-[5px] bg-primary text-[16px] leading-[16px] font-bold whitespace-nowrap text-ink disabled:opacity-60"
+          className={cn('flex w-full items-center justify-center overflow-clip bg-primary text-[16px] leading-[16px] font-bold whitespace-nowrap text-ink disabled:opacity-60', page ? 'h-[60px] rounded-[10px]' : 'h-[45px] rounded-[5px]')}
         >
           {login.isPending ? 'Entrando…' : 'Entrar'}
         </button>
