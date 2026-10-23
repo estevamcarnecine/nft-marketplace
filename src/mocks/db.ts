@@ -13,6 +13,7 @@ import type {
   Quote,
   User,
   Wallet,
+  WalletSession,
 } from '@/types'
 
 export interface StoredUser extends User {
@@ -25,6 +26,9 @@ export interface StoredQuote {
 export interface StoredOrder {
   userId: string
   order: Order
+}
+export interface StoredWalletSession extends WalletSession {
+  userId: string
 }
 export type NftRecord = Omit<NftDetail, 'favorited'>
 
@@ -295,7 +299,9 @@ function createState() {
     favorites: new Map<string, Set<string>>(),
     quotes: new Map<string, StoredQuote>(),
     orders: [] as StoredOrder[],
-    idempotency: new Map<string, Order>(),
+    /** `${userId}:${key}` → fingerprint of the request body and the order it created. */
+    idempotency: new Map<string, { fingerprint: string; orderId: string }>(),
+    walletSessions: new Map<string, StoredWalletSession>(),
     sequence: 1,
   }
 }

@@ -2,7 +2,10 @@ export interface Scenario {
   latencyMs: number
   ticks: boolean
   priceChangeOnNextOrder: boolean
-  orderOutcome: 'completed' | 'failed'
+  orderOutcome: 'confirmed' | 'rejected'
+  /** Time from order creation to the simulated payment result. */
+  orderSettleMs: number
+  walletReject: boolean
   failures: Record<string, { status: number; times: number }>
 }
 
@@ -10,7 +13,9 @@ const defaults = (): Scenario => ({
   latencyMs: 250,
   ticks: false,
   priceChangeOnNextOrder: false,
-  orderOutcome: 'completed',
+  orderOutcome: 'confirmed',
+  orderSettleMs: 3000,
+  walletReject: false,
   failures: {},
 })
 
@@ -50,7 +55,10 @@ export function applyScenarioFromUrl(search: string): void {
         scenario.priceChangeOnNextOrder = true
         break
       case 'orderfail':
-        scenario.orderOutcome = 'failed'
+        scenario.orderOutcome = 'rejected'
+        break
+      case 'walletreject':
+        scenario.walletReject = true
         break
       case 'fail': {
         const status = Number(b)

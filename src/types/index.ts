@@ -30,7 +30,7 @@ export type CollectionId = (typeof COLLECTIONS)[number]['id']
 export type WalletType = (typeof WALLET_TYPES)[number]['id']
 export type CatalogTab = (typeof CATALOG_TABS)[number]
 export type CatalogSort = (typeof CATALOG_SORTS)[number]
-export type OrderStatus = 'pending' | 'processing' | 'completed' | 'failed'
+export type OrderStatus = 'pending' | 'confirmed' | 'rejected'
 
 export interface Nft {
   id: string
@@ -147,17 +147,54 @@ export interface OrderWallet {
   address: string
 }
 
+/** Collector data sent with an order: the "Perfil do colecionador" fields of the payment screen. */
+export interface CollectorInput {
+  displayName: string
+  username: string
+  profileName: string
+  email: string
+  network: NetworkId
+  walletType: WalletType
+  walletAddress: string
+  useAnotherWallet: boolean
+  secondaryWallet: string
+  ensSuffix: '.eth'
+  referralCode: string
+  note: string
+}
+
+/** A simulated wallet connection; orders must be signed by a connected wallet. */
+export interface WalletSession {
+  id: string
+  type: WalletType
+  network: NetworkId
+  address: string
+  connectedAt: string
+}
+
+export interface CreateOrderInput {
+  quoteId: string
+  walletSessionId: string
+  collector: CollectorInput
+}
+
 export interface Order {
   id: string
   status: OrderStatus
+  quoteId: string
   lines: QuoteLine[]
   subtotal: string
   discount: string
   networkFee: string
   total: string
   wallet: OrderWallet
+  /** Where the NFTs are delivered: the paying wallet, or the secondary one when chosen. */
+  recipient: string
   email: string
   note: string
+  txHash: string | null
+  explorerUrl: string | null
+  rejectionReason: string | null
   createdAt: string
   updatedAt: string
 }

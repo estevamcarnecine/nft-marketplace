@@ -1,6 +1,17 @@
 import { addEth, mulEthInt, percentOfEth, subEth, sumEth } from '@/lib/eth'
 import type { AppliedCoupon, Cart, CartLine, OrderStatus, Quote, QuoteLine } from '@/types'
-import { FIXTURE_EPOCH, db, findEdition, findNft, nextId, parseCartKey, serializeNft } from './db'
+import {
+  FIXTURE_EPOCH,
+  cartKey,
+  db,
+  findEdition,
+  findNft,
+  nextId,
+  parseCartKey,
+  serializeNft,
+  syncAvailability,
+  toNftUpdated,
+} from './db'
 import { scenario } from './scenario'
 import { broadcast } from './socket'
 
@@ -103,22 +114,81 @@ export function createQuote(userId: string, promoCode: string | null): Quote {
   return quote
 }
 
-export function scheduleOrderProgress(orderId: string): void {
-  const steps: [number, OrderStatus][] = [
-    [1500, 'processing'],
-    [4000, scenario.orderOutcome],
-  ]
-  for (const [delayMs, status] of steps) {
-    setTimeout(() => {
-      const stored = db.orders.find((entry) => entry.order.id === orderId)
-      if (!stored) return
-      stored.order.status = status
-      stored.order.updatedAt = new Date().toISOString()
-      broadcast('order.updated', {
-        id: stored.order.id,
-        status,
-        updatedAt: stored.order.updatedAt,
-      })
-    }, delayMs)
+/** Everything the buyer agreed to; ids and timestamps are left out on purpose. */
+export function quoteFingerprint(quote: Quote): string {
+  return JSON.stringify([
+    quote.promoCode,
+    quote.lines.map((line) => [line.nftId, line.editionId, line.quantity, line.unitPrice]),
+    quote.subtotal,
+    quote.discount,
+    quote.networkFee,
+    quote.total,
+  ])
+}
+
+/** Deterministic fake transaction hash, so a receipt always shows the same reference. */
+function simulatedTxHash(seed: string): string {
+  let state = 2166136261
+  let hex = ''
+  while (hex.length < 64) {
+    for (const char of seed + hex.length) state = Math.imul(state ^ char.charCodeAt(0), 16777619)
+    hex += (state >>> 0).toString(16).padStart(8, '0')
   }
+  return `0x${hex.slice(0, 64)}`
+}
+
+/** Removes exactly the purchased quantities from the cart, keeping anything added since. */
+function removePurchasedFromCart(lines: QuoteLine[]): void {
+  for (const line of lines) {
+    const key = cartKey(line.nftId, line.editionId)
+    const remaining = (db.cart.get(key) ?? 0) - line.quantity
+    if (remaining > 0) db.cart.set(key, remaining)
+    else db.cart.delete(key)
+  }
+  if (db.cart.size === 0) db.cartCoupon = null
+}
+
+function settleOrder(orderId: string): void {
+  const stored = db.orders.find((entry) => entry.order.id === orderId)
+  if (!stored || stored.order.status !== 'pending') return
+  const order = stored.order
+
+  let status: OrderStatus = scenario.orderOutcome
+  let reason: string | null = status === 'rejected' ? 'O pagamento foi recusado pela carteira.' : null
+
+  if (status === 'confirmed') {
+    const shortLine = order.lines.find((line) => {
+      const nft = findNft(line.nftId)
+      const edition = nft && findEdition(nft, line.editionId)
+      return !edition || edition.available < line.quantity
+    })
+    if (shortLine) {
+      status = 'rejected'
+      reason = `A edição ${shortLine.editionLabel} de ${shortLine.name} esgotou antes da confirmação.`
+    }
+  }
+
+  if (status === 'confirmed') {
+    for (const line of order.lines) {
+      const nft = findNft(line.nftId)
+      const edition = nft && findEdition(nft, line.editionId)
+      if (!nft || !edition) continue
+      edition.available -= line.quantity
+      syncAvailability(nft)
+      broadcast('nft.updated', toNftUpdated(nft))
+    }
+    removePurchasedFromCart(order.lines)
+    order.txHash = simulatedTxHash(order.id)
+    order.explorerUrl = `https://explorer.kurio.mock/tx/${order.txHash}`
+  }
+
+  order.status = status
+  order.rejectionReason = reason
+  order.updatedAt = new Date().toISOString()
+  broadcast('order.updated', { id: order.id, status, updatedAt: order.updatedAt })
+}
+
+/** Payment settles asynchronously, like a transaction waiting for confirmation. */
+export function scheduleOrderProgress(orderId: string): void {
+  setTimeout(() => settleOrder(orderId), scenario.orderSettleMs)
 }
