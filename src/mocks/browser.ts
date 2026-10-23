@@ -27,7 +27,7 @@ export async function startMocks(): Promise<void> {
 
   const worker = setupWorker(...handlers)
   await worker.start({
-    onUnhandledRequest: 'bypass',
+    onUnhandledFrame: 'bypass',
     serviceWorker: { url: '/mockServiceWorker.js' },
   })
   startRealtime()
