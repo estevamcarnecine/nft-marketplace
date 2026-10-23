@@ -4,13 +4,13 @@ import { useQuery } from '@tanstack/react-query'
 import { ComingSoon } from '@/components/common/ComingSoon'
 import { Hairline } from '@/components/common/Hairline'
 import { cartQuery } from '@/features/cart/api'
+import { SearchDialog } from './SearchDialog'
 import activeUnderline from '@/assets/header/active-underline-home.svg'
 import activeUnderlineMarket from '@/assets/header/active-underline-market.svg'
 import badge from '@/assets/header/badge.svg'
 import cartIcon from '@/assets/header/cart.svg'
 import divider from '@/assets/header/divider.svg'
 import logoutIcon from '@/assets/header/logout.svg'
-import searchIcon from '@/assets/header/search.svg'
 
 export type HeaderSection = 'home' | 'market'
 
@@ -83,9 +83,7 @@ export function Header({ active, divider: withDivider = true }: { active: Header
         </nav>
 
         <div className="flex items-center gap-[28px]">
-          <button type="button" aria-label="Buscar" className="relative h-[20px] w-[20.001px] cursor-pointer">
-            <img alt="" src={searchIcon} className="absolute inset-0 block size-full max-w-none" />
-          </button>
+          <SearchDialog />
           <CartButton />
           <Link
             to="/login"

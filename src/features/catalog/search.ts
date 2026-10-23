@@ -1,8 +1,9 @@
 import { z } from 'zod'
 import { CATALOG_SORTS, CATALOG_TABS, COLLECTIONS, NETWORKS } from '@/types'
+import type { CollectionId, NetworkId } from '@/types'
 
-const collectionIds = COLLECTIONS.map((collection) => collection.id) as [string, ...string[]]
-const networkIds = NETWORKS.map((network) => network.id) as [string, ...string[]]
+const collectionIds = COLLECTIONS.map((collection) => collection.id) as [CollectionId, ...CollectionId[]]
+const networkIds = NETWORKS.map((network) => network.id) as [NetworkId, ...NetworkId[]]
 const ethAmount = z.string().regex(/^\d+(\.\d{1,18})?$/)
 
 /** Catalog state that lives in the URL of `/`. Invalid values are dropped instead of failing the route. */

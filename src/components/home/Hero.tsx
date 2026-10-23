@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router'
+
 import carouselDots from '@/assets/home/carousel-dots.svg'
 import heroArt from '@/assets/home/hero-art.png'
 import heroBg from '@/assets/home/hero-bg.svg'
@@ -23,12 +25,13 @@ export function Hero() {
                 artistas e tenha uma parte da cultura da internet.
               </p>
             </div>
-            <button
-              type="button"
-              className="flex h-[40px] w-[140px] cursor-pointer items-center justify-center rounded-button bg-primary py-[10px] pr-[36px] pl-[28px]"
+            <Link
+              to="/"
+              hash="mercado"
+              className="flex h-[40px] w-[140px] items-center justify-center rounded-button bg-primary py-[10px] pr-[36px] pl-[28px]"
             >
               <span className="text-[16px] font-bold leading-[20px] whitespace-nowrap text-ink">EXPLORAR</span>
-            </button>
+            </Link>
           </div>
           <img alt="" src={carouselDots} className="block h-[8px] w-[40px] max-w-none" />
         </div>
