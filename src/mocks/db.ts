@@ -274,6 +274,8 @@ function createState() {
     ensSuffix: '.eth',
     referralCode: 'KURIO2026',
     note: '',
+    walletNickname: 'MetaMask principal',
+    avatarUrl: null,
   }
   const demoWallet: Wallet = {
     id: 'wallet_demo',

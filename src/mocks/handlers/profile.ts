@@ -32,6 +32,8 @@ function emptyProfile(user: StoredUser): Profile {
     ensSuffix: '.eth',
     referralCode: '',
     note: '',
+    walletNickname: '',
+    avatarUrl: null,
   }
 }
 
@@ -117,6 +119,8 @@ export const profileHandlers = [
         ensSuffix: '.eth',
         referralCode,
         note,
+        walletNickname: db.profiles.get(user.id)?.walletNickname ?? '',
+        avatarUrl: db.profiles.get(user.id)?.avatarUrl ?? null,
       }
       db.profiles.set(user.id, profile)
       return json({ ...profile })

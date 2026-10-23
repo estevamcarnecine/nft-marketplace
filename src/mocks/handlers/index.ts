@@ -1,4 +1,5 @@
 import { realtimeHandler } from '../socket'
+import { accountHandlers } from './account'
 import { authHandlers } from './auth'
 import { cartHandlers } from './cart'
 import { catalogHandlers } from './catalog'
@@ -15,6 +16,7 @@ export const handlers = [
   ...checkoutHandlers,
   ...explorerHandlers,
   ...profileHandlers,
+  ...accountHandlers,
   ...walletHandlers,
   ...walletSessionHandlers,
   realtimeHandler,

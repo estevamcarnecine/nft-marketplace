@@ -237,6 +237,10 @@ export interface Profile {
   ensSuffix: '.eth'
   referralCode: string
   note: string
+  /** "Apelido da carteira" on the collector profile screen. */
+  walletNickname: string
+  /** Data URL of the uploaded avatar, or null for the placeholder. */
+  avatarUrl: string | null
 }
 
 export interface Wallet {

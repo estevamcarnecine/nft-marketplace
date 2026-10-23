@@ -77,6 +77,8 @@ export const authHandlers = [
         ensSuffix: '.eth',
         referralCode: '',
         note: '',
+        walletNickname: '',
+        avatarUrl: null,
       })
       return json({ token: tokenFor(user), user: publicUser(user) }, 201)
     }),
