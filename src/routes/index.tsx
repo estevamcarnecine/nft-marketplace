@@ -1,15 +1,18 @@
 import { createFileRoute } from '@tanstack/react-router'
 
+import { Hero } from '@/components/home/Hero'
+import { PageShell } from '@/components/layout/PageShell'
+import { catalogSearchSchema } from '@/features/catalog/search'
+
 export const Route = createFileRoute('/')({
+  validateSearch: catalogSearchSchema,
   component: HomePage,
 })
 
 function HomePage() {
   return (
-    <main className="mx-auto max-w-[1200px] px-6 py-10">
-      <h1 className="text-[43px] font-bold leading-[70px]">
-        SEJA DONO DO FUTURO DA ARTE DIGITAL
-      </h1>
-    </main>
+    <PageShell active="home">
+      <Hero />
+    </PageShell>
   )
 }
