@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { profileQuery } from '@/features/checkout/api'
 import { api } from '@/lib/api'
 import { clearToken } from '@/lib/auth'
+import { rotateGuestCartId } from '@/lib/cart-id'
 import type { Profile } from '@/types'
 
 export interface ProfileUpdate {
@@ -53,6 +54,7 @@ export function useLogout() {
     mutationFn: () => api.post<void>('/auth/logout'),
     onSettled: () => {
       clearToken()
+      rotateGuestCartId()
       queryClient.clear()
     },
   })

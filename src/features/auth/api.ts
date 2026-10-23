@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 import { api } from '@/lib/api'
 import { setToken } from '@/lib/auth'
+import { getGuestCartId, rotateGuestCartId } from '@/lib/cart-id'
 import type { AuthResponse } from '@/types'
 
 export const loginSchema = z.object({
@@ -48,19 +49,23 @@ function useStartSession<TInput>(request: (input: TInput) => Promise<AuthRespons
     mutationFn: request,
     onSuccess: ({ token }) => {
       setToken(token)
-      // Cached data was fetched as a visitor (or another user): refetch it for this session.
-      void queryClient.invalidateQueries()
+      // The visitor cart was merged into the account; the next visitor starts a new one.
+      rotateGuestCartId()
+      // Cached data belonged to the visitor (or another user): drop it, never show it.
+      queryClient.clear()
     },
   })
 }
 
 export function useLogin() {
-  return useStartSession((input: LoginForm) => api.post<AuthResponse>('/auth/login', input))
+  return useStartSession((input: LoginForm) =>
+    api.post<AuthResponse>('/auth/login', { ...input, guestCartId: getGuestCartId() }),
+  )
 }
 
 export function useSignup() {
   // The confirmation is checked on the client only; the API receives the chosen password once.
   return useStartSession(({ username, email, password }: SignupForm) =>
-    api.post<AuthResponse>('/auth/signup', { username, email, password }),
+    api.post<AuthResponse>('/auth/signup', { username, email, password, guestCartId: getGuestCartId() }),
   )
 }

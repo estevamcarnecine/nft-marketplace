@@ -1,6 +1,7 @@
 import axios, { type AxiosRequestConfig } from 'axios'
 import type { ApiErrorBody } from '@/types'
 import { clearToken, getToken } from './auth'
+import { getGuestCartId } from './cart-id'
 import { API_BASE_URL } from './config'
 
 export class ApiError extends Error {
@@ -26,11 +27,14 @@ export function isApiError(error: unknown): error is ApiError {
 export const http = axios.create({
   baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
+  // A request that hangs is reported as a network failure instead of waiting forever.
+  timeout: 10_000,
 })
 
 http.interceptors.request.use((config) => {
   const token = getToken()
   if (token) config.headers.set('Authorization', `Bearer ${token}`)
+  config.headers.set('X-Cart-Id', getGuestCartId())
   return config
 })
 
