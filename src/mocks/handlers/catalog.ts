@@ -2,7 +2,7 @@ import { http } from 'msw'
 import { compareEth, isValidEth } from '@/lib/eth'
 import { CATALOG_SORTS, CATALOG_TABS, COLLECTIONS, NETWORKS } from '@/types'
 import type { CatalogSort, CatalogTab, Facets, Nft, Paginated } from '@/types'
-import { db, findNft, serializeNft } from '../db'
+import { FIXTURE_EPOCH, db, findNft, serializeNft, serializeNftDetail, type NftRecord } from '../db'
 import {
   authenticate,
   csv,
@@ -16,8 +16,9 @@ import {
 
 const NEW_WINDOW_MS = 72 * 3_600_000
 const TRENDING_LIMIT = 60
+const RELATED_LIMIT = 15
 
-const comparators: Record<CatalogSort, (a: Nft, b: Nft) => number> = {
+const comparators: Record<CatalogSort, (a: NftRecord, b: NftRecord) => number> = {
   recent: (a, b) => b.listedAt.localeCompare(a.listedAt),
   trending: (a, b) => b.views - a.views,
   'price-asc': (a, b) => compareEth(a.price, b.price),
@@ -89,7 +90,7 @@ export const catalogHandlers = [
           .slice(0, TRENDING_LIMIT)
           .map((nft) => nft.id),
       )
-      const newSince = new Date(Date.now() - NEW_WINDOW_MS).toISOString()
+      const newSince = new Date(FIXTURE_EPOCH - NEW_WINDOW_MS).toISOString()
 
       const filtered = db.nfts.filter((nft) => {
         if (tab === 'new' && nft.listedAt < newSince) return false
@@ -122,7 +123,26 @@ export const catalogHandlers = [
     withScenario('catalog.detail', ({ request, params }) => {
       const nft = findNft(String(params.id))
       if (!nft) return errorResponse(404, 'NFT_NOT_FOUND', 'NFT não encontrado')
-      return json({ ...serializeNft(nft, authenticate(request)?.id) })
+      return json({ ...serializeNftDetail(nft, authenticate(request)?.id) })
+    }),
+  ),
+
+  http.get(
+    '/api/nfts/:id/related',
+    withScenario('catalog.related', ({ request, params }) => {
+      const nft = findNft(String(params.id))
+      if (!nft) return errorResponse(404, 'NFT_NOT_FOUND', 'NFT não encontrado')
+
+      const others = db.nfts.filter((other) => other.id !== nft.id)
+      const sameSeries = others.filter((other) => other.collectionName === nft.collectionName)
+      const sameCategory = others.filter(
+        (other) => other.collectionName !== nft.collectionName && other.collection === nft.collection,
+      )
+      const userId = authenticate(request)?.id
+      const items = [...sameSeries, ...sameCategory]
+        .slice(0, RELATED_LIMIT)
+        .map((other) => serializeNft(other, userId))
+      return json({ items })
     }),
   ),
 

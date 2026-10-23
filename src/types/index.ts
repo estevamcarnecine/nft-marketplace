@@ -50,6 +50,29 @@ export interface Nft {
   favorited: boolean
 }
 
+export const EDITION_IDS = ['1-1', '1-10', '1-50', 'open'] as const
+export type EditionId = (typeof EDITION_IDS)[number]
+
+export interface NftEdition {
+  id: EditionId
+  label: string
+  supply: number
+  available: number
+}
+
+export interface NftDetail extends Nft {
+  images: string[]
+  collectionName: string
+  attributes: string[]
+  rating: number
+  reviewCount: number
+  story: string[]
+  contractAddress: string
+  tokenStandard: 'ERC-721' | 'ERC-1155'
+  royaltyPercent: number
+  editions: NftEdition[]
+}
+
 export interface Paginated<T> {
   items: T[]
   page: number
@@ -71,7 +94,9 @@ export interface Facets {
 }
 
 export interface CartLine {
+  id: string
   nft: Nft
+  edition: NftEdition
   quantity: number
   lineTotal: string
 }
@@ -84,6 +109,8 @@ export interface Cart {
 
 export interface QuoteLine {
   nftId: string
+  editionId: EditionId
+  editionLabel: string
   name: string
   tokenId: string
   image: string

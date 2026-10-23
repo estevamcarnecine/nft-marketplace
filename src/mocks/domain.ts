@@ -1,6 +1,6 @@
 import { addEth, mulEthInt, percentOfEth, subEth, sumEth } from '@/lib/eth'
 import type { Cart, CartLine, OrderStatus, Quote, QuoteLine } from '@/types'
-import { db, findNft, nextId, serializeNft } from './db'
+import { db, findEdition, findNft, nextId, parseCartKey, serializeNft } from './db'
 import { scenario } from './scenario'
 import { broadcast } from './socket'
 
@@ -10,11 +10,15 @@ const QUOTE_TTL_MS = 5 * 60 * 1000
 
 export function buildCart(userId?: string): Cart {
   const items: CartLine[] = []
-  for (const [nftId, quantity] of db.cart) {
-    const nft = findNft(nftId)
-    if (!nft) continue
+  for (const [key, quantity] of db.cart) {
+    const parsed = parseCartKey(key)
+    const nft = parsed && findNft(parsed.nftId)
+    const edition = parsed && nft && findEdition(nft, parsed.editionId)
+    if (!nft || !edition) continue
     items.push({
+      id: key,
       nft: serializeNft(nft, userId),
+      edition: { ...edition },
       quantity,
       lineTotal: mulEthInt(nft.price, quantity),
     })
@@ -28,8 +32,10 @@ export function buildCart(userId?: string): Cart {
 
 export function createQuote(userId: string, promoCode: string | null): Quote {
   const cart = buildCart()
-  const lines: QuoteLine[] = cart.items.map(({ nft, quantity, lineTotal }) => ({
+  const lines: QuoteLine[] = cart.items.map(({ nft, edition, quantity, lineTotal }) => ({
     nftId: nft.id,
+    editionId: edition.id,
+    editionLabel: edition.label,
     name: nft.name,
     tokenId: nft.tokenId,
     image: nft.image,

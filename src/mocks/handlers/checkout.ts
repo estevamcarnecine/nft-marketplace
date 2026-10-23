@@ -1,6 +1,14 @@
 import { HttpResponse, http } from 'msw'
 import type { Order } from '@/types'
-import { adjustNftPrice, db, findNft, nextId, toNftUpdated } from '../db'
+import {
+  adjustNftPrice,
+  db,
+  findEdition,
+  findNft,
+  nextId,
+  syncAvailability,
+  toNftUpdated,
+} from '../db'
 import { PROMO_CODES, buildCart, createQuote, scheduleOrderProgress } from '../domain'
 import { scenario } from '../scenario'
 import { broadcast } from '../socket'
@@ -113,10 +121,14 @@ export const checkoutHandlers = [
 
       for (const line of fresh.lines) {
         const nft = findNft(line.nftId)
-        if (nft && line.quantity > nft.available) {
-          return errorResponse(409, 'INSUFFICIENT_SUPPLY', `${nft.name} ficou sem estoque`, {
-            available: nft.available,
-          })
+        const edition = nft && findEdition(nft, line.editionId)
+        if (nft && edition && line.quantity > edition.available) {
+          return errorResponse(
+            409,
+            'INSUFFICIENT_SUPPLY',
+            `${nft.name} (edição ${edition.label}) ficou sem estoque`,
+            { available: edition.available },
+          )
         }
       }
 
@@ -141,8 +153,10 @@ export const checkoutHandlers = [
 
       for (const line of fresh.lines) {
         const nft = findNft(line.nftId)
-        if (!nft) continue
-        nft.available -= line.quantity
+        const edition = nft && findEdition(nft, line.editionId)
+        if (!nft || !edition) continue
+        edition.available -= line.quantity
+        syncAvailability(nft)
         broadcast('nft.updated', toNftUpdated(nft))
       }
       db.cart.clear()
