@@ -199,6 +199,19 @@ export interface Order {
   updatedAt: string
 }
 
+/** Public view of a simulated on-chain transaction, as a block explorer would show it. */
+export interface ExplorerTransaction {
+  hash: string
+  network: NetworkId
+  status: 'confirmed'
+  from: string
+  to: string
+  value: string
+  itemCount: number
+  blockNumber: number
+  timestamp: string
+}
+
 export interface User {
   id: string
   name: string

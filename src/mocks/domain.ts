@@ -179,7 +179,8 @@ function settleOrder(orderId: string): void {
     }
     removePurchasedFromCart(order.lines)
     order.txHash = simulatedTxHash(order.id)
-    order.explorerUrl = `https://explorer.kurio.mock/tx/${order.txHash}`
+    // In-app simulated explorer: no real chain is involved.
+    order.explorerUrl = `/explorer/tx/${order.txHash}`
   }
 
   order.status = status
