@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useLocation, useSearch } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 
 import { ComingSoon } from '@/components/common/ComingSoon'
@@ -53,6 +53,11 @@ function CartButton() {
 }
 
 export function Header({ active }: { active: HeaderSection }) {
+  const location = useLocation()
+  const search = useSearch({ strict: false })
+  // Return to the current page after signing in; on /login itself keep its own target.
+  const loginRedirect = location.pathname === '/login' ? search.redirect : location.href
+
   return (
     <header className="flex w-full flex-col items-start">
       <div className="flex w-full items-start justify-between">
@@ -80,6 +85,7 @@ export function Header({ active }: { active: HeaderSection }) {
           <CartButton />
           <Link
             to="/login"
+            search={{ redirect: loginRedirect }}
             className="flex h-[35px] w-[100px] items-center justify-center rounded-button bg-primary"
           >
             <span className="flex items-start gap-[4px]">
