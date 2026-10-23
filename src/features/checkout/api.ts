@@ -1,7 +1,16 @@
 import { queryOptions, useMutation } from '@tanstack/react-query'
 
 import { api, isApiError, newIdempotencyKey } from '@/lib/api'
-import type { CreateOrderInput, Order, Profile, Quote, WalletSession, WalletType, NetworkId } from '@/types'
+import type {
+  CreateOrderInput,
+  ExplorerTransaction,
+  NetworkId,
+  Order,
+  Profile,
+  Quote,
+  WalletSession,
+  WalletType,
+} from '@/types'
 
 export const profileQuery = queryOptions({
   queryKey: ['profile'] as const,
@@ -12,6 +21,13 @@ export function orderQuery(id: string) {
   return queryOptions({
     queryKey: ['orders', id] as const,
     queryFn: ({ signal }) => api.get<Order>(`/orders/${encodeURIComponent(id)}`, { signal }),
+  })
+}
+
+export function explorerTxQuery(hash: string) {
+  return queryOptions({
+    queryKey: ['explorer', 'tx', hash] as const,
+    queryFn: ({ signal }) => api.get<ExplorerTransaction>(`/explorer/tx/${encodeURIComponent(hash)}`, { signal }),
   })
 }
 
