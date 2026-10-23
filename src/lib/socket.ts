@@ -5,11 +5,19 @@ import { REALTIME_URL } from './config'
 interface ServerToClientEvents {
   'nft.updated': (payload: NftUpdatedEvent) => void
   'order.updated': (payload: OrderUpdatedEvent) => void
+  'session.ready': (payload: { authenticated: boolean }) => void
 }
 
-export type RealtimeSocket = Socket<ServerToClientEvents>
+interface ClientToServerEvents {
+  /** Binds this socket to the session, so the server sends it that user's order events. */
+  'session.subscribe': (payload: { token: string }) => void
+  'session.unsubscribe': () => void
+}
+
+export type RealtimeSocket = Socket<ServerToClientEvents, ClientToServerEvents>
 
 let socket: RealtimeSocket | null = null
+let pendingDisconnect: ReturnType<typeof setTimeout> | undefined
 
 export function getSocket(): RealtimeSocket {
   if (!socket) {
@@ -19,11 +27,17 @@ export function getSocket(): RealtimeSocket {
 }
 
 export function connectSocket(): RealtimeSocket {
+  clearTimeout(pendingDisconnect)
   const instance = getSocket()
-  if (!instance.connected) instance.connect()
+  if (!instance.active) instance.connect()
   return instance
 }
 
+/**
+ * Deferred by a tick, so an immediate remount (React StrictMode in dev) keeps the same connection
+ * instead of closing one mid-handshake and opening another.
+ */
 export function disconnectSocket(): void {
-  socket?.disconnect()
+  clearTimeout(pendingDisconnect)
+  pendingDisconnect = setTimeout(() => socket?.disconnect(), 0)
 }

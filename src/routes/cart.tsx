@@ -6,6 +6,7 @@ import { cartQuery } from '@/features/cart/api'
 import { CartSummary } from '@/features/cart/components/CartSummary'
 import { CartTable } from '@/features/cart/components/CartTable'
 import { RelatedNfts } from '@/features/nft/components/RelatedNfts'
+import { CartNotices } from '@/features/realtime/components/CartNotices'
 
 export const Route = createFileRoute('/cart')({
   component: CartPage,
@@ -28,6 +29,7 @@ function CartPage() {
           <span aria-current="page">Carrinho</span>
         </nav>
         <h1 className="sr-only">Carrinho</h1>
+        <CartNotices />
         <div className="flex w-full items-start justify-between overflow-clip">
           <CartTable lines={lines} status={cart.status} onRetry={() => void cart.refetch()} />
           <CartSummary cart={cart.data} loading={cart.isPending} />

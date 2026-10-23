@@ -14,8 +14,11 @@ export function ReviewDialog({
   session,
   recipient,
   changedNotice,
+  staleNotice,
   submitting,
+  requoting,
   onConfirm,
+  onRequote,
   onClose,
 }: {
   open: boolean
@@ -23,8 +26,11 @@ export function ReviewDialog({
   session: WalletSession | null
   recipient: string
   changedNotice: string | null
+  staleNotice: string | null
   submitting: boolean
+  requoting: boolean
   onConfirm: () => void
+  onRequote: () => void
   onClose: () => void
 }) {
   const network = NETWORKS.find((item) => item.id === session?.network)?.label
@@ -45,7 +51,11 @@ export function ReviewDialog({
           </DialogDescription>
         </div>
 
-        {changedNotice && (
+        {staleNotice ? (
+          <p role="alert" className="rounded-[3px] border border-primary bg-surface-dark p-[12px] text-[14px] leading-[20px] text-text-accent">
+            {staleNotice}
+          </p>
+        ) : changedNotice && (
           <p role="alert" className="rounded-[3px] border border-primary bg-surface-dark p-[12px] text-[14px] leading-[20px] text-text-accent">
             {changedNotice}
           </p>
@@ -101,15 +111,27 @@ export function ReviewDialog({
           >
             Voltar e editar
           </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={submitting || !quote}
-            aria-busy={submitting}
-            className="flex h-[40px] items-center justify-center rounded-[6px] bg-primary px-[20px] text-[14px] leading-[20px] font-bold text-ink disabled:opacity-60"
-          >
-            {submitting ? 'Enviando pedido…' : changedNotice ? 'Confirmar novos valores' : 'Confirmar pagamento'}
-          </button>
+          {staleNotice ? (
+            <button
+              type="button"
+              onClick={onRequote}
+              disabled={requoting}
+              aria-busy={requoting}
+              className="flex h-[40px] items-center justify-center rounded-[6px] bg-primary px-[20px] text-[14px] leading-[20px] font-bold text-ink disabled:opacity-60"
+            >
+              {requoting ? 'Atualizando valores…' : 'Atualizar valores'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={submitting || !quote}
+              aria-busy={submitting}
+              className="flex h-[40px] items-center justify-center rounded-[6px] bg-primary px-[20px] text-[14px] leading-[20px] font-bold text-ink disabled:opacity-60"
+            >
+              {submitting ? 'Enviando pedido…' : changedNotice ? 'Confirmar novos valores' : 'Confirmar pagamento'}
+            </button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

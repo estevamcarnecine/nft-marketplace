@@ -24,6 +24,7 @@ import {
   toCollector,
   type CheckoutForm,
 } from '@/features/checkout/schema'
+import { onNftUpdated } from '@/features/realtime/apply'
 import { isApiError, type ApiError } from '@/lib/api'
 import type { Quote, WalletSession } from '@/types'
 
@@ -74,6 +75,8 @@ function CheckoutPage() {
   const [quote, setQuote] = useState<Quote | null>(null)
   const [reviewOpen, setReviewOpen] = useState(false)
   const [changedNotice, setChangedNotice] = useState<string | null>(null)
+  /** Set when a pushed price or stock change makes the open quote outdated. */
+  const [staleNotice, setStaleNotice] = useState<string | null>(null)
   const hydrated = useRef(false)
 
   // Prefill from the saved draft (session expired mid-checkout) or the collector profile.
@@ -91,6 +94,23 @@ function CheckoutPage() {
       },
     })
   }, [form])
+
+  // The server would refuse this quote anyway (QUOTE_CHANGED); block it before the buyer signs.
+  useEffect(() => {
+    if (!quote) return
+    return onNftUpdated((event) => {
+      const line = quote.lines.find((item) => item.nftId === event.resource.id)
+      if (!line) return
+      const available = event.data.editions.find((edition) => edition.id === line.editionId)?.available
+      if (line.unitPrice !== event.data.price) {
+        setStaleNotice(`O preço de ${line.name} mudou enquanto você revisava. Atualize os valores antes de confirmar.`)
+      } else if (available !== undefined && available < line.quantity) {
+        setStaleNotice(
+          `A disponibilidade de ${line.name} (edição ${line.editionLabel}) mudou. Atualize os valores antes de confirmar.`,
+        )
+      }
+    })
+  }, [quote])
 
   function handleAuthError(error: ApiError) {
     if (error.status !== 401) return false
@@ -156,6 +176,7 @@ function CheckoutPage() {
     try {
       setQuote(await createQuote.mutateAsync())
       setChangedNotice(null)
+      setStaleNotice(null)
       setReviewOpen(true)
     } catch (error) {
       if (isApiError(error) && handleAuthError(error)) return
@@ -163,9 +184,22 @@ function CheckoutPage() {
     }
   }
 
+  async function handleRequote() {
+    try {
+      setQuote(await createQuote.mutateAsync())
+      setStaleNotice(null)
+      setChangedNotice('Valores atualizados. Revise e confirme novamente.')
+    } catch (error) {
+      if (isApiError(error) && handleAuthError(error)) return
+      setReviewOpen(false)
+      toast.error(isApiError(error) ? error.message : 'Não foi possível atualizar o pedido. Tente novamente.')
+      void navigate({ to: '/cart' })
+    }
+  }
+
   function handleConfirm() {
     const collector = toCollector(form.getValues())
-    if (!collector || !quote || !session) return
+    if (!collector || !quote || !session || staleNotice) return
 
     createOrder.mutate(
       { quoteId: quote.id, walletSessionId: session.id, collector },
@@ -281,8 +315,11 @@ function CheckoutPage() {
         session={session}
         recipient={(values.useAnotherWallet ? values.secondaryWallet : values.walletAddress) ?? ''}
         changedNotice={changedNotice}
+        staleNotice={staleNotice}
         submitting={createOrder.isPending}
+        requoting={createQuote.isPending}
         onConfirm={handleConfirm}
+        onRequote={() => void handleRequote()}
         onClose={() => setReviewOpen(false)}
       />
     </PageShell>

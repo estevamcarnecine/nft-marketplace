@@ -3,22 +3,24 @@ import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 
 import { orderQuery } from '@/features/checkout/api'
 import { OrderReceipt } from '@/features/orders/components/OrderReceipt'
+import { useRealtimeConnected } from '@/features/realtime/status'
 import { isApiError } from '@/lib/api'
 
 export const Route = createFileRoute('/_authenticated/orders/$orderId')({
   component: OrderPage,
 })
 
-// Until the Socket.IO phase, a pending order is refreshed from the REST API. Confirmed and
-// rejected are terminal, so polling stops there.
+// order.updated pushes the result. Only while the socket is down is a pending order polled over
+// REST; confirmed and rejected are terminal, so nothing is refreshed after them.
 const PENDING_POLL_MS = 1500
 
 function OrderPage() {
   const { orderId } = Route.useParams()
   const navigate = useNavigate()
+  const realtime = useRealtimeConnected()
   const order = useQuery({
     ...orderQuery(orderId),
-    refetchInterval: (query) => (query.state.data?.status === 'pending' ? PENDING_POLL_MS : false),
+    refetchInterval: (query) => (!realtime && query.state.data?.status === 'pending' ? PENDING_POLL_MS : false),
   })
 
   const notFound = isApiError(order.error) && order.error.status === 404
