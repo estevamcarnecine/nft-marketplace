@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { CATALOG_SORTS, CATALOG_TABS, COLLECTIONS, NETWORKS } from '@/types'
-import type { CollectionId, NetworkId } from '@/types'
+import type { CatalogSort, CatalogTab, CollectionId, NetworkId } from '@/types'
 
 const collectionIds = COLLECTIONS.map((collection) => collection.id) as [CollectionId, ...CollectionId[]]
 const networkIds = NETWORKS.map((network) => network.id) as [NetworkId, ...NetworkId[]]
@@ -19,3 +19,17 @@ export const catalogSearchSchema = z.object({
 })
 
 export type CatalogSearch = z.infer<typeof catalogSearchSchema>
+
+export const TABS: { id: CatalogTab; label: string }[] = [
+  { id: 'all', label: 'Todos os NFTs' },
+  { id: 'new', label: 'Novos lançamentos' },
+  { id: 'trending', label: 'Em alta' },
+]
+
+export const SORTS: { id: CatalogSort; label: string }[] = [
+  { id: 'recent', label: 'Listados recentemente' },
+  { id: 'trending', label: 'Mais vistos' },
+  { id: 'price-asc', label: 'Menor preço' },
+  { id: 'price-desc', label: 'Maior preço' },
+  { id: 'name', label: 'Nome (A–Z)' },
+]

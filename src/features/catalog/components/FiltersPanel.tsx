@@ -121,12 +121,13 @@ function PriceFilter({ min, max }: { min: string; max: string }) {
   )
 }
 
-export function FiltersPanel() {
+/** Sidebar on desktop; inside the filters sheet on mobile, where it fills the sheet width. */
+export function FiltersPanel({ className }: { className?: string }) {
   const facets = useQuery(facetsQuery)
   const { search, update } = useCatalogSearch()
 
   return (
-    <section aria-label="Filtros" className="flex w-[310px] shrink-0 flex-col items-start overflow-clip bg-surface-card p-[20px]">
+    <section aria-label="Filtros" className={cn('flex w-[310px] shrink-0 flex-col items-start overflow-clip bg-surface-card p-[20px]', className)}>
       <div className="flex w-full flex-col items-start gap-[40px]">
         <div role="group" aria-labelledby="collections-filter-title" className="flex w-full flex-col items-start gap-[12px] overflow-clip">
           <h3 id="collections-filter-title" className={HEADING}>

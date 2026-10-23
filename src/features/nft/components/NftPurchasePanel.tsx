@@ -1,15 +1,10 @@
-import { useState } from 'react'
-import { useLocation, useNavigate } from '@tanstack/react-router'
 import { Hairline } from '@/components/common/Hairline'
 import { RadioGroup } from 'radix-ui'
-import { toast } from 'sonner'
 import { cn } from 'cn'
 
-import { isAuthenticated } from '@/lib/auth'
-import { isApiError } from '@/lib/api'
 import { formatEthLabel, formatRating } from '@/lib/format'
 import type { EditionId, NftDetail, NftEdition } from '@/types'
-import { useAddToCart, useToggleFavorite } from '../api'
+import { useNftPurchase } from '../use-nft-purchase'
 import divider from '@/assets/nft-detail/divider-details.svg'
 import heart from '@/assets/nft-detail/heart.svg'
 import minus from '@/assets/nft-detail/minus.svg'
@@ -20,15 +15,8 @@ import shareTwitter from '@/assets/nft-detail/share-twitter.svg'
 import star from '@/assets/nft-detail/star.svg'
 import starEmpty from '@/assets/nft-detail/star-empty.svg'
 
-const MAX_PER_LINE = 99
 const LABEL = 'text-[15px] leading-[16px] font-bold text-foreground'
 
-/** Limited editions first, largest supply first: the Figma opens on 1/50. */
-function defaultEdition(editions: NftEdition[]): NftEdition | undefined {
-  const available = editions.filter((edition) => edition.available > 0)
-  const limited = available.filter((edition) => edition.id !== 'open')
-  return [...limited].sort((a, b) => b.supply - a.supply)[0] ?? available[0]
-}
 
 function Rating({ rating, count }: { rating: number; count: number }) {
   const filled = Math.round(rating)
@@ -123,51 +111,10 @@ function StepButton({
 }
 
 export function NftPurchasePanel({ nft }: { nft: NftDetail }) {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [editionId, setEditionId] = useState<EditionId | undefined>(() => defaultEdition(nft.editions)?.id)
-  const [quantity, setQuantity] = useState(1)
-  const addToCart = useAddToCart()
-  const toggleFavorite = useToggleFavorite(nft.id)
-
-  const edition = nft.editions.find((item) => item.id === editionId)
-  const maxQuantity = Math.min(edition?.available ?? 0, MAX_PER_LINE)
-  const canBuy = Boolean(edition) && maxQuantity > 0 && quantity <= maxQuantity
+  const purchase = useNftPurchase(nft)
+  const { quantity, maxQuantity, canBuy } = purchase
   const shareUrl = typeof window === 'undefined' ? '' : window.location.href
   const shareText = `${nft.name} na Kurio`
-
-  function goToLogin() {
-    void navigate({ to: '/login', search: { redirect: location.href } })
-  }
-
-  function handleEditionChange(id: EditionId) {
-    setEditionId(id)
-    const next = nft.editions.find((item) => item.id === id)
-    setQuantity((current) => Math.max(1, Math.min(current, next?.available ?? 1)))
-  }
-
-  function handleBuy() {
-    if (!edition || !canBuy) return
-    addToCart.mutate(
-      { nftId: nft.id, editionId: edition.id, quantity },
-      {
-        onSuccess: () => void navigate({ to: '/cart' }),
-        onError: (error) =>
-          toast.error(isApiError(error) ? error.message : 'Não foi possível adicionar ao carrinho.'),
-      },
-    )
-  }
-
-  function handleFavorite() {
-    if (!isAuthenticated()) return goToLogin()
-    toggleFavorite.mutate(!nft.favorited, {
-      onError: (error) => {
-        if (isApiError(error) && error.status === 401) return goToLogin()
-        toast.error('Não foi possível atualizar seus favoritos. Tente novamente.')
-      },
-      onSuccess: (result) => toast.success(result.favorited ? 'Adicionado aos favoritos.' : 'Removido dos favoritos.'),
-    })
-  }
 
   return (
     <div className="flex min-w-px flex-1 flex-col items-start justify-between self-stretch">
@@ -192,7 +139,7 @@ export function NftPurchasePanel({ nft }: { nft: NftDetail }) {
         <p className="min-h-[66px] w-full text-[14px] leading-[24px] text-text-secondary">{nft.description}</p>
       </section>
 
-      <EditionPicker editions={nft.editions} value={editionId} onChange={handleEditionChange} />
+      <EditionPicker editions={nft.editions} value={purchase.editionId} onChange={purchase.changeEdition} />
 
       <div className="flex w-full items-start justify-between">
         <div role="group" aria-label="Quantidade" className="flex items-center gap-[12px]">
@@ -200,7 +147,7 @@ export function NftPurchasePanel({ nft }: { nft: NftDetail }) {
             icon={minus}
             label="Diminuir quantidade"
             disabled={quantity <= 1}
-            onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+            onClick={purchase.decrement}
           />
           <output aria-live="polite" className="text-[20px] leading-[28px] whitespace-nowrap text-foreground">
             {quantity}
@@ -209,24 +156,24 @@ export function NftPurchasePanel({ nft }: { nft: NftDetail }) {
             icon={plus}
             label="Aumentar quantidade"
             disabled={quantity >= maxQuantity}
-            onClick={() => setQuantity((current) => Math.min(maxQuantity, current + 1))}
+            onClick={purchase.increment}
           />
         </div>
         <div className="flex items-center gap-[8px]">
           <button
             type="button"
-            onClick={handleBuy}
-            disabled={!canBuy || addToCart.isPending}
-            aria-busy={addToCart.isPending}
+            onClick={() => purchase.add({ goToCart: true })}
+            disabled={!canBuy || purchase.adding}
+            aria-busy={purchase.adding}
             className="flex h-[40px] w-[130px] items-center justify-center rounded-[6px] bg-primary text-[14px] leading-[20px] font-bold whitespace-nowrap text-ink disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {addToCart.isPending ? 'ADICIONANDO…' : canBuy ? 'COMPRAR' : 'ESGOTADO'}
+            {purchase.adding ? 'ADICIONANDO…' : canBuy ? 'COMPRAR' : 'ESGOTADO'}
           </button>
           <button
             type="button"
-            onClick={handleFavorite}
+            onClick={purchase.favorite}
             aria-pressed={nft.favorited}
-            disabled={toggleFavorite.isPending}
+            disabled={purchase.favoritePending}
             className={cn(
               'flex h-[40px] w-[130px] items-center justify-center gap-[8px] rounded-[6px] border border-primary disabled:cursor-wait',
               nft.favorited && 'bg-surface-dark',

@@ -1,19 +1,15 @@
 import { Link } from '@tanstack/react-router'
-import { toast } from 'sonner'
 
 import { Hairline } from '@/components/common/Hairline'
 import { Skeleton } from '@/components/ui/skeleton'
-import { isApiError } from '@/lib/api'
 import { formatEthLabel } from '@/lib/format'
 import type { CartLine } from '@/types'
-import { useRemoveCartLine, useUpdateCartLine } from '../api'
-import { isLineUnavailable } from '../availability'
+import { useCartLineActions } from '../use-cart-actions'
 import deleteIcon from '@/assets/cart/delete.svg'
 import divider from '@/assets/cart/divider-table.svg'
 import minus from '@/assets/cart/minus.svg'
 import plus from '@/assets/cart/plus.svg'
 
-const MAX_PER_LINE = 99
 const ROW = 'flex h-[70px] w-full items-center justify-between bg-surface-card pr-[24px]'
 const COLUMNS = {
   nft: 'w-[250px] shrink-0',
@@ -48,26 +44,8 @@ function StepButton({
 }
 
 function CartRow({ line }: { line: CartLine }) {
-  const update = useUpdateCartLine()
-  const remove = useRemoveCartLine()
-  const busy = update.isPending || remove.isPending
-  const unavailable = isLineUnavailable(line)
-  const max = Math.min(line.edition.available, MAX_PER_LINE)
+  const { changeQuantity, removeLine, busy, unavailable, max } = useCartLineActions(line)
   const name = `${line.nft.name} (edição ${line.edition.label})`
-
-  function changeQuantity(quantity: number) {
-    update.mutate(
-      { lineId: line.id, quantity },
-      { onError: (error) => toast.error(isApiError(error) ? error.message : 'Não foi possível alterar a quantidade.') },
-    )
-  }
-
-  function handleRemove() {
-    remove.mutate(line.id, {
-      onSuccess: () => toast.success(`${line.nft.name} removido do carrinho.`),
-      onError: () => toast.error('Não foi possível remover o item. Tente novamente.'),
-    })
-  }
 
   return (
     <li aria-busy={busy} className={ROW} data-unavailable={unavailable || undefined}>
@@ -124,7 +102,7 @@ function CartRow({ line }: { line: CartLine }) {
       <div className={`${COLUMNS.action} flex items-center`}>
         <button
           type="button"
-          onClick={handleRemove}
+          onClick={removeLine}
           disabled={busy}
           aria-label={`Remover ${name} do carrinho`}
           className="relative size-[24px] disabled:cursor-wait disabled:opacity-50"

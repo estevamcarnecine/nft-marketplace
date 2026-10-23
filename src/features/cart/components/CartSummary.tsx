@@ -1,14 +1,11 @@
-import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { toast } from 'sonner'
 
 import { Hairline } from '@/components/common/Hairline'
 import { Skeleton } from '@/components/ui/skeleton'
-import { isApiError } from '@/lib/api'
 import { formatEth } from '@/lib/eth'
 import { formatEthLabel } from '@/lib/format'
 import type { Cart } from '@/types'
-import { useApplyCoupon, useRemoveCoupon } from '../api'
+import { useCouponForm } from '../use-cart-actions'
 import { isLineUnavailable } from '../availability'
 import divider from '@/assets/cart/divider-summary.svg'
 
@@ -20,49 +17,19 @@ function Amount({ value, loading, className }: { value: string; loading: boolean
 }
 
 function CouponForm({ cart, disabled }: { cart: Cart | undefined; disabled: boolean }) {
-  const [code, setCode] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const apply = useApplyCoupon()
-  const remove = useRemoveCoupon()
-  const applied = cart?.coupon
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    if (applied) {
-      remove.mutate(undefined, {
-        onSuccess: () => toast.success(`Código ${applied.code} removido.`),
-        onError: () => toast.error('Não foi possível remover o código. Tente novamente.'),
-      })
-      return
-    }
-    const trimmed = code.trim()
-    if (!trimmed) return setError('Informe o código promocional')
-    setError(null)
-    apply.mutate(trimmed, {
-      onSuccess: (next) => {
-        setCode('')
-        toast.success(`Código ${next.coupon?.code ?? trimmed.toUpperCase()} aplicado.`)
-      },
-      onError: (failure) =>
-        setError(isApiError(failure) ? failure.message : 'Não foi possível aplicar o código. Tente novamente.'),
-    })
-  }
-
-  const pending = apply.isPending || remove.isPending
+  const coupon = useCouponForm(cart)
+  const { applied, error, pending } = coupon
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex w-full flex-col items-start gap-[8px] overflow-clip">
+    <form onSubmit={coupon.submit} noValidate className="flex w-full flex-col items-start gap-[8px] overflow-clip">
       <label htmlFor="promo-code" className="text-[14px] leading-[16px] font-bold whitespace-nowrap text-foreground">
         Código promocional
       </label>
       <div className="flex h-[40px] w-[332px] items-center rounded-[3px] border border-primary pl-[8px]">
         <input
           id="promo-code"
-          value={applied ? applied.code : code}
-          onChange={(event) => {
-            setCode(event.target.value)
-            setError(null)
-          }}
+          value={coupon.value}
+          onChange={(event) => coupon.change(event.target.value)}
           readOnly={Boolean(applied)}
           disabled={disabled}
           placeholder="Digite o código promocional..."

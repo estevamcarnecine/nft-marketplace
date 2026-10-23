@@ -1,13 +1,13 @@
-import { Link, useLocation, useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { cn } from 'cn'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { isApiError } from '@/lib/api'
-import { isAuthenticated } from '@/lib/auth'
 import { formatEthLabel } from '@/lib/format'
 import type { Nft } from '@/types'
-import { useQuickAddToCart, useToggleListFavorite } from '../api'
+import { useQuickAddToCart } from '../api'
+import { useCardFavorite } from '../use-card-favorite'
 import cartIcon from '@/assets/catalog/action-cart.svg'
 import heartIcon from '@/assets/catalog/action-heart.svg'
 import viewIcon from '@/assets/catalog/action-view.svg'
@@ -27,36 +27,14 @@ export function ProductCardSkeleton() {
 
 /** The Figma spaces the first row 12px between name and price, the others 6px. */
 export function ProductCard({ nft, eager, firstRow }: { nft: Nft; eager?: boolean; firstRow?: boolean }) {
-  const navigate = useNavigate()
-  const location = useLocation()
   const quickAdd = useQuickAddToCart()
-  const favorite = useToggleListFavorite()
+  const favorite = useCardFavorite(nft)
 
   function addToCart() {
     quickAdd.mutate(nft.id, {
       onSuccess: () => toast.success(`${nft.name} adicionado ao carrinho.`),
       onError: (error) => toast.error(isApiError(error) ? error.message : 'Não foi possível adicionar ao carrinho.'),
     })
-  }
-
-  function toggleFavorite() {
-    if (!isAuthenticated()) {
-      void navigate({ to: '/login', search: { redirect: location.href } })
-      return
-    }
-    favorite.mutate(
-      { id: nft.id, favorited: !nft.favorited },
-      {
-        onSuccess: (result) => toast.success(result.favorited ? 'Adicionado aos favoritos.' : 'Removido dos favoritos.'),
-        onError: (error) => {
-          if (isApiError(error) && error.status === 401) {
-            void navigate({ to: '/login', search: { redirect: location.href } })
-            return
-          }
-          toast.error('Não foi possível atualizar seus favoritos. Tente novamente.')
-        },
-      },
-    )
   }
 
   return (
@@ -106,8 +84,8 @@ export function ProductCard({ nft, eager, firstRow }: { nft: Nft; eager?: boolea
         </button>
         <button
           type="button"
-          onClick={toggleFavorite}
-          disabled={favorite.isPending}
+          onClick={favorite.toggle}
+          disabled={favorite.pending}
           aria-pressed={nft.favorited}
           aria-label={nft.favorited ? `Remover ${nft.name} dos favoritos` : `Favoritar ${nft.name}`}
           className={cn(ACTION, nft.favorited && 'border-primary bg-primary/20')}

@@ -2,27 +2,13 @@ import { useQuery } from '@tanstack/react-query'
 import { Select } from 'radix-ui'
 import { cn } from 'cn'
 
-import type { CatalogSort, CatalogTab } from '@/types'
 import { catalogQuery, toCatalogParams } from '../api'
+import { SORTS, TABS } from '../search'
 import { useCatalogSearch } from '../use-catalog-search'
 import { ProductCard, ProductCardSkeleton } from './ProductCard'
 import pageArrow from '@/assets/catalog/page-arrow.svg'
 import sortArrow from '@/assets/catalog/sort-arrow.svg'
 import tabUnderline from '@/assets/catalog/tab-underline.svg'
-
-const TABS: { id: CatalogTab; label: string }[] = [
-  { id: 'all', label: 'Todos os NFTs' },
-  { id: 'new', label: 'Novos lançamentos' },
-  { id: 'trending', label: 'Em alta' },
-]
-
-const SORTS: { id: CatalogSort; label: string }[] = [
-  { id: 'recent', label: 'Listados recentemente' },
-  { id: 'trending', label: 'Mais vistos' },
-  { id: 'price-asc', label: 'Menor preço' },
-  { id: 'price-desc', label: 'Maior preço' },
-  { id: 'name', label: 'Nome (A–Z)' },
-]
 
 const PAGE_BUTTON = 'flex size-[35px] items-center justify-center rounded-[4px] text-[18px] leading-[16px]'
 
@@ -106,7 +92,7 @@ function pageWindow(current: number, total: number): number[] {
   return Array.from({ length: size }, (_, index) => start + index)
 }
 
-function Pagination({ page, totalPages }: { page: number; totalPages: number }) {
+export function Pagination({ page, totalPages }: { page: number; totalPages: number }) {
   const { goToPage } = useCatalogSearch()
   if (totalPages <= 1) return null
 
