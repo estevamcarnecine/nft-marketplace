@@ -15,6 +15,7 @@ import {
   withScenario,
 } from '../utils'
 import { RESERVED_USERNAMES } from '../validation'
+import { syncProfileFromDefault, upsertDefaultWallet } from '../wallet-sync'
 
 
 function emptyProfile(user: StoredUser): Profile {
@@ -65,6 +66,7 @@ export const profileHandlers = [
       const ensName = str(input.ensName)
       const referralCode = str(input.referralCode).toUpperCase()
       const note = str(input.note)
+      const walletNickname = str(input.walletNickname)
 
       const errors: Record<string, string> = {}
       const required = { displayName, username, profileName, email, walletAddress, ensName, referralCode }
@@ -92,6 +94,8 @@ export const profileHandlers = [
         errors.walletAddress = 'Endereço de carteira inválido'
       }
       if (
+        // A secondary delivery wallet was validated when it was registered.
+        input.useAnotherWallet !== true &&
         isNetwork(network) &&
         secondaryWallet &&
         !/\.eth$/i.test(secondaryWallet) &&
@@ -100,6 +104,8 @@ export const profileHandlers = [
         errors.secondaryWallet = 'Informe um nome .eth ou um endereço válido'
       }
       if (note.length > 500) errors.note = 'Use até 500 caracteres'
+      if (!walletNickname) errors.walletNickname = 'Campo obrigatório'
+      else if (walletNickname.length > 40) errors.walletNickname = 'Use até 40 caracteres'
 
       if (!isNetwork(network) || !isWalletType(walletType) || Object.keys(errors).length > 0) {
         return validationError(errors)
@@ -119,11 +125,14 @@ export const profileHandlers = [
         ensSuffix: '.eth',
         referralCode,
         note,
-        walletNickname: db.profiles.get(user.id)?.walletNickname ?? '',
+        walletNickname,
         avatarUrl: db.profiles.get(user.id)?.avatarUrl ?? null,
       }
       db.profiles.set(user.id, profile)
-      return json({ ...profile })
+      // The wallet fields of this form are the primary wallet.
+      upsertDefaultWallet(user.id, { label: walletNickname, type: walletType, network, address: walletAddress })
+      syncProfileFromDefault(user.id)
+      return json({ ...(db.profiles.get(user.id) ?? profile) })
     }),
   ),
 ]
