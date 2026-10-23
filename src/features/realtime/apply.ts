@@ -68,6 +68,22 @@ export function applyNftUpdated(queryClient: QueryClient, event: NftUpdatedEvent
     data ? { ...data, items: data.items.map((nft) => patchNft(nft, event)) } : data,
   )
 
+  // A request in flight may have been answered before this change and would land older data than
+  // the event, so it is restarted. Cancelling is explicit: a refetch of a query still loading for
+  // the first time would just reuse the in-flight request.
+  const inFlight = queryClient
+    .getQueryCache()
+    .findAll({
+      predicate: (query) =>
+        query.state.fetchStatus === 'fetching' && (query.queryKey[0] === 'nfts' || query.queryKey[0] === cartKey[0]),
+    })
+    .map((query) => query.queryKey)
+  for (const queryKey of inFlight) {
+    void queryClient
+      .cancelQueries({ queryKey, exact: true })
+      .then(() => queryClient.refetchQueries({ queryKey, exact: true, type: 'all' }))
+  }
+
   const cart = queryClient.getQueryData<Cart>(cartKey)
   // Totals, discount and line limits come from the server, so the cart is re-read instead of patched.
   if (cart && noticeCartChanges(cart, event)) void queryClient.invalidateQueries({ queryKey: cartKey })
