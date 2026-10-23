@@ -1,11 +1,42 @@
 import { addEth, mulEthInt, percentOfEth, subEth, sumEth } from '@/lib/eth'
-import type { Cart, CartLine, OrderStatus, Quote, QuoteLine } from '@/types'
-import { db, findEdition, findNft, nextId, parseCartKey, serializeNft } from './db'
+import type { AppliedCoupon, Cart, CartLine, OrderStatus, Quote, QuoteLine } from '@/types'
+import { FIXTURE_EPOCH, db, findEdition, findNft, nextId, parseCartKey, serializeNft } from './db'
 import { scenario } from './scenario'
 import { broadcast } from './socket'
 
 export const NETWORK_FEE = '0.016'
-export const PROMO_CODES: Record<string, number> = { KURIO10: 10 }
+interface CouponRule {
+  percent: number
+  expiresAt: number
+}
+
+const DAY_MS = 86_400_000
+
+// Deterministic fixtures: two valid codes and one that expired before the fixture epoch.
+export const COUPONS: Record<string, CouponRule> = {
+  KURIO10: { percent: 10, expiresAt: FIXTURE_EPOCH + 3650 * DAY_MS },
+  BEMVINDO5: { percent: 5, expiresAt: FIXTURE_EPOCH + 3650 * DAY_MS },
+  NATAL2025: { percent: 15, expiresAt: FIXTURE_EPOCH - 290 * DAY_MS },
+}
+
+export type CouponCheck =
+  | { ok: true; coupon: AppliedCoupon }
+  | { ok: false; code: 'COUPON_INVALID' | 'COUPON_EXPIRED'; message: string }
+
+export function checkCoupon(raw: string, now = Date.now()): CouponCheck {
+  const code = raw.trim().toUpperCase()
+  const rule = Object.hasOwn(COUPONS, code) ? COUPONS[code] : undefined
+  if (!rule) return { ok: false, code: 'COUPON_INVALID', message: 'Código promocional inválido' }
+  if (rule.expiresAt < now) return { ok: false, code: 'COUPON_EXPIRED', message: 'Este código promocional expirou' }
+  return { ok: true, coupon: { code, percent: rule.percent } }
+}
+
+/** The cart coupon, dropped when it is no longer valid. */
+function activeCoupon(): AppliedCoupon | null {
+  if (!db.cartCoupon) return null
+  const check = checkCoupon(db.cartCoupon)
+  return check.ok ? check.coupon : null
+}
 const QUOTE_TTL_MS = 5 * 60 * 1000
 
 export function buildCart(userId?: string): Cart {
@@ -23,10 +54,18 @@ export function buildCart(userId?: string): Cart {
       lineTotal: mulEthInt(nft.price, quantity),
     })
   }
+  const subtotal = sumEth(items.map((line) => line.lineTotal))
+  const coupon = items.length > 0 ? activeCoupon() : null
+  const discount = percentOfEth(subtotal, coupon?.percent ?? 0)
+  const networkFee = items.length > 0 ? NETWORK_FEE : '0'
   return {
     items,
     count: items.reduce((total, line) => total + line.quantity, 0),
-    subtotal: sumEth(items.map((line) => line.lineTotal)),
+    subtotal,
+    coupon,
+    discount,
+    networkFee,
+    total: addEth(subEth(subtotal, discount), networkFee),
   }
 }
 
@@ -43,7 +82,8 @@ export function createQuote(userId: string, promoCode: string | null): Quote {
     unitPrice: nft.price,
     lineTotal,
   }))
-  const percent = promoCode ? (PROMO_CODES[promoCode] ?? 0) : 0
+  const check = promoCode ? checkCoupon(promoCode) : null
+  const percent = check?.ok ? check.coupon.percent : 0
   const discount = percentOfEth(cart.subtotal, percent)
   const now = Date.now()
 

@@ -9,7 +9,7 @@ import {
   syncAvailability,
   toNftUpdated,
 } from '../db'
-import { PROMO_CODES, buildCart, createQuote, scheduleOrderProgress } from '../domain'
+import { buildCart, checkCoupon, createQuote, scheduleOrderProgress } from '../domain'
 import { scenario } from '../scenario'
 import { broadcast } from '../socket'
 import {
@@ -36,9 +36,12 @@ export const checkoutHandlers = [
       if (!user) return unauthorized()
 
       const body = await readJson(request)
-      const promo = str(body.promoCode).toUpperCase()
-      if (promo && !Object.hasOwn(PROMO_CODES, promo)) {
-        return validationError({ promoCode: 'Código promocional inválido' })
+      const promo = str(body.promoCode).toUpperCase() || db.cartCoupon || ''
+      if (promo) {
+        const check = checkCoupon(promo)
+        if (!check.ok) {
+          return errorResponse(422, check.code, check.message, { errors: { promoCode: check.message } })
+        }
       }
       if (db.cart.size === 0) {
         return errorResponse(422, 'EMPTY_CART', 'Seu carrinho está vazio')

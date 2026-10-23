@@ -285,9 +285,10 @@ function createState() {
     nfts: createNfts(),
     cart: new Map<string, number>([
       [cartKey('nft-0042', '1-50'), 2],
-      [cartKey('nft-0314', '1-50'), 4],
-      [cartKey('nft-0088', '1-10'), 1],
+      [cartKey('nft-0314', '1-50'), 6],
+      [cartKey('nft-0088', '1-50'), 9],
     ]),
+    cartCoupon: null as string | null,
     users: [demo],
     profiles: new Map<string, Profile>([[demo.id, demoProfile]]),
     wallets: new Map<string, Wallet[]>([[demo.id, [demoWallet]]]),

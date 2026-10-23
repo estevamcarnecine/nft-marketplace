@@ -2,7 +2,7 @@ import { http } from 'msw'
 import { EDITION_IDS } from '@/types'
 import type { EditionId, NftEdition } from '@/types'
 import { cartKey, db, findEdition, findNft, parseCartKey } from '../db'
-import { buildCart } from '../domain'
+import { buildCart, checkCoupon } from '../domain'
 import {
   authenticate,
   errorResponse,
@@ -96,6 +96,30 @@ export const cartHandlers = [
       if (edition && quantity > edition.available) return insufficientSupply(edition)
 
       db.cart.set(key, quantity)
+      return json({ ...buildCart(authenticate(request)?.id) })
+    }),
+  ),
+
+  http.put(
+    '/api/cart/coupon',
+    withScenario('cart.coupon.apply', async ({ request }) => {
+      const body = await readJson(request)
+      const code = str(body.code)
+      if (!code) return validationError({ code: 'Informe o código promocional' })
+      if (db.cart.size === 0) return errorResponse(422, 'EMPTY_CART', 'Seu carrinho está vazio')
+
+      const check = checkCoupon(code)
+      if (!check.ok) return errorResponse(422, check.code, check.message, { errors: { code: check.message } })
+
+      db.cartCoupon = check.coupon.code
+      return json({ ...buildCart(authenticate(request)?.id) })
+    }),
+  ),
+
+  http.delete(
+    '/api/cart/coupon',
+    withScenario('cart.coupon.remove', ({ request }) => {
+      db.cartCoupon = null
       return json({ ...buildCart(authenticate(request)?.id) })
     }),
   ),

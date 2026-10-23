@@ -101,10 +101,19 @@ export interface CartLine {
   lineTotal: string
 }
 
+export interface AppliedCoupon {
+  code: string
+  percent: number
+}
+
 export interface Cart {
   items: CartLine[]
   count: number
   subtotal: string
+  coupon: AppliedCoupon | null
+  discount: string
+  networkFee: string
+  total: string
 }
 
 export interface QuoteLine {
