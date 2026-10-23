@@ -17,6 +17,7 @@ import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedWalletsRouteImport } from './routes/_authenticated/wallets'
 import { Route as NftIdRouteImport } from './routes/nft.$id'
+import { Route as AuthenticatedOrdersOrderIdRouteImport } from './routes/_authenticated/orders.$orderId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -57,6 +58,12 @@ const NftIdRoute = NftIdRouteImport.update({
   path: '/nft/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedOrdersOrderIdRoute =
+  AuthenticatedOrdersOrderIdRouteImport.update({
+    id: '/orders/$orderId',
+    path: '/orders/$orderId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/wallets': typeof AuthenticatedWalletsRoute
   '/nft/$id': typeof NftIdRoute
+  '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,6 +83,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/wallets': typeof AuthenticatedWalletsRoute
   '/nft/$id': typeof NftIdRoute
+  '/orders/$orderId': typeof AuthenticatedOrdersOrderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,6 +95,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/wallets': typeof AuthenticatedWalletsRoute
   '/nft/$id': typeof NftIdRoute
+  '/_authenticated/orders/$orderId': typeof AuthenticatedOrdersOrderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/wallets'
     | '/nft/$id'
+    | '/orders/$orderId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/wallets'
     | '/nft/$id'
+    | '/orders/$orderId'
   id:
     | '__root__'
     | '/'
@@ -116,6 +128,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/wallets'
     | '/nft/$id'
+    | '/_authenticated/orders/$orderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NftIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/orders/$orderId': {
+      id: '/_authenticated/orders/$orderId'
+      path: '/orders/$orderId'
+      fullPath: '/orders/$orderId'
+      preLoaderRoute: typeof AuthenticatedOrdersOrderIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -191,12 +211,14 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedWalletsRoute: typeof AuthenticatedWalletsRoute
+  AuthenticatedOrdersOrderIdRoute: typeof AuthenticatedOrdersOrderIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedWalletsRoute: AuthenticatedWalletsRoute,
+  AuthenticatedOrdersOrderIdRoute: AuthenticatedOrdersOrderIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
