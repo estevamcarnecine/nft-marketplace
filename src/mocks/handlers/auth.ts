@@ -1,5 +1,7 @@
-import { http } from 'msw'
+import { HttpResponse, http } from 'msw'
+import { mergeGuestCart } from '../carts'
 import { db, nextId, type StoredUser } from '../db'
+import { bearerToken, checkSession, createSession, hashPassword, newSalt, revokeSession, verifyPassword } from '../session'
 import {
   authenticate,
   errorResponse,
@@ -8,12 +10,16 @@ import {
   publicUser,
   readJson,
   str,
-  tokenFor,
   unauthorized,
   validationError,
   withScenario,
 } from '../utils'
 import { PASSWORD_RULE, RESERVED_USERNAMES, USERNAME_PATTERN, isStrongPassword } from '../validation'
+
+function sessionResponse(user: StoredUser, status = 200) {
+  const session = createSession(user.id)
+  return json({ token: session.token, expiresAt: new Date(session.expiresAt).toISOString(), user: publicUser(user) }, status)
+}
 
 export const authHandlers = [
   http.post(
@@ -28,10 +34,13 @@ export const authHandlers = [
       if (!password) errors.password = 'Informe sua senha'
       if (Object.keys(errors).length > 0) return validationError(errors)
 
-      const user = db.users.find((u) => u.email === email && u.password === password)
-      if (!user) return errorResponse(401, 'INVALID_CREDENTIALS', 'E-mail ou senha incorretos')
+      const user = db.users.find((candidate) => candidate.email === email)
+      if (!user || !(await verifyPassword(user, password))) {
+        return errorResponse(401, 'INVALID_CREDENTIALS', 'E-mail ou senha incorretos')
+      }
 
-      return json({ token: tokenFor(user), user: publicUser(user) })
+      mergeGuestCart(str(body.guestCartId) || undefined, user.id)
+      return sessionResponse(user)
     }),
   ),
 
@@ -61,7 +70,14 @@ export const authHandlers = [
         return errorResponse(409, 'USERNAME_TAKEN', message, { errors: { username: message } })
       }
 
-      const user: StoredUser = { id: nextId('user'), name: username, email, password }
+      const salt = newSalt()
+      const user: StoredUser = {
+        id: nextId('user'),
+        name: username,
+        email,
+        salt,
+        passwordHash: await hashPassword(salt, password),
+      }
       db.users.push(user)
       db.profiles.set(user.id, {
         displayName: username,
@@ -80,7 +96,17 @@ export const authHandlers = [
         walletNickname: '',
         avatarUrl: null,
       })
-      return json({ token: tokenFor(user), user: publicUser(user) }, 201)
+      mergeGuestCart(str(body.guestCartId) || undefined, user.id)
+      return sessionResponse(user, 201)
+    }),
+  ),
+
+  http.get(
+    '/api/auth/session',
+    withScenario('auth.session', ({ request }) => {
+      const session = checkSession(request)
+      if (session.status !== 'valid') return unauthorized(request)
+      return json({ user: publicUser(session.user), expiresAt: new Date(session.expiresAt).toISOString() })
     }),
   ),
 
@@ -88,8 +114,18 @@ export const authHandlers = [
     '/api/auth/me',
     withScenario('auth.me', ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
       return json(publicUser(user))
+    }),
+  ),
+
+  http.post(
+    '/api/auth/logout',
+    withScenario('auth.logout', ({ request }) => {
+      // Idempotent: logging out an unknown or expired session still succeeds.
+      const token = bearerToken(request)
+      if (token) revokeSession(token)
+      return new HttpResponse(null, { status: 204 })
     }),
   ),
 ]

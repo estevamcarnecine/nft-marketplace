@@ -1,14 +1,20 @@
-import { HttpResponse, http } from 'msw'
+import { HttpResponse, delay, http } from 'msw'
 import type { Order } from '@/types'
+import { getCart } from '../carts'
 import {
   adjustNftPrice,
   db,
+  findEdition,
+  findNft,
   nextId,
+  syncAvailability,
   toNftUpdated,
+  userCartKey,
 } from '../db'
 import { buildCart, checkCoupon, createQuote, quoteFingerprint, scheduleOrderProgress } from '../domain'
+import { schedulePersist } from '../persistence'
 import { validateCollector } from '../validation'
-import { scenario } from '../scenario'
+import { TIMEOUT_DELAY_MS, scenario } from '../scenario'
 import { broadcast } from '../socket'
 import {
   authenticate,
@@ -26,17 +32,18 @@ export const checkoutHandlers = [
     '/api/quotes',
     withScenario('quote.create', async ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const body = await readJson(request)
-      const promo = str(body.promoCode).toUpperCase() || db.cartCoupon || ''
+      const cart = getCart(userCartKey(user.id))
+      const promo = str(body.promoCode).toUpperCase() || cart.coupon || ''
       if (promo) {
         const check = checkCoupon(promo)
         if (!check.ok) {
           return errorResponse(422, check.code, check.message, { errors: { promoCode: check.message } })
         }
       }
-      if (db.cart.size === 0) {
+      if (cart.lines.size === 0) {
         return errorResponse(422, 'EMPTY_CART', 'Seu carrinho está vazio')
       }
 
@@ -48,7 +55,7 @@ export const checkoutHandlers = [
     '/api/orders',
     withScenario('orders.create', async ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const key = request.headers.get('idempotency-key')
       if (!key) {
@@ -98,19 +105,32 @@ export const checkoutHandlers = [
       if (!stored || stored.userId !== user.id) {
         return errorResponse(404, 'QUOTE_NOT_FOUND', 'Cotação não encontrada')
       }
-      if (db.cart.size === 0) {
+      const owner = { key: userCartKey(user.id), userId: user.id }
+      if (getCart(owner.key).lines.size === 0) {
         return errorResponse(422, 'EMPTY_CART', 'Seu carrinho está vazio')
       }
 
       if (scenario.priceChangeOnNextOrder) {
         scenario.priceChangeOnNextOrder = false
-        for (const line of buildCart().items) {
+        for (const line of buildCart(owner).items) {
           const updated = adjustNftPrice(line.nft.id, 5)
           if (updated) broadcast('nft.updated', toNftUpdated(updated))
         }
       }
+      if (scenario.soldOutOnNextOrder) {
+        // Someone else bought the last units of the first edition in the cart.
+        scenario.soldOutOnNextOrder = false
+        const first = buildCart(owner).items[0]
+        const nft = first && findNft(first.nft.id)
+        const edition = nft && findEdition(nft, first.edition.id)
+        if (nft && edition) {
+          edition.available = 0
+          syncAvailability(nft)
+          broadcast('nft.updated', toNftUpdated(nft))
+        }
+      }
 
-      for (const line of buildCart().items) {
+      for (const line of buildCart(owner).items) {
         if (line.quantity > line.edition.available) {
           return errorResponse(
             409,
@@ -162,6 +182,13 @@ export const checkoutHandlers = [
       db.idempotency.set(`${user.id}:${key}`, { fingerprint, orderId: order.id })
       scheduleOrderProgress(order.id)
 
+      if (scenario.orderTimeout) {
+        // The order exists, but this response arrives after the client gave up; its retry
+        // with the same Idempotency-Key must recover this very order.
+        scenario.orderTimeout = false
+        schedulePersist()
+        await delay(TIMEOUT_DELAY_MS)
+      }
       return json({ ...order }, 201)
     }),
   ),
@@ -170,7 +197,7 @@ export const checkoutHandlers = [
     '/api/orders',
     withScenario('orders.list', ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
       const orders = db.orders.filter((entry) => entry.userId === user.id).map((entry) => entry.order)
       return json({ items: orders })
     }),
@@ -180,7 +207,7 @@ export const checkoutHandlers = [
     '/api/orders/:id',
     withScenario('orders.get', ({ request, params }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
       const found = db.orders.find(
         (entry) => entry.userId === user.id && entry.order.id === String(params.id),
       )

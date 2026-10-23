@@ -3,6 +3,7 @@ import { toSocketIo } from '@mswjs/socket.io-binding'
 import { REALTIME_URL } from '@/lib/config'
 import type { NftUpdatedEvent, OrderUpdatedEvent } from '@/types'
 import { adjustNftPrice, db, toNftUpdated } from './db'
+import { schedulePersist } from './persistence'
 import { scenario } from './scenario'
 
 type SocketIo = ReturnType<typeof toSocketIo>
@@ -36,6 +37,9 @@ export function startRealtime(): void {
     if (!nft) return
     const direction = Math.random() < 0.5 ? -1 : 1
     const updated = adjustNftPrice(nft.id, direction * (1 + Math.floor(Math.random() * 5)))
-    if (updated) broadcast('nft.updated', toNftUpdated(updated))
+    if (updated) {
+      broadcast('nft.updated', toNftUpdated(updated))
+      schedulePersist()
+    }
   }, 6000)
 }

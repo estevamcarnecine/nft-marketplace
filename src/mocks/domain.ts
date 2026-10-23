@@ -11,7 +11,11 @@ import {
   serializeNft,
   syncAvailability,
   toNftUpdated,
+  userCartKey,
+  type StoredCart,
 } from './db'
+import { getCart, peekCart, type CartOwner } from './carts'
+import { schedulePersist } from './persistence'
 import { scenario } from './scenario'
 import { broadcast } from './socket'
 
@@ -43,16 +47,18 @@ export function checkCoupon(raw: string, now = Date.now()): CouponCheck {
 }
 
 /** The cart coupon, dropped when it is no longer valid. */
-function activeCoupon(): AppliedCoupon | null {
-  if (!db.cartCoupon) return null
-  const check = checkCoupon(db.cartCoupon)
+function activeCoupon(cart: StoredCart): AppliedCoupon | null {
+  if (!cart.coupon) return null
+  const check = checkCoupon(cart.coupon)
   return check.ok ? check.coupon : null
 }
 const QUOTE_TTL_MS = 5 * 60 * 1000
 
-export function buildCart(userId?: string): Cart {
+export function buildCart(owner: CartOwner): Cart {
+  const stored = peekCart(owner.key)
+  const userId = owner.userId
   const items: CartLine[] = []
-  for (const [key, quantity] of db.cart) {
+  for (const [key, quantity] of stored.lines) {
     const parsed = parseCartKey(key)
     const nft = parsed && findNft(parsed.nftId)
     const edition = parsed && nft && findEdition(nft, parsed.editionId)
@@ -66,7 +72,7 @@ export function buildCart(userId?: string): Cart {
     })
   }
   const subtotal = sumEth(items.map((line) => line.lineTotal))
-  const coupon = items.length > 0 ? activeCoupon() : null
+  const coupon = items.length > 0 ? activeCoupon(stored) : null
   const discount = percentOfEth(subtotal, coupon?.percent ?? 0)
   const networkFee = items.length > 0 ? NETWORK_FEE : '0'
   return {
@@ -81,7 +87,7 @@ export function buildCart(userId?: string): Cart {
 }
 
 export function createQuote(userId: string, promoCode: string | null): Quote {
-  const cart = buildCart()
+  const cart = buildCart({ key: userCartKey(userId), userId })
   const lines: QuoteLine[] = cart.items.map(({ nft, edition, quantity, lineTotal }) => ({
     nftId: nft.id,
     editionId: edition.id,
@@ -137,15 +143,16 @@ function simulatedTxHash(seed: string): string {
   return `0x${hex.slice(0, 64)}`
 }
 
-/** Removes exactly the purchased quantities from the cart, keeping anything added since. */
-function removePurchasedFromCart(lines: QuoteLine[]): void {
+/** Removes exactly the purchased quantities from the buyer's cart, keeping anything added since. */
+function removePurchasedFromCart(userId: string, lines: QuoteLine[]): void {
+  const cart = getCart(userCartKey(userId))
   for (const line of lines) {
     const key = cartKey(line.nftId, line.editionId)
-    const remaining = (db.cart.get(key) ?? 0) - line.quantity
-    if (remaining > 0) db.cart.set(key, remaining)
-    else db.cart.delete(key)
+    const remaining = (cart.lines.get(key) ?? 0) - line.quantity
+    if (remaining > 0) cart.lines.set(key, remaining)
+    else cart.lines.delete(key)
   }
-  if (db.cart.size === 0) db.cartCoupon = null
+  if (cart.lines.size === 0) cart.coupon = null
 }
 
 function settleOrder(orderId: string): void {
@@ -177,7 +184,7 @@ function settleOrder(orderId: string): void {
       syncAvailability(nft)
       broadcast('nft.updated', toNftUpdated(nft))
     }
-    removePurchasedFromCart(order.lines)
+    removePurchasedFromCart(stored.userId, order.lines)
     order.txHash = simulatedTxHash(order.id)
     // In-app simulated explorer: no real chain is involved.
     order.explorerUrl = `/explorer/tx/${order.txHash}`
@@ -187,6 +194,13 @@ function settleOrder(orderId: string): void {
   order.rejectionReason = reason
   order.updatedAt = new Date().toISOString()
   broadcast('order.updated', { id: order.id, status, updatedAt: order.updatedAt })
+  schedulePersist()
+}
+
+export function resumePendingOrders(): void {
+  for (const { order } of db.orders) {
+    if (order.status === 'pending') scheduleOrderProgress(order.id)
+  }
 }
 
 /** Payment settles asynchronously, like a transaction waiting for confirmation. */

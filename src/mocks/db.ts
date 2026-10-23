@@ -16,8 +16,20 @@ import type {
   WalletSession,
 } from '@/types'
 
+/** Passwords are kept as salted SHA-256 hashes (see `src/mocks/session.ts`), never in plain text. */
 export interface StoredUser extends User {
-  password: string
+  salt: string
+  passwordHash: string
+}
+/** A cart belongs to a signed-in user (`user:<id>`) or to a visitor (`guest:<cart id>`). */
+export interface StoredCart {
+  lines: Map<string, number>
+  coupon: string | null
+}
+export interface StoredSession {
+  userId: string
+  createdAt: number
+  expiresAt: number
 }
 export interface StoredQuote {
   userId: string
@@ -110,6 +122,7 @@ const EDITION_SPECS: { id: EditionId; label: string; supply: number }[] = [
 ]
 
 const DEMO_ADDRESS = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
+const COLLECTOR_ADDRESS = '0x8Ba1f109551bD432803012645Ac136ddd64DBA72'
 
 // Fixed reference time so listing dates, and the visual baselines built on them, are stable.
 export const FIXTURE_EPOCH = Date.parse('2026-10-20T12:00:00.000Z')
@@ -243,6 +256,14 @@ function createNfts(): NftRecord[] {
   })
 }
 
+export function userCartKey(userId: string): string {
+  return `user:${userId}`
+}
+
+export function guestCartKey(cartId: string): string {
+  return `guest:${cartId}`
+}
+
 export function cartKey(nftId: string, editionId: EditionId): string {
   return `${nftId}~${editionId}`
 }
@@ -258,7 +279,43 @@ function createState() {
     id: 'user_demo',
     name: 'Demo Collector',
     email: 'demo@kurio.io',
-    password: '123456',
+    // Kurio@2026
+    salt: 'b7c1e2a94f0d3e58',
+    passwordHash: '169e9d5c144737fc4106c7d440ae57979b3359f94803a6d6f0173a8e86f1f70d',
+  }
+  const collector: StoredUser = {
+    id: 'user_ana',
+    name: 'Ana Colecionadora',
+    email: 'colecionador@kurio.io',
+    // Kurio@2026
+    salt: '4e9a0c7d21f6b83a',
+    passwordHash: '87f3b9cb12dd49945dde729417e69ada70adce9f8573477ec6af40bbf5bc7bd6',
+  }
+  const collectorProfile: Profile = {
+    displayName: 'Ana Colecionadora',
+    username: 'ana_coleciona',
+    profileName: 'Ana Colecionadora',
+    email: collector.email,
+    network: 'polygon',
+    walletType: 'coinbase',
+    walletAddress: COLLECTOR_ADDRESS,
+    useAnotherWallet: false,
+    secondaryWallet: '',
+    ensName: 'anacoleciona',
+    ensSuffix: '.eth',
+    referralCode: 'ANA2026',
+    note: '',
+    walletNickname: 'Coinbase da Ana',
+    avatarUrl: null,
+  }
+  const collectorWallet: Wallet = {
+    id: 'wallet_ana',
+    label: 'Coinbase da Ana',
+    type: 'coinbase',
+    network: 'polygon',
+    address: COLLECTOR_ADDRESS,
+    isDefault: true,
+    createdAt: new Date(FIXTURE_EPOCH).toISOString(),
   }
   const demoProfile: Profile = {
     displayName: 'Demo Collector',
@@ -289,16 +346,31 @@ function createState() {
 
   return {
     nfts: createNfts(),
-    cart: new Map<string, number>([
-      [cartKey('nft-0042', '1-50'), 2],
-      [cartKey('nft-0314', '1-50'), 6],
-      [cartKey('nft-0088', '1-50'), 9],
+    // The demo collector starts with the cart of the Figma frame; everyone else starts empty.
+    carts: new Map<string, StoredCart>([
+      [
+        userCartKey(demo.id),
+        {
+          lines: new Map<string, number>([
+            [cartKey('nft-0042', '1-50'), 2],
+            [cartKey('nft-0314', '1-50'), 6],
+            [cartKey('nft-0088', '1-50'), 9],
+          ]),
+          coupon: null,
+        },
+      ],
     ]),
-    cartCoupon: null as string | null,
-    users: [demo],
-    profiles: new Map<string, Profile>([[demo.id, demoProfile]]),
-    wallets: new Map<string, Wallet[]>([[demo.id, [demoWallet]]]),
-    favorites: new Map<string, Set<string>>(),
+    sessions: new Map<string, StoredSession>(),
+    users: [demo, collector],
+    profiles: new Map<string, Profile>([
+      [demo.id, demoProfile],
+      [collector.id, collectorProfile],
+    ]),
+    wallets: new Map<string, Wallet[]>([
+      [demo.id, [demoWallet]],
+      [collector.id, [collectorWallet]],
+    ]),
+    favorites: new Map<string, Set<string>>([[collector.id, new Set(['nft-0042', 'nft-0088'])]]),
     quotes: new Map<string, StoredQuote>(),
     orders: [] as StoredOrder[],
     /** `${userId}:${key}` → fingerprint of the request body and the order it created. */

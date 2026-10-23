@@ -43,7 +43,7 @@ export const profileHandlers = [
     '/api/profile',
     withScenario('profile.get', ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
       return json({ ...(db.profiles.get(user.id) ?? emptyProfile(user)) })
     }),
   ),
@@ -52,7 +52,7 @@ export const profileHandlers = [
     '/api/profile',
     withScenario('profile.update', async ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const input = await readJson(request)
       const displayName = str(input.displayName)

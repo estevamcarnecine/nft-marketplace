@@ -1,8 +1,10 @@
 import { HttpResponse, delay, type HttpResponseResolver } from 'msw'
 import { NETWORKS, WALLET_TYPES } from '@/types'
 import type { NetworkId, User, WalletType } from '@/types'
-import { db, type StoredUser } from './db'
-import { scenario, takeFailure } from './scenario'
+import { type StoredUser } from './db'
+import { schedulePersist } from './persistence'
+import { TIMEOUT_DELAY_MS, isOffline, isTimedOut, latencyFor, takeFailure } from './scenario'
+import { checkSession } from './session'
 
 type JsonBody = Parameters<typeof HttpResponse.json>[0]
 type ResolverInfo = Parameters<HttpResponseResolver>[0]
@@ -25,14 +27,26 @@ export function validationError(errors: Record<string, string>) {
   return errorResponse(422, 'VALIDATION_ERROR', 'Revise os campos destacados', { errors })
 }
 
+/**
+ * Every handler runs through the active scenario (latency, jitter, offline, timeout, injected
+ * HTTP failures), and every mutation is persisted afterwards so a reload keeps the data.
+ */
 export function withScenario(key: string, resolver: Resolver): HttpResponseResolver {
   return async (info) => {
-    await delay(scenario.latencyMs)
+    await delay(latencyFor(key))
+    if (isOffline(key)) return HttpResponse.error()
+    if (isTimedOut(key)) await delay(TIMEOUT_DELAY_MS)
     const status = takeFailure(key)
     if (status !== null) {
-      return errorResponse(status, 'SCENARIO_FAILURE', `Falha simulada em ${key}`)
+      return errorResponse(
+        status,
+        status >= 500 ? 'SERVICE_UNAVAILABLE' : 'SCENARIO_FAILURE',
+        status >= 500 ? 'O serviço está temporariamente indisponível. Tente novamente.' : `Falha simulada em ${key}`,
+      )
     }
-    return resolver(info)
+    const response = await resolver(info)
+    if (info.request.method !== 'GET') schedulePersist()
+    return response
   }
 }
 
@@ -79,24 +93,19 @@ export function isValidAddress(network: NetworkId, address: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(address)
 }
 
-const TOKEN_PREFIX = 'mock-token-'
-
-export function tokenFor(user: StoredUser): string {
-  return `${TOKEN_PREFIX}${user.id}`
-}
-
 export function publicUser(user: StoredUser): User {
   return { id: user.id, name: user.name, email: user.email }
 }
 
 export function authenticate(request: Request): StoredUser | null {
-  const header = request.headers.get('authorization') ?? ''
-  const token = header.startsWith('Bearer ') ? header.slice(7) : ''
-  if (!token.startsWith(TOKEN_PREFIX)) return null
-  const id = token.slice(TOKEN_PREFIX.length)
-  return db.users.find((user) => user.id === id) ?? null
+  const session = checkSession(request)
+  return session.status === 'valid' ? session.user : null
 }
 
-export function unauthorized() {
+/** 401 that tells an expired session (resume after login) apart from no session at all. */
+export function unauthorized(request?: Request) {
+  if (request && checkSession(request).status === 'expired') {
+    return errorResponse(401, 'SESSION_EXPIRED', 'Sua sessão expirou. Entre novamente para continuar.')
+  }
   return errorResponse(401, 'UNAUTHORIZED', 'Faça login para continuar')
 }

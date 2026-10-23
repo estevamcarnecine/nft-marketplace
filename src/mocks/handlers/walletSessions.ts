@@ -22,7 +22,7 @@ export const walletSessionHandlers = [
     '/api/wallet-sessions',
     withScenario('wallet.connect', async ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const body = await readJson(request)
       const type = str(body.type)
@@ -60,7 +60,7 @@ export const walletSessionHandlers = [
     '/api/wallet-sessions/:id',
     withScenario('wallet.disconnect', ({ request, params }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
       const stored = db.walletSessions.get(String(params.id))
       if (!stored || stored.userId !== user.id) {
         return errorResponse(404, 'WALLET_SESSION_NOT_FOUND', 'Carteira não conectada')

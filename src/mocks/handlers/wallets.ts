@@ -58,7 +58,7 @@ export const walletHandlers = [
     '/api/wallets',
     withScenario('wallets.list', ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
       return json({ items: db.wallets.get(user.id) ?? [] })
     }),
   ),
@@ -67,7 +67,7 @@ export const walletHandlers = [
     '/api/wallets',
     withScenario('wallets.create', async ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const body = await readJson(request)
       const result = validateWallet(body)
@@ -99,7 +99,7 @@ export const walletHandlers = [
     '/api/wallets/:id',
     withScenario('wallets.update', async ({ request, params }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const wallets = db.wallets.get(user.id) ?? []
       const target = wallets.find((wallet) => wallet.id === String(params.id))
@@ -129,7 +129,7 @@ export const walletHandlers = [
     '/api/wallets/:id/default',
     withScenario('wallets.default', ({ request, params }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const wallets = db.wallets.get(user.id) ?? []
       if (!wallets.some((w) => w.id === String(params.id))) {
@@ -147,7 +147,7 @@ export const walletHandlers = [
     '/api/wallets/:id',
     withScenario('wallets.delete', ({ request, params }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const wallets = db.wallets.get(user.id) ?? []
       const target = wallets.find((w) => w.id === String(params.id))
@@ -166,7 +166,7 @@ export const walletHandlers = [
     '/api/profile/delivery',
     withScenario('profile.delivery', async ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const body = await readJson(request)
       const walletId = body.walletId === null ? null : str(body.walletId)

@@ -220,7 +220,14 @@ export interface User {
 
 export interface AuthResponse {
   token: string
+  /** Sliding expiry: each authenticated request extends it. */
+  expiresAt: string
   user: User
+}
+
+export interface SessionInfo {
+  user: User
+  expiresAt: string
 }
 
 export interface Profile {

@@ -3,6 +3,7 @@ import { compareEth, isValidEth } from '@/lib/eth'
 import { CATALOG_SORTS, CATALOG_TABS, COLLECTIONS, NETWORKS } from '@/types'
 import type { CatalogSort, CatalogTab, Facets, Nft, Paginated } from '@/types'
 import { FIXTURE_EPOCH, db, findNft, serializeNft, serializeNftDetail, type NftRecord } from '../db'
+import { scenario } from '../scenario'
 import {
   authenticate,
   csv,
@@ -92,7 +93,8 @@ export const catalogHandlers = [
       )
       const newSince = new Date(FIXTURE_EPOCH - NEW_WINDOW_MS).toISOString()
 
-      const filtered = db.nfts.filter((nft) => {
+      // Scenario "empty": a catalog with no listings, to exercise the empty state.
+      const filtered = (scenario.emptyCatalog ? [] : db.nfts).filter((nft) => {
         if (tab === 'new' && nft.listedAt < newSince) return false
         if (tab === 'trending' && !trendingIds.has(nft.id)) return false
         if (q && !`${nft.name} ${nft.tokenId} ${nft.creator}`.toLowerCase().includes(q)) return false
@@ -150,7 +152,7 @@ export const catalogHandlers = [
     '/api/nfts/:id/favorite',
     withScenario('favorite.set', async ({ request, params }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const nft = findNft(String(params.id))
       if (!nft) return errorResponse(404, 'NFT_NOT_FOUND', 'NFT não encontrado')

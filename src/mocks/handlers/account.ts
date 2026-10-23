@@ -12,6 +12,7 @@ import {
   validationError,
   withScenario,
 } from '../utils'
+import { hashPassword, newSalt, verifyPassword } from '../session'
 import { PASSWORD_RULE, RESERVED_USERNAMES, USERNAME_PATTERN, isStrongPassword } from '../validation'
 
 const ENS_NAME = /^[a-z0-9-]{3,63}$/i
@@ -52,7 +53,7 @@ export const accountHandlers = [
     '/api/profile',
     withScenario('profile.patch', async ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const input = await readJson(request)
       const displayName = str(input.displayName)
@@ -100,7 +101,7 @@ export const accountHandlers = [
     '/api/profile/avatar',
     withScenario('profile.avatar', async ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const form = await request.formData().catch(() => null)
       const file = form?.get('avatar')
@@ -121,7 +122,7 @@ export const accountHandlers = [
     '/api/profile/avatar',
     withScenario('profile.avatar.remove', ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
       const current = db.profiles.get(user.id) ?? blankProfile(user.email, user.name)
       const profile: Profile = { ...current, avatarUrl: null }
       db.profiles.set(user.id, profile)
@@ -133,7 +134,7 @@ export const accountHandlers = [
     '/api/profile/password',
     withScenario('profile.password', async ({ request }) => {
       const user = authenticate(request)
-      if (!user) return unauthorized()
+      if (!user) return unauthorized(request)
 
       const input = await readJson(request)
       const currentPassword = typeof input.currentPassword === 'string' ? input.currentPassword : ''
@@ -145,17 +146,13 @@ export const accountHandlers = [
       else if (newPassword === currentPassword) errors.newPassword = 'A nova senha deve ser diferente da atual'
       if (Object.keys(errors).length > 0) return validationError(errors)
 
-      if (currentPassword !== user.password) {
+      if (!(await verifyPassword(user, currentPassword))) {
         const message = 'Senha atual incorreta'
         return errorResponse(422, 'WRONG_PASSWORD', message, { errors: { currentPassword: message } })
       }
-      user.password = newPassword
+      user.salt = newSalt()
+      user.passwordHash = await hashPassword(user.salt, newPassword)
       return new HttpResponse(null, { status: 204 })
     }),
-  ),
-
-  http.post(
-    '/api/auth/logout',
-    withScenario('auth.logout', () => new HttpResponse(null, { status: 204 })),
   ),
 ]

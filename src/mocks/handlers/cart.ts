@@ -1,19 +1,10 @@
 import { http } from 'msw'
 import { EDITION_IDS } from '@/types'
 import type { EditionId, NftEdition } from '@/types'
-import { cartKey, db, findEdition, findNft, parseCartKey } from '../db'
+import { MAX_PER_LINE, cartOwner, getCart, type CartOwner } from '../carts'
+import { cartKey, findEdition, findNft, parseCartKey } from '../db'
 import { buildCart, checkCoupon } from '../domain'
-import {
-  authenticate,
-  errorResponse,
-  json,
-  readJson,
-  str,
-  validationError,
-  withScenario,
-} from '../utils'
-
-export const MAX_PER_LINE = 99
+import { errorResponse, json, readJson, str, validationError, withScenario } from '../utils'
 
 function parseQuantity(value: unknown, fallback?: number): number | null {
   const quantity = value === undefined ? fallback : value
@@ -40,17 +31,28 @@ function insufficientSupply(edition: NftEdition) {
   )
 }
 
+function missingOwner() {
+  return errorResponse(400, 'MISSING_CART_ID', 'Envie o header X-Cart-Id para usar o carrinho como visitante')
+}
+
+const respond = (owner: CartOwner, status = 200) => json({ ...buildCart(owner) }, status)
+
 export const cartHandlers = [
   http.get(
     '/api/cart',
     withScenario('cart.get', ({ request }) => {
-      return json({ ...buildCart(authenticate(request)?.id) })
+      const owner = cartOwner(request)
+      // A visitor that never added anything simply has an empty cart.
+      return respond(owner ?? { key: 'guest:none' })
     }),
   ),
 
   http.post(
     '/api/cart/items',
     withScenario('cart.add', async ({ request }) => {
+      const owner = cartOwner(request)
+      if (!owner) return missingOwner()
+
       const body = await readJson(request)
       const nftId = str(body.nftId)
       const editionId = parseEditionId(body.editionId)
@@ -69,21 +71,25 @@ export const cartHandlers = [
       const edition = findEdition(nft, editionId)
       if (!edition) return errorResponse(404, 'EDITION_NOT_FOUND', 'Edição não encontrada')
 
+      const cart = getCart(owner.key)
       const key = cartKey(nft.id, edition.id)
-      const next = (db.cart.get(key) ?? 0) + quantity
+      const next = (cart.lines.get(key) ?? 0) + quantity
       if (next > edition.available || next > MAX_PER_LINE) return insufficientSupply(edition)
 
-      db.cart.set(key, next)
-      return json({ ...buildCart(authenticate(request)?.id) }, 201)
+      cart.lines.set(key, next)
+      return respond(owner, 201)
     }),
   ),
 
   http.patch(
     '/api/cart/items/:lineId',
     withScenario('cart.update', async ({ request, params }) => {
+      const owner = cartOwner(request)
+      if (!owner) return missingOwner()
+      const cart = getCart(owner.key)
       const key = String(params.lineId)
       const parsed = parseCartKey(key)
-      if (!parsed || !db.cart.has(key)) {
+      if (!parsed || !cart.lines.has(key)) {
         return errorResponse(404, 'CART_ITEM_NOT_FOUND', 'Item não está no carrinho')
       }
 
@@ -95,42 +101,49 @@ export const cartHandlers = [
       const edition = nft && findEdition(nft, parsed.editionId)
       if (edition && quantity > edition.available) return insufficientSupply(edition)
 
-      db.cart.set(key, quantity)
-      return json({ ...buildCart(authenticate(request)?.id) })
+      cart.lines.set(key, quantity)
+      return respond(owner)
     }),
   ),
 
   http.put(
     '/api/cart/coupon',
     withScenario('cart.coupon.apply', async ({ request }) => {
+      const owner = cartOwner(request)
+      if (!owner) return missingOwner()
       const body = await readJson(request)
       const code = str(body.code)
       if (!code) return validationError({ code: 'Informe o código promocional' })
-      if (db.cart.size === 0) return errorResponse(422, 'EMPTY_CART', 'Seu carrinho está vazio')
+      const cart = getCart(owner.key)
+      if (cart.lines.size === 0) return errorResponse(422, 'EMPTY_CART', 'Seu carrinho está vazio')
 
       const check = checkCoupon(code)
       if (!check.ok) return errorResponse(422, check.code, check.message, { errors: { code: check.message } })
 
-      db.cartCoupon = check.coupon.code
-      return json({ ...buildCart(authenticate(request)?.id) })
+      cart.coupon = check.coupon.code
+      return respond(owner)
     }),
   ),
 
   http.delete(
     '/api/cart/coupon',
     withScenario('cart.coupon.remove', ({ request }) => {
-      db.cartCoupon = null
-      return json({ ...buildCart(authenticate(request)?.id) })
+      const owner = cartOwner(request)
+      if (!owner) return missingOwner()
+      getCart(owner.key).coupon = null
+      return respond(owner)
     }),
   ),
 
   http.delete(
     '/api/cart/items/:lineId',
     withScenario('cart.remove', ({ request, params }) => {
-      if (!db.cart.delete(String(params.lineId))) {
+      const owner = cartOwner(request)
+      if (!owner) return missingOwner()
+      if (!getCart(owner.key).lines.delete(String(params.lineId))) {
         return errorResponse(404, 'CART_ITEM_NOT_FOUND', 'Item não está no carrinho')
       }
-      return json({ ...buildCart(authenticate(request)?.id) })
+      return respond(owner)
     }),
   ),
 ]
