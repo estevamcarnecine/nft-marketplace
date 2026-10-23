@@ -1,11 +1,9 @@
 import { Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { Hairline } from '@/components/common/Hairline'
 
-import { api } from '@/lib/api'
-import type { Cart } from '@/types'
 import { ComingSoon } from '@/components/common/ComingSoon'
-import { cartKey } from '@/features/nft/api'
+import { Hairline } from '@/components/common/Hairline'
+import { cartQuery } from '@/features/cart/api'
 import activeUnderline from '@/assets/header/active-underline-home.svg'
 import activeUnderlineMarket from '@/assets/header/active-underline-market.svg'
 import badge from '@/assets/header/badge.svg'
@@ -34,10 +32,7 @@ function NavLabel({ label, underline }: { label: string; underline?: string }) {
 }
 
 function CartButton() {
-  const { data } = useQuery({
-    queryKey: cartKey,
-    queryFn: ({ signal }) => api.get<Cart>('/cart', { signal }),
-  })
+  const { data } = useQuery(cartQuery)
   const count = data?.count ?? 0
 
   return (

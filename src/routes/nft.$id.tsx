@@ -106,7 +106,7 @@ function NftDetailPage() {
       </div>
 
       {detail.isSuccess && <NftDetailsTabs nft={detail.data} />}
-      {!notFound && <RelatedNfts nftId={id} />}
+      {!notFound && <RelatedNfts title="Mais desta coleção" nftId={id} />}
     </PageShell>
   )
 }

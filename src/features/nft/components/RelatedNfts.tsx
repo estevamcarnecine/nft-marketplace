@@ -1,32 +1,45 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Hairline } from '@/components/common/Hairline'
 import { Link } from '@tanstack/react-router'
 import { cn } from 'cn'
 
+import { Hairline } from '@/components/common/Hairline'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatEthLabel } from '@/lib/format'
 import type { Nft } from '@/types'
-import { relatedNftsQuery } from '../api'
+import { relatedNftsQuery, trendingNftsQuery } from '../api'
 import dividerSection from '@/assets/nft-detail/divider-section.svg'
 
 const PAGE_SIZE = 5
 
-function RelatedCard({ nft }: { nft: Nft }) {
+/**
+ * The two carousels in the Figma differ only in card spacing: "Mais desta coleção" on the
+ * detail page (image pinned 20px from the top, radius 13) and "Colecionadores também viram"
+ * on the cart (image centered, radius 17, 8px text gaps).
+ */
+const VARIANTS = {
+  detail: { card: 'gap-[12px]', box: 'justify-center pt-[20px]', image: 'rounded-[13px]', text: '' },
+  cart: { card: 'gap-[8px]', box: 'items-center justify-center', image: 'rounded-[17px]', text: 'gap-[8px]' },
+} as const
+
+type Variant = keyof typeof VARIANTS
+
+function RelatedCard({ nft, variant }: { nft: Nft; variant: Variant }) {
+  const styles = VARIANTS[variant]
   return (
     <li className="w-[219px]">
-      <Link to="/nft/$id" params={{ id: nft.id }} className="flex w-full flex-col items-start gap-[12px]">
-        <span className="flex h-[255px] w-full justify-center bg-surface-card pt-[20px]">
+      <Link to="/nft/$id" params={{ id: nft.id }} className={cn('flex w-full flex-col items-start', styles.card)}>
+        <span className={cn('flex h-[255px] w-full bg-surface-card', styles.box)}>
           <img
             alt=""
             src={nft.image}
             width={212}
             height={212}
             loading="lazy"
-            className="size-[212px] max-w-none rounded-[13px] object-cover"
+            className={cn('size-[212px] max-w-none object-cover', styles.image)}
           />
         </span>
-        <span className="flex w-full flex-col items-start">
+        <span className={cn('flex w-full flex-col items-start', styles.text)}>
           <span className="w-full text-[15px] leading-[normal] text-foreground">{nft.name}</span>
           <span className="w-full text-[16px] leading-[16px] font-bold text-text-accent">
             <span className="sr-only">Preço: </span>
@@ -52,54 +65,69 @@ function RelatedSkeleton() {
   )
 }
 
-export function RelatedNfts({ nftId }: { nftId: string }) {
-  const related = useQuery(relatedNftsQuery(nftId))
+export function RelatedNfts({
+  title,
+  nftId,
+  exclude = [],
+  variant = 'detail',
+}: {
+  title: string
+  /** NFT whose collection drives the list; without it the list falls back to trending NFTs. */
+  nftId?: string
+  exclude?: string[]
+  variant?: Variant
+}) {
+  const related = useQuery({ ...relatedNftsQuery(nftId ?? ''), enabled: Boolean(nftId) })
+  const trending = useQuery({ ...trendingNftsQuery(), enabled: !nftId })
+  const source = nftId ? related : trending
   const [page, setPage] = useState(0)
-  const items = related.data ?? []
+  const items = (source.data ?? []).filter((nft) => !exclude.includes(nft.id))
   const pageCount = Math.ceil(items.length / PAGE_SIZE)
-  const visible = items.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE)
+  const current = Math.min(page, Math.max(0, pageCount - 1))
+  const visible = items.slice(current * PAGE_SIZE, current * PAGE_SIZE + PAGE_SIZE)
+  const headingId = `related-heading-${variant}`
 
-  if (related.isSuccess && items.length === 0) return null
+  if (source.isSuccess && items.length === 0) return null
 
   return (
-    <section aria-labelledby="related-heading" className="flex w-full flex-col items-start gap-[32px] overflow-clip">
+    <section aria-labelledby={headingId} className="flex w-full flex-col items-start gap-[32px] overflow-clip">
       <div className="flex w-full flex-col items-start gap-[12px]">
-        <h2 id="related-heading" className="w-full text-[17px] leading-[16px] font-bold text-text-accent">
-          Mais desta coleção
+        <h2 id={headingId} className="w-full text-[17px] leading-[16px] font-bold text-text-accent">
+          {title}
         </h2>
         <Hairline src={dividerSection} />
       </div>
 
       <div className="flex w-full flex-col items-center gap-[32px]">
-        {related.isPending ? (
+        {source.isPending ? (
           <RelatedSkeleton />
-        ) : related.isError ? (
+        ) : source.isError ? (
           <p role="alert" className="flex items-center gap-[12px] text-[14px] leading-[24px] text-text-secondary">
-            Não foi possível carregar a coleção.
-            <button type="button" onClick={() => void related.refetch()} className="font-bold text-text-accent underline">
+            Não foi possível carregar as sugestões.
+            <button type="button" onClick={() => void source.refetch()} className="font-bold text-text-accent underline">
               Tentar novamente
             </button>
           </p>
         ) : (
           <ul aria-live="polite" className="flex w-full items-start justify-between">
             {visible.map((nft) => (
-              <RelatedCard key={nft.id} nft={nft} />
+              <RelatedCard key={nft.id} nft={nft} variant={variant} />
             ))}
           </ul>
         )}
 
         {pageCount > 1 && (
-          <div role="group" aria-label="Páginas da coleção" className="flex h-[12px] items-center gap-[8px]">
+          <div role="group" aria-label="Páginas de sugestões" className="flex h-[12px] items-center gap-[8px]">
             {Array.from({ length: pageCount }, (_, index) => (
               <button
                 key={index}
                 type="button"
                 onClick={() => setPage(index)}
                 aria-label={`Página ${index + 1} de ${pageCount}`}
-                aria-current={index === page ? 'true' : undefined}
+                aria-current={index === current ? 'true' : undefined}
                 className={cn(
                   'relative size-[12px] rounded-full border-[1.3px] border-primary after:absolute after:-inset-[4px]',
-                  index === page && 'bg-primary',
+                  index === current && 'bg-primary',
                 )}
               />
             ))}

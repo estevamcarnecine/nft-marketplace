@@ -1,15 +1,14 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { cartKey } from '@/features/cart/api'
 import { api } from '@/lib/api'
-import type { Cart, EditionId, Nft, NftDetail } from '@/types'
+import type { Cart, EditionId, Nft, NftDetail, Paginated } from '@/types'
 
 export const nftKeys = {
   all: ['nfts'] as const,
   detail: (id: string) => ['nfts', 'detail', id] as const,
   related: (id: string) => ['nfts', 'related', id] as const,
 }
-
-export const cartKey = ['cart'] as const
 
 export function nftDetailQuery(id: string) {
   return queryOptions({
@@ -23,6 +22,15 @@ export function relatedNftsQuery(id: string) {
     queryKey: nftKeys.related(id),
     queryFn: ({ signal }) =>
       api.get<{ items: Nft[] }>(`/nfts/${encodeURIComponent(id)}/related`, { signal }),
+    select: (data) => data.items,
+  })
+}
+
+export function trendingNftsQuery(limit = 15) {
+  return queryOptions({
+    queryKey: ['nfts', 'list', { tab: 'trending', pageSize: limit }] as const,
+    queryFn: ({ signal }) =>
+      api.get<Paginated<Nft>>('/nfts', { params: { tab: 'trending', pageSize: limit }, signal }),
     select: (data) => data.items,
   })
 }
