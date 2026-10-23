@@ -52,7 +52,11 @@ function CartButton() {
   )
 }
 
-export function Header({ active }: { active: HeaderSection }) {
+/**
+ * Figma "Header Row". The hairline below it belongs to "Header With Divider", used on the home,
+ * account and auth screens; market screens use the bare row.
+ */
+export function Header({ active, divider: withDivider = true }: { active: HeaderSection; divider?: boolean }) {
   const location = useLocation()
   const search = useSearch({ strict: false })
   // Return to the current page after signing in; on /login itself keep its own target.
@@ -102,7 +106,7 @@ export function Header({ active }: { active: HeaderSection }) {
         </div>
       </div>
 
-      <Hairline src={divider} />
+      {withDivider && <Hairline src={divider} />}
     </header>
   )
 }

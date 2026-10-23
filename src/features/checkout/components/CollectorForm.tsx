@@ -4,7 +4,7 @@ import { cn } from 'cn'
 
 import { NETWORKS, WALLET_TYPES } from '@/types'
 import type { CheckoutForm } from '../schema'
-import { CONTROL, FieldError, FieldLabel, SelectField, TextField } from './fields'
+import { CONTROL, FieldError, FieldLabel, SelectField, TextField } from '@/components/form/fields'
 import arrowDownEns from '@/assets/checkout/arrow-down-ens.svg'
 
 function EnsSuffixField() {
