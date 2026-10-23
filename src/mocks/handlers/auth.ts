@@ -13,6 +13,7 @@ import {
   validationError,
   withScenario,
 } from '../utils'
+import { PASSWORD_RULE, RESERVED_USERNAMES, USERNAME_PATTERN, isStrongPassword } from '../validation'
 
 export const authHandlers = [
   http.post(
@@ -38,22 +39,45 @@ export const authHandlers = [
     '/api/auth/signup',
     withScenario('auth.signup', async ({ request }) => {
       const body = await readJson(request)
-      const name = str(body.name)
+      const username = str(body.username)
       const email = str(body.email).toLowerCase()
       const password = typeof body.password === 'string' ? body.password : ''
 
       const errors: Record<string, string> = {}
-      if (name.length < 2) errors.name = 'Informe seu nome'
+      if (!USERNAME_PATTERN.test(username)) errors.username = 'Use de 3 a 20 letras, números ou _'
       if (!isEmail(email)) errors.email = 'Informe um e-mail válido'
-      if (password.length < 6) errors.password = 'A senha precisa ter ao menos 6 caracteres'
+      if (!isStrongPassword(password)) errors.password = PASSWORD_RULE
       if (Object.keys(errors).length > 0) return validationError(errors)
 
       if (db.users.some((u) => u.email === email)) {
-        return errorResponse(409, 'EMAIL_TAKEN', 'Este e-mail já está cadastrado')
+        const message = 'Este e-mail já está cadastrado'
+        return errorResponse(409, 'EMAIL_TAKEN', message, { errors: { email: message } })
+      }
+      const taken = [...db.profiles.values()].some(
+        (profile) => profile.username.toLowerCase() === username.toLowerCase(),
+      )
+      if (taken || RESERVED_USERNAMES.includes(username.toLowerCase())) {
+        const message = 'Este nome de usuário já está em uso'
+        return errorResponse(409, 'USERNAME_TAKEN', message, { errors: { username: message } })
       }
 
-      const user: StoredUser = { id: nextId('user'), name, email, password }
+      const user: StoredUser = { id: nextId('user'), name: username, email, password }
       db.users.push(user)
+      db.profiles.set(user.id, {
+        displayName: username,
+        username,
+        profileName: username,
+        email,
+        network: '',
+        walletType: '',
+        walletAddress: '',
+        useAnotherWallet: false,
+        secondaryWallet: '',
+        ensName: '',
+        ensSuffix: '.eth',
+        referralCode: '',
+        note: '',
+      })
       return json({ token: tokenFor(user), user: publicUser(user) }, 201)
     }),
   ),

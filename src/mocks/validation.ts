@@ -8,6 +8,12 @@ export const USERNAME_PATTERN = /^[a-z0-9_]{3,20}$/i
 export const REFERRAL_PATTERN = /^[A-Z0-9]{6,12}$/
 const ENS_PATTERN = /^[a-z0-9-]{3,63}\.eth$/i
 export const NOTE_MAX = 500
+export const RESERVED_USERNAMES = ['admin', 'kurio', 'support']
+export const PASSWORD_RULE = 'Use ao menos 8 caracteres, com letras e números'
+
+export function isStrongPassword(password: string): boolean {
+  return password.length >= 8 && /[a-z]/i.test(password) && /\d/.test(password)
+}
 
 /** Server-side rules for the "Perfil do colecionador" block of the payment screen. */
 export function validateCollector(raw: unknown): Validation<CollectorInput> {

@@ -14,8 +14,8 @@ import {
   validationError,
   withScenario,
 } from '../utils'
+import { RESERVED_USERNAMES } from '../validation'
 
-const RESERVED_USERNAMES = ['admin', 'kurio', 'support']
 
 function emptyProfile(user: StoredUser): Profile {
   return {
