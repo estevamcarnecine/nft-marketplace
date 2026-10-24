@@ -61,7 +61,10 @@ export const walletSessionHandlers = [
       const user = authenticate(request)
       if (!user) return unauthorized(request)
       const stored = db.walletSessions.get(String(params.id))
-      if (!stored || stored.userId !== user.id) {
+      if (stored && stored.userId !== user.id) {
+        return errorResponse(403, 'FORBIDDEN', 'Esta conexão pertence a outra conta.')
+      }
+      if (!stored) {
         return errorResponse(404, 'WALLET_SESSION_NOT_FOUND', 'Carteira não conectada')
       }
       db.walletSessions.delete(stored.id)

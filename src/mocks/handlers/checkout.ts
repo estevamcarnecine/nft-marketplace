@@ -203,10 +203,9 @@ export const checkoutHandlers = [
     withScenario('orders.get', ({ request, params }) => {
       const user = authenticate(request)
       if (!user) return unauthorized(request)
-      const found = db.orders.find(
-        (entry) => entry.userId === user.id && entry.order.id === String(params.id),
-      )
+      const found = db.orders.find((entry) => entry.order.id === String(params.id))
       if (!found) return errorResponse(404, 'ORDER_NOT_FOUND', 'Pedido não encontrado')
+      if (found.userId !== user.id) return errorResponse(403, 'FORBIDDEN', 'Este pedido pertence a outra conta.')
       return json({ ...found.order })
     }),
   ),

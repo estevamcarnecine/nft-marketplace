@@ -156,6 +156,17 @@ export const catalogHandlers = [
     }),
   ),
 
+  http.get(
+    '/api/favorites',
+    withScenario('favorite.list', ({ request }) => {
+      const user = authenticate(request)
+      if (!user) return unauthorized(request)
+      const ids = db.favorites.get(user.id) ?? new Set<string>()
+      const items = db.nfts.filter((nft) => ids.has(nft.id)).map((nft) => serializeNft(nft, user.id))
+      return json({ items })
+    }),
+  ),
+
   http.put(
     '/api/nfts/:id/favorite',
     withScenario('favorite.set', async ({ request, params }) => {

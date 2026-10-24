@@ -21,18 +21,22 @@ function OrderPage() {
     refetchInterval: (query) => (!realtime && query.state.data?.status === 'pending' ? PENDING_POLL_MS : false),
   })
 
-  const notFound = isApiError(order.error) && order.error.status === 404
+  const status = isApiError(order.error) ? order.error.status : 0
+  const notFound = status === 404
+  const forbidden = status === 403
   const error = order.isError ? (
     <>
       <p role="alert" className="text-[16px] leading-[22px] font-bold text-foreground">
-        {notFound ? 'Pedido não encontrado' : 'Não foi possível carregar o pedido'}
+        {notFound ? 'Pedido não encontrado' : forbidden ? 'Acesso negado' : 'Não foi possível carregar o pedido'}
       </p>
       <p className="text-[14px] leading-[22px] text-text-secondary">
         {notFound
-          ? 'Este pedido não existe ou pertence a outra conta.'
-          : 'Verifique sua conexão. O pedido não é afetado: tente novamente.'}
+          ? 'Este pedido não existe.'
+          : forbidden
+            ? 'Este pedido pertence a outra conta.'
+            : 'Verifique sua conexão. O pedido não é afetado: tente novamente.'}
       </p>
-      {notFound ? (
+      {notFound || forbidden ? (
         <Link to="/" className="rounded-[5px] bg-primary p-[16px] text-[16px] leading-[16px] font-bold text-ink">
           Voltar ao início
         </Link>
