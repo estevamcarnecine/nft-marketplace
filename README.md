@@ -96,7 +96,7 @@ The mock database lives in the browser (`localStorage` key `kurio.mockdb`), so c
 
 Handler keys for `offline`, `timeout` and `fail`:
 - **Auth:** `auth.login`, `auth.signup`, `auth.session`, `auth.logout`
-- **Catalog:** `catalog.list`, `catalog.detail`, `catalog.featured`, `catalog.related`, `catalog.facets`, `favorite.set`
+- **Catalog:** `catalog.list`, `catalog.detail`, `catalog.featured`, `catalog.related`, `catalog.facets`, `favorite.list`, `favorite.set`
 - **Cart:** `cart.get`, `cart.add`, `cart.update`, `cart.remove`, `cart.coupon.apply`
 - **Checkout:** `quote.create`, `orders.create`, `orders.get`, `wallet.connect`
 - **Account:** `profile.get`, `profile.patch`, `profile.avatar`, `profile.password`, `wallets.create`, `wallets.update`, `wallets.delete`
@@ -123,12 +123,16 @@ Handler keys for `offline`, `timeout` and `fail`:
 
 ## Tests
 
-`npm run e2e` runs 73 tests: the 12 flows from the brief on desktop, the main flows (`@main`) on mobile, and visual regression (`@visual`) for home, detail, cart and payment on both.
+`npm run e2e` runs 82 tests:
+- the 12 flows from the brief on desktop;
+- the main flows (`@main`) on mobile;
+- visual regression (`@visual`) for home, detail, cart and payment on both;
+- a responsive check that no main screen overflows horizontally at 390, 768 or 1440 px.
 - **Isolation:** every test gets a fresh browser context, so storage and the mock database start from the fixtures.
 - **Scenarios and clock:** scenarios are injected per test, and the page clock drives order settlement.
 - **Real-time tests** change data on the mock server; the page only learns of it through socket.io-client.
 
-**Visual baselines** are versioned per platform under `e2e/specs/__screenshots__/<platform>/` (text rasterization differs between operating systems). The committed set is `win32`. On another OS, record one with `npm run e2e:update` before comparing.
+**Visual baselines** are versioned per platform under `e2e/specs/__screenshots__/<platform>/` (text rasterization differs between operating systems). The committed set is `win32`. On another OS the first run records the missing baselines (`updateSnapshots: 'missing'`) and later runs compare against them. `npm run e2e:update` re-records them on purpose.
 
 ## Performance
 

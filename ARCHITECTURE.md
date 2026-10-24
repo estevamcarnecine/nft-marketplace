@@ -25,14 +25,15 @@ Base `/api`, JSON. Every error is `{ code, message, errors?, ...details }`. `err
 | | `POST /auth/logout` | Revokes the token |
 | Catalog | `GET /nfts?q&tab&collections&networks&minPrice&maxPrice&sort&page&pageSize` | `Paginated<Nft>`; each NFT carries `version` |
 | | `GET /nfts/featured`, `GET /nfts/:id`, `GET /nfts/:id/related`, `GET /catalog/facets` | 404 `NFT_NOT_FOUND` |
-| | `PUT /nfts/:id/favorite {favorited}` | Idempotent; private |
+| Favorites | `GET /favorites` | The signed-in user's favorite NFTs; private |
+| | `PUT /nfts/:id/favorite {favorited}` | Adds (`true`) or removes (`false`); idempotent; private |
 | Cart | `GET /cart` | Owner = signed-in user, else the visitor named by `X-Cart-Id` |
 | | `POST /cart/items {nftId, editionId?, quantity}`, `PATCH /cart/items/:lineId {quantity}`, `DELETE /cart/items/:lineId` | Always answer the full cart. 409 `INSUFFICIENT_SUPPLY {available}`. At most 99 per line. |
 | | `PUT /cart/coupon {code}`, `DELETE /cart/coupon` | 422 `COUPON_INVALID` / `COUPON_EXPIRED` |
-| Checkout | `POST /wallet-sessions`, `DELETE /wallet-sessions/:id` | Simulated wallet connection. 409 `WALLET_REJECTED` under `walletreject`. |
+| Checkout | `POST /wallet-sessions`, `DELETE /wallet-sessions/:id` | Simulated wallet connection and disconnection. 409 `WALLET_REJECTED` under `walletreject`; 403 `FORBIDDEN` for another account's session. |
 | | `POST /quotes {promoCode?}` | Snapshot of lines, subtotal, discount, network fee (0.016 ETH), total; expires in 5 min |
 | | `POST /orders` + `Idempotency-Key` | Details in the list below |
-| | `GET /orders`, `GET /orders/:id` | Only the owner's. 404 `ORDER_NOT_FOUND` for anyone else. |
+| | `GET /orders`, `GET /orders/:id` | 404 `ORDER_NOT_FOUND`; 403 `FORBIDDEN` for another account's order |
 | Account | `GET/PUT/PATCH /profile`, `PUT/DELETE /profile/avatar`, `POST /profile/password`, `PUT /profile/delivery` | 409 for e-mail/username taken. 422 `WRONG_PASSWORD` on the current-password field. |
 | | `GET/POST /wallets`, `PATCH/DELETE /wallets/:id`, `POST /wallets/:id/default` | A single primary wallet; 409 for duplicate addresses |
 | Explorer | `GET /explorer/tx/:hash` | Simulated block explorer for receipts |
@@ -151,6 +152,7 @@ Approved decisions:
 - **Breakpoints:** no tablet frames exist, so 768–1279 px uses the mobile frames, centered and wider (catalog grid 3–4 columns, forms capped at 560 px). From 1280 px the desktop frames are used unchanged.
 - **Mobile checkout:** the "Mobile / Pagamento" frame only shows wallets. The collector data the order needs is prefilled from the profile in a collapsible "Dados do colecionador" section, which opens on any validation error.
 - **Mobile tab bar:** the raised center button focuses search; the favorites tab is "Em breve" (no favorites screen in scope).
+- **Saved wallets in checkout:** on desktop, a wallet icon inside the address field ("Usar carteira cadastrada") fills address, network and type from a registered wallet. Mobile lists them as the frame's cards. Both show the connected wallet with "Desconectar".
 
 Deviations and additions (no frame shows them):
 - **Signed-in header:** the "Entrar" slot becomes an account menu (Dados do perfil, Carteiras, Sair), same size and style.
@@ -163,6 +165,8 @@ Deviations and additions (no frame shows them):
 - **Mobile sign-up:** the username placeholder is left-aligned like the other fields; the frame centers it.
 - **Mobile catalog cards:** no "RARO" badge, because the list API carries no rarity. A favorite badge is on every card; the frame shows it only on the first, with the others hidden behind the art.
 - **Mobile hero:** grows past 190 px when a phone narrower than the 414 px frame wraps its copy.
+- **Mobile home "NFT em destaque":** the mobile frame has no featured NFT, which the brief requires on Início; a compact card between the hero and the tabs shows it.
+- **Mobile detail gallery:** the frame shows one image; the art is a swipeable carousel of all images, with its dots where the frame places a 56×7 dots group (y = 365).
 - **Related carousel dots:** 12 px apart instead of 8, which puts dot centers 24 px apart (WCAG target spacing).
 - **Text widths:** they can differ by a few pixels from Figma, because Windows rasterizes Roboto Mono advances to whole pixels. Visual baselines are therefore per platform.
 - **Artwork files:** served as AVIF/WebP derived from the Figma PNGs, with the PNG as the fallback. The pixels are the same artwork.
@@ -213,7 +217,7 @@ Desktop meets every target.
 ## 13. Testing
 
 Playwright, two projects:
-- **desktop** (1440 × 900): every spec.
+- **desktop** (1440 × 900): every spec, plus a responsive check that no main screen overflows horizontally at 390, 768 or 1440 px.
 - **mobile** (390 × 844, Pixel 7 profile): specs tagged `@main` and `@visual`.
 
 How the suite is built:
