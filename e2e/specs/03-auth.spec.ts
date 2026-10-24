@@ -85,6 +85,26 @@ test.describe('sign up, login, session expiry, logout and user switch', () => {
     await app.waitForSocket((list) => list.length === 1 && list[0]?.userId === 'user_ana')
   })
 
+  test.describe('orders of another account', () => {
+    test.use({ scenario: 'latency:50,orderdelay:300' })
+
+    test('are refused with 403 and never shown', async ({ app, page }) => {
+      await app.login('demo', '/checkout')
+      await expect(page.locator('#displayName')).toHaveValue(USERS.demo.name)
+      await page.getByRole('button', { name: 'Confirmar compra' }).click()
+      await page.getByRole('dialog').getByRole('button', { name: 'Confirmar pagamento' }).click()
+      await expect(page).toHaveURL(/\/orders\/order_/)
+      const orderPath = new URL(page.url()).pathname
+
+      await page.keyboard.press('Escape')
+      await app.logout()
+      await app.login('ana', '/')
+      await app.goto(orderPath)
+      await expect(page.getByRole('alert')).toHaveText('Acesso negado')
+      await expect(page.getByText('Este pedido pertence a outra conta.')).toBeVisible()
+    })
+  })
+
   test('logging out in another tab ends the session here too', async ({ app, page, context }) => {
     await app.login('demo', '/profile')
     const other = await context.newPage()

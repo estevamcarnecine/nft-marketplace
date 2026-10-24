@@ -45,6 +45,8 @@ test.describe('favorites', () => {
       await expect(page.getByText('Adicionado aos favoritos.')).toBeVisible()
       await expect(button).toHaveAttribute('aria-pressed', 'true')
       expect((await app.api<{ favorited: boolean }>('/nfts/nft-0042')).favorited).toBe(true)
+      const favorites = await app.api<{ items: { id: string }[] }>('/favorites')
+      expect(favorites.items.map((item) => item.id)).toContain('nft-0042')
     })
   })
 

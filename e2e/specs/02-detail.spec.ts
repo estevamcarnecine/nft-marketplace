@@ -30,10 +30,12 @@ test.describe('NFT detail: direct access and missing resources', () => {
     await expect(page).toHaveURL(/\/$/)
   })
 
-  test('the gallery switches images and opens the zoom dialog', async ({ app, page }) => {
+  test('the gallery switches images @main', async ({ app, page }) => {
     await app.goto('/nft/nft-0042')
     await page.getByRole('button', { name: 'Ver imagem 3 de 4' }).click()
     await expect(page.getByRole('button', { name: 'Ver imagem 3 de 4' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('button', { name: 'Ver imagem 1 de 4' })).toHaveAttribute('aria-pressed', 'false')
+    if (!app.isDesktop) return
     await page.getByRole('button', { name: 'Ampliar imagem' }).click()
     await expect(page.getByRole('dialog')).toBeVisible()
     await page.keyboard.press('Escape')

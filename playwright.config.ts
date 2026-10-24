@@ -16,6 +16,7 @@ export default defineConfig({
     toHaveScreenshot: { animations: 'disabled', caret: 'hide', scale: 'css', maxDiffPixelRatio: 0.002 },
   },
   reporter: [['list'], ['html', { open: 'never' }]],
+  updateSnapshots: 'missing',
   snapshotPathTemplate: '{testDir}/__screenshots__/{platform}/{projectName}/{arg}{ext}',
   use: {
     baseURL: BASE_URL,

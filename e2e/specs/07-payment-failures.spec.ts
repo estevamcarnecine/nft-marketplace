@@ -9,6 +9,17 @@ async function openReview(app: App) {
   return review
 }
 
+test('desktop checkout fills the wallet from a saved one', async ({ app, page }) => {
+  test.skip(!app.isDesktop, 'mobile checkout lists the saved wallets as cards')
+  await app.login('ana', '/checkout')
+  await expect(page.locator('#displayName')).toHaveValue('Ana Colecionadora')
+  const saved = (await app.api<{ items: { address: string }[] }>('/wallets')).items[0]
+  await page.locator('#walletAddress').fill('')
+  await page.getByRole('button', { name: 'Usar carteira cadastrada' }).click()
+  await page.getByRole('menuitem').first().click()
+  await expect(page.locator('#walletAddress')).toHaveValue(saved?.address ?? '')
+})
+
 test.describe('payment failures', () => {
   test.describe('rejected payment', () => {
     test.use({ scenario: 'latency:50,orderfail,orderdelay:500' })
