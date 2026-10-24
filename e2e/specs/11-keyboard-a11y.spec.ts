@@ -57,6 +57,7 @@ test.describe('keyboard, dialog focus and form validation', () => {
   test('checkout validation errors are linked to their fields @main', async ({ app, page }) => {
     await app.login('demo', '/checkout')
     await expect(page.locator('#displayName')).toHaveValue('Demo Collector')
+    await app.openCollectorDetails()
     await page.locator('#username').fill('a')
     await page.locator('#walletAddress').fill('0x123')
     await page.getByRole('button', { name: 'Confirmar compra' }).click()

@@ -5,20 +5,25 @@ const APE = 'Emerald Ape #042'
 /** Builds a visitor cart through the UI: quick add from the catalog, then "COMPRAR" on a detail page. */
 async function fillGuestCart(app: App) {
   const { page } = app
-  await app.goto('/')
-  await app.catalogSettled()
-  const card = page.locator('ul[aria-label="NFTs"] > li').filter({ hasText: APE })
-  await card.hover()
-  await card.getByRole('button', { name: `Adicionar ${APE} ao carrinho` }).click()
+  if (app.isDesktop) {
+    await app.goto('/')
+    await app.catalogSettled()
+    const card = page.locator('ul[aria-label="NFTs"] > li').filter({ hasText: APE })
+    await card.hover()
+    await card.getByRole('button', { name: `Adicionar ${APE} ao carrinho` }).click()
+  } else {
+    await app.goto('/nft/nft-0042')
+    await page.getByRole('button', { name: 'Adicionar ao carrinho' }).click()
+  }
   await expect(page.getByText(`${APE} adicionado ao carrinho.`)).toBeVisible()
 
   await app.goto('/nft/nft-0009')
-  await page.getByRole('button', { name: 'COMPRAR' }).click()
+  await app.buyButton().click()
   await expect(page).toHaveURL(/\/cart$/)
   await expect(page.locator('section[aria-label="Itens do carrinho"] li')).toHaveCount(2)
 }
 
-const total = (app: App) => app.page.locator('aside[aria-labelledby="summary-heading"]')
+const total = (app: App) => app.page.locator('[aria-labelledby="summary-heading"]')
 
 test.describe('cart', () => {
   test('quantities, removal and totals come from the API @main', async ({ app, page }) => {
@@ -27,7 +32,8 @@ test.describe('cart', () => {
     await expect.poll(async () => (await app.cart()).items.find((line) => line.nft.name === APE)?.quantity).toBe(2)
     const cart = await app.cart()
     await expect(total(app)).toContainText(cart.total)
-    await expect(app.cartBadge()).toHaveAttribute('aria-label', `Carrinho, ${cart.count} itens`)
+    // The mobile cart screen has no header badge; the lines and totals above are what it shows.
+    if (app.isDesktop) await expect(app.cartBadge()).toHaveAttribute('aria-label', `Carrinho, ${cart.count} itens`)
 
     await page.getByRole('button', { name: new RegExp(`^Remover ${APE} .*do carrinho`) }).click()
     await expect(page.locator('section[aria-label="Itens do carrinho"] li')).toHaveCount(1)
@@ -68,10 +74,12 @@ test.describe('cart', () => {
     // The visitor lines were carried into the account cart, which already had its own items.
     for (const line of guest.items) expect(merged.items.map((item) => item.id)).toContain(line.id)
     expect(merged.count).toBeGreaterThan(guest.count)
-    await expect(app.cartBadge()).toHaveAttribute('aria-label', `Carrinho, ${merged.count} itens`)
+    const lines = page.locator('section[aria-label="Itens do carrinho"] li')
+    await expect(lines).toHaveCount(merged.items.length)
 
     // Signed-in cart persists after a refresh too.
     await page.reload()
-    await expect(app.cartBadge()).toHaveAttribute('aria-label', `Carrinho, ${merged.count} itens`)
+    await expect(lines).toHaveCount(merged.items.length)
+    if (app.isDesktop) await expect(app.cartBadge()).toHaveAttribute('aria-label', `Carrinho, ${merged.count} itens`)
   })
 })

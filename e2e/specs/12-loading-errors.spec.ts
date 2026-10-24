@@ -31,8 +31,8 @@ test.describe('loading states, failure feedback and retry', () => {
       await app.goto('/')
       await expect(page.getByText('Não foi possível carregar os NFTs.')).toBeVisible({ timeout: 15_000 })
       await page.getByRole('button', { name: 'Tentar novamente' }).click()
-      await app.catalogSettled()
-      expect((await app.cardNames()).length).toBe(9)
+      // The refetch may not have started yet when the click returns: wait for the cards themselves.
+      await expect.poll(async () => (await app.cardNames()).length).toBe(9)
     })
   })
 

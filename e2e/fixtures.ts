@@ -33,6 +33,11 @@ export class App {
     await this.page.goto(path)
   }
 
+  /** The app switches to the mobile frames below 1280px (src/lib/use-media-query.ts). */
+  get isDesktop() {
+    return (this.page.viewportSize()?.width ?? 0) >= 1280
+  }
+
   /** Signs in through the real form and waits for the redirect target. */
   async login(user: UserKey = 'demo', redirect = '/') {
     await this.page.goto(`/login?redirect=${encodeURIComponent(redirect)}`)
@@ -40,15 +45,72 @@ export class App {
     await this.page.locator('#login-password').fill(PASSWORD)
     await this.page.getByRole('button', { name: 'Entrar', exact: true }).click()
     await this.page.waitForURL((url) => url.pathname === redirect.split('?')[0])
-    await expect(this.header.getByRole('button', { name: `Conta de ${USERS[user].name}` })).toBeVisible()
+    await this.expectSignedIn(user)
+  }
+
+  /** Desktop: the header account menu names the user. Mobile screens have no header; the session is checked. */
+  async expectSignedIn(user?: UserKey) {
+    if (this.isDesktop) {
+      const name = user ? `Conta de ${USERS[user].name}` : /^Conta de/
+      await expect(this.header.getByRole('button', { name })).toBeVisible()
+    } else {
+      await expect.poll(() => this.page.evaluate(() => localStorage.getItem('nft.token'))).not.toBeNull()
+    }
+  }
+
+  /** Desktop: header menu → Sair. Mobile: the account screen's "Sair". */
+  async logout() {
+    if (this.isDesktop) {
+      await this.header.getByRole('button', { name: /^Conta de/ }).click()
+      await this.page.getByRole('menuitem', { name: 'Sair' }).click()
+    } else {
+      if (!/^\/(profile|wallets)$/.test(new URL(this.page.url()).pathname)) await this.page.goto('/profile')
+      await this.page.getByRole('navigation', { name: 'Minha conta' }).getByRole('button', { name: 'Sair' }).click()
+    }
+    await expect.poll(() => this.page.evaluate(() => localStorage.getItem('nft.token'))).toBeNull()
   }
 
   get header() {
     return this.page.locator('header').first()
   }
 
+  /** Desktop header, or the mobile home tab bar: both name the link "Carrinho, N itens". */
   cartBadge() {
-    return this.header.getByRole('link', { name: /^Carrinho/ })
+    return this.page.getByRole('link', { name: /^Carrinho, \d+ itens$/ }).first()
+  }
+
+  /** The detail screen's main buy action: "COMPRAR" (desktop) or "Comprar NFT" (mobile). */
+  buyButton() {
+    return this.page.getByRole('button', { name: /^(COMPRAR|Comprar NFT)$/ })
+  }
+
+  /** Mobile keeps filters in a sheet: open it, act, close it, so the grid is usable again. */
+  async withFilters<T>(action: () => Promise<T>): Promise<T> {
+    if (this.isDesktop) return action()
+    await this.page.getByRole('button', { name: /^Filtros e ordenação/ }).click()
+    const sheet = this.page.getByRole('dialog', { name: 'Filtros e ordenação' })
+    await expect(sheet).toBeVisible()
+    const result = await action()
+    await this.page.keyboard.press('Escape')
+    await expect(sheet).toBeHidden()
+    return result
+  }
+
+  toggleFilter(name: RegExp) {
+    return this.withFilters(() => this.page.getByRole('checkbox', { name }).click())
+  }
+
+  filterChecked(name: RegExp) {
+    return this.withFilters(() => this.page.getByRole('checkbox', { name }).getAttribute('aria-checked'))
+  }
+
+  /** Mobile checkout shows the collector fields in a collapsible section. */
+  async openCollectorDetails() {
+    if (this.isDesktop) return
+    const details = this.page.locator('details', { hasText: 'Dados do colecionador' })
+    if (!(await details.evaluate((element) => (element as HTMLDetailsElement).open))) {
+      await details.locator('summary').click()
+    }
   }
 
   /** Waits for the catalog grid to finish its current request. */

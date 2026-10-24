@@ -13,7 +13,8 @@ export function MobileHero() {
   return (
     <section
       aria-labelledby="mobile-hero-title"
-      className="relative flex h-[190px] w-full shrink-0 flex-col items-center justify-center overflow-clip rounded-[12px] p-[16px]"
+      // 190px tall at the frame width; narrower phones wrap the copy, so the banner may grow.
+      className="relative flex min-h-[190px] w-full shrink-0 flex-col items-center justify-center overflow-clip rounded-[12px] p-[16px]"
     >
       <img alt="" src={heroMask} className="absolute inset-0 block size-full max-w-none" />
       <div className="relative flex w-full flex-col items-center gap-[16px]">

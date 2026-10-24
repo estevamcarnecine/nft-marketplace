@@ -13,11 +13,11 @@ test.describe('catalog: search, filters, sorting, pagination and history', () =>
     expect(await app.cardNames()).toEqual(third.items.map((item) => item.name))
     expect(third.items.map((item) => item.name)).not.toEqual(firstPage)
 
-    await page.getByRole('checkbox', { name: /Música/ }).click()
+    await app.toggleFilter(/Música/)
     await app.catalogSettled()
     // Any filter change goes back to the first page.
     await expect(page).not.toHaveURL(/page=/)
-    await page.getByRole('checkbox', { name: /Solana/ }).click()
+    await app.toggleFilter(/Solana/)
     await app.catalogSettled()
 
     const search = new URL(page.url()).searchParams
@@ -77,7 +77,7 @@ test.describe('catalog: search, filters, sorting, pagination and history', () =>
     await app.catalogSettled()
     const firstPage = await app.cardNames()
 
-    await page.getByRole('checkbox', { name: /Música/ }).click()
+    await app.toggleFilter(/Música/)
     await app.catalogSettled()
     const musicNames = await app.cardNames()
     await page.getByRole('tab', { name: 'Em alta' }).click()
@@ -87,17 +87,17 @@ test.describe('catalog: search, filters, sorting, pagination and history', () =>
     await page.goBack()
     await app.catalogSettled()
     await expect(page.getByRole('tab', { name: 'Em alta' })).toHaveAttribute('aria-selected', 'false')
-    await expect(page.getByRole('checkbox', { name: /Música/ })).toHaveAttribute('aria-checked', 'true')
+    expect(await app.filterChecked(/Música/)).toBe('true')
     expect(await app.cardNames()).toEqual(musicNames)
 
     await page.goBack()
     await app.catalogSettled()
-    await expect(page.getByRole('checkbox', { name: /Música/ })).toHaveAttribute('aria-checked', 'false')
+    expect(await app.filterChecked(/Música/)).toBe('false')
     expect(await app.cardNames()).toEqual(firstPage)
 
     await page.goForward()
     await app.catalogSettled()
-    await expect(page.getByRole('checkbox', { name: /Música/ })).toHaveAttribute('aria-checked', 'true')
+    expect(await app.filterChecked(/Música/)).toBe('true')
   })
 
   test.describe('out-of-order responses', () => {

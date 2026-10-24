@@ -9,6 +9,7 @@ import { formatEthLabel, formatRating } from '@/lib/format'
 import type { NftDetail } from '@/types'
 import { useNftPurchase } from '../use-nft-purchase'
 import arrowLeft from '@/assets/mobile/detail/arrow-left.svg'
+import arrowLeftMuted from '@/assets/mobile/cart/arrow-left.svg'
 import heart from '@/assets/mobile/detail/heart.svg'
 import minus from '@/assets/mobile/detail/minus.svg'
 import plus from '@/assets/mobile/detail/plus.svg'
@@ -21,8 +22,11 @@ const ROUND = 'flex size-[35px] shrink-0 items-center justify-center rounded-[17
 const STEP =
   'relative flex h-[30px] w-[20px] items-center justify-center rounded-[20px] border border-ink bg-primary drop-shadow-[0px_4px_6px_rgba(20,13,10,0.15)] disabled:opacity-50 before:absolute before:inset-[-7px_-12px] before:content-[""]'
 
-/** Back to the previous screen, or to the catalog when the detail was opened directly. */
-export function MobileBackButton({ label = 'Voltar' }: { label?: string }) {
+/**
+ * Back to the previous screen, or to the catalog when opened directly. The detail frame draws the
+ * arrow in text-secondary; the cart and payment frames in the muted secondary tone.
+ */
+export function MobileBackButton({ label = 'Voltar', tone = 'muted' }: { label?: string; tone?: 'muted' | 'light' }) {
   const router = useRouter()
   const canGoBack = useCanGoBack()
   return (
@@ -32,7 +36,7 @@ export function MobileBackButton({ label = 'Voltar' }: { label?: string }) {
       onClick={() => (canGoBack ? router.history.back() : void router.navigate({ to: '/' }))}
       className={cn(ROUND, 'relative before:absolute before:-inset-[5px] before:content-[""]')}
     >
-      <img alt="" src={arrowLeft} className="block h-[7.333px] w-[13.167px] max-w-none rotate-90" />
+      <img alt="" src={tone === 'light' ? arrowLeft : arrowLeftMuted} className="block h-[7.333px] w-[13.167px] max-w-none rotate-90" />
     </button>
   )
 }
@@ -47,7 +51,7 @@ export function MobileNftDetail({ nft }: { nft: NftDetail }) {
       <div className="relative h-[506px] w-full shrink-0" style={{ backgroundImage: HERO }}>
         <div className="mx-auto flex w-full max-w-[560px] flex-col items-center gap-[8px] px-[28px] pt-[23px]">
           <div className="flex w-full items-center justify-between">
-            <MobileBackButton />
+            <MobileBackButton tone="light" />
             <button
               type="button"
               onClick={purchase.favorite}
@@ -205,7 +209,7 @@ export function MobileNftDetailSkeleton() {
     <div aria-busy="true" aria-label="Carregando NFT" className="w-full">
       <div className="h-[506px] w-full px-[28px] pt-[23px]" style={{ backgroundImage: HERO }}>
         <div className="flex justify-between">
-          <MobileBackButton />
+          <MobileBackButton tone="light" />
           <Skeleton className="size-[35px] rounded-full" />
         </div>
         <Skeleton className="mt-[8px] h-[356px] w-full rounded-[24px]" />

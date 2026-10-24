@@ -3,10 +3,10 @@ import { PASSWORD, USERS, expect, test } from '../fixtures'
 test.describe('sign up, login, session expiry, logout and user switch', () => {
   test('sign up validates, reports conflicts and signs the new user in @main', async ({ app, page }) => {
     await app.goto('/login?redirect=/cart')
-    await page.getByRole('link', { name: 'Criar conta' }).click()
+    await page.getByRole('link', { name: /^(Criar conta|Crie uma conta)$/ }).click()
     await expect(page).toHaveURL(/\/signup\?redirect=/)
 
-    const submit = () => page.getByRole('button', { name: 'Criar conta', exact: true }).click()
+    const submit = () => page.getByRole('button', { name: /^(Criar conta|Criar perfil)$/ }).click()
     const fill = async (username: string, email: string, password: string, confirm: string) => {
       await page.locator('#signup-username').fill(username)
       await page.locator('#signup-email').fill(email)
@@ -30,7 +30,7 @@ test.describe('sign up, login, session expiry, logout and user switch', () => {
     await fill('nova_conta', 'nova@kurio.io', 'Senha1234', 'Senha1234')
     await submit()
     await expect(page).toHaveURL(/\/cart$/)
-    await expect(app.header.getByRole('button', { name: /^Conta de/ })).toBeVisible()
+    await app.expectSignedIn()
   })
 
   test('wrong credentials keep the user signed out', async ({ app, page }) => {
@@ -45,6 +45,7 @@ test.describe('sign up, login, session expiry, logout and user switch', () => {
   test('an expired session mid-checkout returns to the same draft after login @main', async ({ app, page }) => {
     await app.login('demo', '/checkout')
     await expect(page.locator('#displayName')).toHaveValue(USERS.demo.name)
+    await app.openCollectorDetails()
     await page.locator('#displayName').fill('Rascunho Mantido')
 
     await app.expireSessions()
@@ -74,16 +75,14 @@ test.describe('sign up, login, session expiry, logout and user switch', () => {
   test('switching users shows only the new user data @main', async ({ app, page }) => {
     await app.login('demo', '/profile')
     await expect(page.locator('#displayName')).toHaveValue(USERS.demo.name)
-    await expect(app.cartBadge()).not.toHaveAttribute('aria-label', 'Carrinho, 0 itens')
+    if (app.isDesktop) await expect(app.cartBadge()).not.toHaveAttribute('aria-label', 'Carrinho, 0 itens')
 
-    await app.header.getByRole('button', { name: `Conta de ${USERS.demo.name}` }).click()
-    await page.getByRole('menuitem', { name: 'Sair' }).click()
-    await expect(app.header.getByRole('link', { name: 'Entrar' })).toBeVisible()
+    await app.logout()
 
     await app.login('ana', '/profile')
     await expect(page.locator('#displayName')).toHaveValue(USERS.ana.name)
     const anaCart = await app.cart()
-    await expect(app.cartBadge()).toHaveAttribute('aria-label', `Carrinho, ${anaCart.count} itens`)
+    if (app.isDesktop) await expect(app.cartBadge()).toHaveAttribute('aria-label', `Carrinho, ${anaCart.count} itens`)
     await app.waitForSocket((list) => list.length === 1 && list[0]?.userId === 'user_ana')
   })
 

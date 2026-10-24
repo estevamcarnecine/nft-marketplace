@@ -36,8 +36,8 @@ export default defineConfig({
     },
     {
       name: 'mobile',
-      // Main flows only; tagged in the specs.
-      grep: /@main/,
+      // Main flows and the visual baselines; tagged in the specs.
+      grep: /@main|@visual/,
       use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 } },
     },
   ],

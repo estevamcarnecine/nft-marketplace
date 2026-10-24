@@ -13,7 +13,7 @@ test.describe('full purchase', () => {
 
     await page.locator('ul[aria-label="NFTs"] > li > a').filter({ hasText: 'Sage Nomad #009' }).click()
     await expect(page).toHaveURL(/\/nft\/nft-0009$/)
-    await page.getByRole('button', { name: 'COMPRAR' }).click()
+    await app.buyButton().click()
     await expect(page).toHaveURL(/\/cart$/)
     const cart = await app.cart()
     expect(cart.items.some((line) => line.nft.id === 'nft-0009')).toBe(true)

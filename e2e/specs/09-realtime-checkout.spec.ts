@@ -17,7 +17,7 @@ test.describe('price and availability changes over Socket.IO', () => {
 
     const after = await app.cart()
     expect(after.total).not.toBe(before.total)
-    await expect(page.locator('aside[aria-labelledby="summary-heading"]')).toContainText(after.total)
+    await expect(page.locator('[aria-labelledby="summary-heading"]')).toContainText(after.total)
 
     await notice.getByRole('button', { name: 'Entendi' }).click()
     await expect(notice).toHaveCount(0)
