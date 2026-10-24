@@ -19,7 +19,8 @@ export function useCardFavorite(nft: Nft) {
     favorite.mutate(
       { id: nft.id, favorited: !nft.favorited },
       {
-        onSuccess: (result) => toast.success(result.favorited ? 'Adicionado aos favoritos.' : 'Removido dos favoritos.'),
+        onSuccess: (result) =>
+          toast.success(result.favorited ? 'Adicionado aos favoritos.' : 'Removido dos favoritos.'),
         onError: (error) => {
           if (isApiError(error) && error.status === 401) {
             void navigate({ to: '/login', search: { redirect: location.href } })

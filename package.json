@@ -15,7 +15,9 @@
     "e2e:mobile": "playwright test --project=mobile",
     "e2e:update": "playwright test --project=desktop --update-snapshots",
     "images": "node scripts/optimize-images.mjs",
-    "lighthouse": "node lighthouse/run.mjs"
+    "lighthouse": "node lighthouse/run.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@fontsource/roboto-mono": "^5.3.0",
@@ -41,7 +43,6 @@
   "devDependencies": {
     "@mswjs/socket.io-binding": "^0.2.0",
     "@playwright/test": "^1.64.1",
-    "@tanstack/react-query-devtools": "^5.104.5",
     "@tanstack/router-plugin": "^1.168.48",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
@@ -51,6 +52,7 @@
     "lighthouse": "^12.8.2",
     "msw": "^3.0.3",
     "oxlint": "^1.88.0",
+    "prettier": "^3.9.10",
     "sharp": "^0.34.5",
     "typescript": "~6.0.3",
     "vite": "^8.3.4"

@@ -46,8 +46,7 @@ export function useNftPurchase(nft: NftDetail) {
           if (goToCart) void navigate({ to: '/cart' })
           else toast.success(`${nft.name} adicionado ao carrinho.`)
         },
-        onError: (error) =>
-          toast.error(isApiError(error) ? error.message : 'Não foi possível adicionar ao carrinho.'),
+        onError: (error) => toast.error(isApiError(error) ? error.message : 'Não foi possível adicionar ao carrinho.'),
       },
     )
   }

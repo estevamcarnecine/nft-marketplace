@@ -57,7 +57,12 @@ export function MobileTabBar({ onSearch }: { onSearch: () => void }) {
           </span>
         ))}
 
-        <Link to="/" aria-label="Início" aria-current={location.pathname === '/' ? 'page' : undefined} className={`${SLOT} left-[11.1%]`}>
+        <Link
+          to="/"
+          aria-label="Início"
+          aria-current={location.pathname === '/' ? 'page' : undefined}
+          className={`${SLOT} left-[11.1%]`}
+        >
           <img alt="" src={homeIcon} className="block h-[16.667px] w-[15.833px] max-w-none" />
         </Link>
         <ComingSoon className={`${SLOT} left-[28.5%]`}>
@@ -67,7 +72,10 @@ export function MobileTabBar({ onSearch }: { onSearch: () => void }) {
         <Link to="/cart" aria-label={`Carrinho, ${count} itens`} className={`${SLOT} left-[72.95%]`}>
           <img alt="" src={shopIcon} className="block size-[20px] max-w-none" />
           {count > 0 && (
-            <span aria-hidden className="absolute top-[4px] right-[2px] flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-primary px-[3px] text-[10px] leading-none font-medium text-ink">
+            <span
+              aria-hidden
+              className="absolute top-[4px] right-[2px] flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-primary px-[3px] text-[10px] leading-none font-medium text-ink"
+            >
               {count}
             </span>
           )}

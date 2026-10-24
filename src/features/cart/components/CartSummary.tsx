@@ -67,7 +67,10 @@ export function CartSummary({ cart, loading }: { cart: Cart | undefined; loading
   const blocked = cart?.items.some(isLineUnavailable) ?? false
 
   return (
-    <aside aria-labelledby="summary-heading" className="flex w-[332px] shrink-0 flex-col items-start gap-[24px] overflow-clip">
+    <aside
+      aria-labelledby="summary-heading"
+      className="flex w-[332px] shrink-0 flex-col items-start gap-[24px] overflow-clip"
+    >
       <div className="flex w-full flex-col items-start gap-[12px] overflow-clip">
         <h2 id="summary-heading" className="text-[18px] leading-[16px] font-bold whitespace-nowrap text-foreground">
           Resumo da carteira
@@ -81,7 +84,11 @@ export function CartSummary({ cart, loading }: { cart: Cart | undefined; loading
         <div className={ROW}>
           <dt className="text-[15px] leading-[normal]">Subtotal</dt>
           <dd>
-            <Amount loading={loading} value={formatEthLabel(cart?.subtotal ?? '0')} className="text-right text-[18px] leading-[16px]" />
+            <Amount
+              loading={loading}
+              value={formatEthLabel(cart?.subtotal ?? '0')}
+              className="text-right text-[18px] leading-[16px]"
+            />
           </dd>
         </div>
         <div className={`${ROW} text-[15px] leading-[normal]`}>
@@ -94,7 +101,11 @@ export function CartSummary({ cart, loading }: { cart: Cart | undefined; loading
           <div className="flex w-[332px] items-center justify-between whitespace-nowrap text-foreground">
             <dt className="text-[15px] leading-[normal]">Taxa de rede</dt>
             <dd>
-              <Amount loading={loading} value={formatEthLabel(cart?.networkFee ?? '0')} className="text-right text-[18px] leading-[16px]" />
+              <Amount
+                loading={loading}
+                value={formatEthLabel(cart?.networkFee ?? '0')}
+                className="text-right text-[18px] leading-[16px]"
+              />
             </dd>
           </div>
           <p className="text-[12px] leading-[16px] text-text-accent">Taxa estimada</p>

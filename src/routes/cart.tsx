@@ -24,7 +24,10 @@ function CartPage() {
   return (
     <PageShell active="market">
       <div className="flex w-full flex-col items-start gap-[12px] overflow-clip">
-        <nav aria-label="Você está em" className="text-[15px] leading-[16px] font-bold whitespace-nowrap text-foreground">
+        <nav
+          aria-label="Você está em"
+          className="text-[15px] leading-[16px] font-bold whitespace-nowrap text-foreground"
+        >
           <Link to="/">Início</Link>
           {' / '}
           <Link to="/" hash="mercado">
@@ -41,9 +44,7 @@ function CartPage() {
         </div>
       </div>
 
-      {cart.isSuccess && (
-        <RelatedNfts title="Colecionadores também viram" nftId={lines[0]?.nft.id} variant="cart" />
-      )}
+      {cart.isSuccess && <RelatedNfts title="Colecionadores também viram" nftId={lines[0]?.nft.id} variant="cart" />}
     </PageShell>
   )
 }

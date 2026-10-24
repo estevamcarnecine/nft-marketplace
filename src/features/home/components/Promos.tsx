@@ -45,7 +45,11 @@ export function Promos() {
   return (
     <section aria-label="Destaques do mercado" className="flex w-full items-start justify-between">
       {PROMOS.map((promo) => (
-        <article key={promo.id} aria-labelledby={`promo-${promo.id}`} className="relative h-[250px] w-[586px] overflow-clip rounded-[8px] bg-surface-card">
+        <article
+          key={promo.id}
+          aria-labelledby={`promo-${promo.id}`}
+          className="relative h-[250px] w-[586px] overflow-clip rounded-[8px] bg-surface-card"
+        >
           <img
             alt=""
             src={promo.image}
@@ -54,12 +58,19 @@ export function Promos() {
             loading="lazy"
             className={`absolute top-0 h-[250px] max-w-none object-cover ${promo.imageBox}`}
           />
-          <h3 id={`promo-${promo.id}`} className={`absolute top-[37px] text-right text-[18px] leading-[24px] font-bold whitespace-nowrap text-foreground ${promo.titleRight}`}>
+          <h3
+            id={`promo-${promo.id}`}
+            className={`absolute top-[37px] text-right text-[18px] leading-[24px] font-bold whitespace-nowrap text-foreground ${promo.titleRight}`}
+          >
             {promo.title[0]}
             <br />
             {promo.title[1]}
           </h3>
-          <p className={`absolute top-[94px] h-[45px] text-right text-[14px] leading-[24px] text-text-secondary ${promo.textRight}`}>{promo.text}</p>
+          <p
+            className={`absolute top-[94px] h-[45px] text-right text-[14px] leading-[24px] text-text-secondary ${promo.textRight}`}
+          >
+            {promo.text}
+          </p>
           <Link
             to="/"
             search={promo.search}
@@ -72,7 +83,12 @@ export function Promos() {
             </span>
             <span className="sr-only"> {promo.title.join(' ')}</span>
           </Link>
-          <img aria-hidden alt="" src={promoMask} className="pointer-events-none absolute inset-0 block h-[250px] w-[586px] max-w-none" />
+          <img
+            aria-hidden
+            alt=""
+            src={promoMask}
+            className="pointer-events-none absolute inset-0 block h-[250px] w-[586px] max-w-none"
+          />
         </article>
       ))}
     </section>

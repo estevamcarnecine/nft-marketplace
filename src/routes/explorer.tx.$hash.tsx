@@ -21,7 +21,9 @@ function ExplorerPage() {
         <p className="text-[14px] leading-[16px] font-medium tracking-[1.4px] text-text-secondary">
           Explorador de blocos simulado
         </p>
-        <h1 className="text-[28px] leading-[normal] font-bold text-foreground max-sm:text-[22px]">Detalhes da transação</h1>
+        <h1 className="text-[28px] leading-[normal] font-bold text-foreground max-sm:text-[22px]">
+          Detalhes da transação
+        </h1>
         <p className="text-[14px] leading-[22px] text-text-secondary">
           Esta demonstração não usa uma blockchain real: os dados abaixo vêm da simulação.
         </p>
@@ -31,7 +33,9 @@ function ExplorerPage() {
           </p>
         ) : tx.isError ? (
           <p role="alert" className="text-[14px] text-text-secondary">
-            {isApiError(tx.error) && tx.error.status === 404 ? 'Transação não encontrada.' : 'Não foi possível carregar a transação.'}
+            {isApiError(tx.error) && tx.error.status === 404
+              ? 'Transação não encontrada.'
+              : 'Não foi possível carregar a transação.'}
           </p>
         ) : (
           <dl className="grid w-full grid-cols-[180px_1fr] max-sm:grid-cols-[112px_1fr] max-sm:gap-x-[12px] gap-x-[24px] gap-y-[12px] text-[15px] leading-[22px]">
@@ -44,9 +48,13 @@ function ExplorerPage() {
             <dt className="text-text-secondary">Bloco</dt>
             <dd className="text-foreground">{tx.data.blockNumber.toLocaleString('pt-BR')}</dd>
             <dt className="text-text-secondary">De</dt>
-            <dd className="text-foreground" title={tx.data.from}>{shortAddress(tx.data.from)}</dd>
+            <dd className="text-foreground" title={tx.data.from}>
+              {shortAddress(tx.data.from)}
+            </dd>
             <dt className="text-text-secondary">Para</dt>
-            <dd className="text-foreground" title={tx.data.to}>{shortAddress(tx.data.to)}</dd>
+            <dd className="text-foreground" title={tx.data.to}>
+              {shortAddress(tx.data.to)}
+            </dd>
             <dt className="text-text-secondary">Valor</dt>
             <dd className="text-foreground">{formatEthLabel(tx.data.value)}</dd>
             <dt className="text-text-secondary">NFTs transferidos</dt>
@@ -55,7 +63,10 @@ function ExplorerPage() {
             <dd className="text-foreground">{new Date(tx.data.timestamp).toLocaleString('pt-BR')}</dd>
           </dl>
         )}
-        <Link to="/" className="mt-[8px] rounded-[5px] bg-primary p-[16px] text-[16px] leading-[16px] font-bold text-ink">
+        <Link
+          to="/"
+          className="mt-[8px] rounded-[5px] bg-primary p-[16px] text-[16px] leading-[16px] font-bold text-ink"
+        >
           Voltar ao início
         </Link>
       </section>

@@ -42,8 +42,7 @@ export function NftDetailsTabs({ nft }: { nft: NftDetail }) {
                 aria-disabled="true"
                 className="cursor-not-allowed text-[17px] leading-[16px] whitespace-nowrap text-foreground"
               >
-                Avaliações de colecionadores ({nft.reviewCount})
-                <span className="sr-only"> (em breve)</span>
+                Avaliações de colecionadores ({nft.reviewCount})<span className="sr-only"> (em breve)</span>
               </button>
             </TooltipTrigger>
             <TooltipContent>Em breve</TooltipContent>

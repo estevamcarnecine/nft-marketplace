@@ -9,7 +9,9 @@ export function shortAddress(address: string): string {
 }
 
 export function shortHash(hash: string): string {
-  return hash.length > 12 ? `${hash.slice(0, 6).toUpperCase().replace('0X', '0x')}…${hash.slice(-4).toUpperCase()}` : hash
+  return hash.length > 12
+    ? `${hash.slice(0, 6).toUpperCase().replace('0X', '0x')}…${hash.slice(-4).toUpperCase()}`
+    : hash
 }
 
 export function formatShortDate(iso: string): string {

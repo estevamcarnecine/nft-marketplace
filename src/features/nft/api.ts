@@ -20,8 +20,7 @@ export function nftDetailQuery(id: string) {
 export function relatedNftsQuery(id: string) {
   return queryOptions({
     queryKey: nftKeys.related(id),
-    queryFn: ({ signal }) =>
-      api.get<{ items: Nft[] }>(`/nfts/${encodeURIComponent(id)}/related`, { signal }),
+    queryFn: ({ signal }) => api.get<{ items: Nft[] }>(`/nfts/${encodeURIComponent(id)}/related`, { signal }),
     select: (data) => data.items,
   })
 }
@@ -29,8 +28,7 @@ export function relatedNftsQuery(id: string) {
 export function trendingNftsQuery(limit = 15) {
   return queryOptions({
     queryKey: ['nfts', 'list', { tab: 'trending', pageSize: limit }] as const,
-    queryFn: ({ signal }) =>
-      api.get<Paginated<Nft>>('/nfts', { params: { tab: 'trending', pageSize: limit }, signal }),
+    queryFn: ({ signal }) => api.get<Paginated<Nft>>('/nfts', { params: { tab: 'trending', pageSize: limit }, signal }),
     select: (data) => data.items,
   })
 }

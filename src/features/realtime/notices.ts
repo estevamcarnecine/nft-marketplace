@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
 
-export interface CartNotice {
+interface CartNotice {
   id: string
   message: string
 }

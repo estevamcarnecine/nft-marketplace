@@ -4,16 +4,7 @@ import { CATALOG_SORTS, CATALOG_TABS, COLLECTIONS, NETWORKS } from '@/types'
 import type { CatalogSort, CatalogTab, Facets, Nft, Paginated } from '@/types'
 import { FEATURED_NFT_ID, FIXTURE_EPOCH, db, findNft, serializeNft, serializeNftDetail, type NftRecord } from '../db'
 import { scenario } from '../scenario'
-import {
-  authenticate,
-  csv,
-  errorResponse,
-  json,
-  readJson,
-  unauthorized,
-  validationError,
-  withScenario,
-} from '../utils'
+import { authenticate, csv, errorResponse, json, readJson, unauthorized, validationError, withScenario } from '../utils'
 
 const NEW_WINDOW_MS = 72 * 3_600_000
 const TRENDING_LIMIT = 60
@@ -75,10 +66,7 @@ export const catalogHandlers = [
       const tab = parseTab(params.get('tab'))
       const sort = parseSort(params.get('sort'), tab)
       const page = Math.max(1, Number.parseInt(params.get('page') ?? '1', 10) || 1)
-      const pageSize = Math.min(
-        48,
-        Math.max(1, Number.parseInt(params.get('pageSize') ?? '9', 10) || 9),
-      )
+      const pageSize = Math.min(48, Math.max(1, Number.parseInt(params.get('pageSize') ?? '9', 10) || 9))
 
       const errors: Record<string, string> = {}
       if (minPrice && !isValidEth(minPrice)) errors.minPrice = 'Valor inválido'
@@ -149,9 +137,7 @@ export const catalogHandlers = [
         (other) => other.collectionName !== nft.collectionName && other.collection === nft.collection,
       )
       const userId = authenticate(request)?.id
-      const items = [...sameSeries, ...sameCategory]
-        .slice(0, RELATED_LIMIT)
-        .map((other) => serializeNft(other, userId))
+      const items = [...sameSeries, ...sameCategory].slice(0, RELATED_LIMIT).map((other) => serializeNft(other, userId))
       return json({ items })
     }),
   ),

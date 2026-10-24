@@ -19,7 +19,11 @@ function Toolbar() {
 
   return (
     <div className="relative flex w-full items-center justify-between">
-      <div role="tablist" aria-label="Listagens" className="flex items-start gap-[20px] overflow-clip text-[15px] leading-[16px] font-medium whitespace-nowrap">
+      <div
+        role="tablist"
+        aria-label="Listagens"
+        className="flex items-start gap-[20px] overflow-clip text-[15px] leading-[16px] font-medium whitespace-nowrap"
+      >
         {TABS.map((item) => {
           const active = item.id === tab
           return (
@@ -67,7 +71,12 @@ function Toolbar() {
           </Select.Icon>
         </Select.Trigger>
         <Select.Portal>
-          <Select.Content position="popper" align="end" sideOffset={8} className="z-50 rounded-[4px] border border-border bg-surface-card p-[4px]">
+          <Select.Content
+            position="popper"
+            align="end"
+            sideOffset={8}
+            className="z-50 rounded-[4px] border border-border bg-surface-card p-[4px]"
+          >
             <Select.Viewport>
               {SORTS.map((item) => (
                 <Select.Item
@@ -106,7 +115,12 @@ export function Pagination({ page, totalPages }: { page: number; totalPages: num
   return (
     <nav aria-label="Paginação" className="flex items-center gap-[8px]">
       {page > 1 && (
-        <button type="button" onClick={() => go(page - 1)} aria-label="Página anterior" className={cn(PAGE_BUTTON, 'border border-border')}>
+        <button
+          type="button"
+          onClick={() => go(page - 1)}
+          aria-label="Página anterior"
+          className={cn(PAGE_BUTTON, 'border border-border')}
+        >
           <img alt="" src={pageArrow} className="block h-[6.75px] w-[12px] max-w-none rotate-90" />
         </button>
       )}
@@ -119,14 +133,21 @@ export function Pagination({ page, totalPages }: { page: number; totalPages: num
           aria-current={target === page ? 'page' : undefined}
           className={cn(
             PAGE_BUTTON,
-            target === page ? 'bg-primary font-bold text-ink' : 'border border-border pt-[8px] pb-[10px] text-foreground hover:border-primary',
+            target === page
+              ? 'bg-primary font-bold text-ink'
+              : 'border border-border pt-[8px] pb-[10px] text-foreground hover:border-primary',
           )}
         >
           {target}
         </button>
       ))}
       {page < totalPages && (
-        <button type="button" onClick={() => go(page + 1)} aria-label="Próxima página" className={cn(PAGE_BUTTON, 'border border-border')}>
+        <button
+          type="button"
+          onClick={() => go(page + 1)}
+          aria-label="Próxima página"
+          className={cn(PAGE_BUTTON, 'border border-border')}
+        >
           <img alt="" src={pageArrow} className="block h-[6.75px] w-[12px] max-w-none -rotate-90" />
         </button>
       )}
@@ -138,7 +159,9 @@ export function CatalogGrid() {
   const { search, update, reset } = useCatalogSearch()
   const list = useQuery(catalogQuery(toCatalogParams(search)))
   const page = list.data?.page ?? search.page ?? 1
-  const filtered = Boolean(search.q || search.collections || search.networks || search.minPrice || search.maxPrice || search.tab)
+  const filtered = Boolean(
+    search.q || search.collections || search.networks || search.minPrice || search.maxPrice || search.tab,
+  )
 
   return (
     <div className="flex min-w-px flex-1 flex-col items-end gap-[88px]">
@@ -148,7 +171,11 @@ export function CatalogGrid() {
         {search.q && (
           <p className="-mt-[12px] flex items-center gap-[12px] text-[14px] leading-[20px] text-text-secondary">
             Resultados para “<span className="text-foreground">{search.q}</span>”
-            <button type="button" onClick={() => update({ q: undefined })} className="font-bold text-text-accent underline">
+            <button
+              type="button"
+              onClick={() => update({ q: undefined })}
+              className="font-bold text-text-accent underline"
+            >
               Limpar busca
             </button>
           </p>
@@ -156,16 +183,26 @@ export function CatalogGrid() {
 
         <div id="catalog-results" role="tabpanel" aria-live="polite" aria-busy={list.isFetching} className="w-full">
           {list.isPending ? (
-            <ul aria-label="Carregando NFTs" className="grid w-full grid-cols-3 justify-between gap-x-[34px] gap-y-[72px]">
+            <ul
+              aria-label="Carregando NFTs"
+              className="grid w-full grid-cols-3 justify-between gap-x-[34px] gap-y-[72px]"
+            >
               {Array.from({ length: 9 }, (_, index) => (
                 <ProductCardSkeleton key={index} />
               ))}
             </ul>
           ) : list.isError && !list.data ? (
-            <div role="alert" className="flex min-h-[300px] w-full flex-col items-start justify-center gap-[16px] bg-surface-card p-[40px]">
+            <div
+              role="alert"
+              className="flex min-h-[300px] w-full flex-col items-start justify-center gap-[16px] bg-surface-card p-[40px]"
+            >
               <p className="text-[18px] leading-[24px] font-bold text-foreground">Não foi possível carregar os NFTs.</p>
               <p className="text-[14px] leading-[22px] text-text-secondary">Verifique sua conexão e tente novamente.</p>
-              <button type="button" onClick={() => void list.refetch()} className="rounded-[6px] bg-primary px-[20px] py-[10px] text-[14px] leading-[20px] font-bold text-ink">
+              <button
+                type="button"
+                onClick={() => void list.refetch()}
+                className="rounded-[6px] bg-primary px-[20px] py-[10px] text-[14px] leading-[20px] font-bold text-ink"
+              >
                 Tentar novamente
               </button>
             </div>
@@ -176,14 +213,20 @@ export function CatalogGrid() {
                 {filtered ? 'Tente outra busca ou remova alguns filtros.' : 'Ainda não há NFTs listados no mercado.'}
               </p>
               {filtered && (
-                <button type="button" onClick={reset} className="rounded-[6px] bg-primary px-[20px] py-[10px] text-[14px] leading-[20px] font-bold text-ink">
+                <button
+                  type="button"
+                  onClick={reset}
+                  className="rounded-[6px] bg-primary px-[20px] py-[10px] text-[14px] leading-[20px] font-bold text-ink"
+                >
                   Limpar filtros
                 </button>
               )}
             </div>
           ) : (
             <>
-              <p className="sr-only">{list.data?.total} NFTs encontrados. Página {page} de {list.data?.totalPages}.</p>
+              <p className="sr-only">
+                {list.data?.total} NFTs encontrados. Página {page} de {list.data?.totalPages}.
+              </p>
               <ul
                 aria-label="NFTs"
                 className={cn(
@@ -198,7 +241,11 @@ export function CatalogGrid() {
               {list.isError && (
                 <p role="alert" className="mt-[16px] text-[14px] leading-[20px] text-text-secondary">
                   Não foi possível atualizar a lista.{' '}
-                  <button type="button" onClick={() => void list.refetch()} className="font-bold text-text-accent underline">
+                  <button
+                    type="button"
+                    onClick={() => void list.refetch()}
+                    className="font-bold text-text-accent underline"
+                  >
                     Tentar novamente
                   </button>
                 </p>

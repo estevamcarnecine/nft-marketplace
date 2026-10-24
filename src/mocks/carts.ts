@@ -2,7 +2,7 @@ import { db, findEdition, findNft, guestCartKey, parseCartKey, userCartKey, type
 import { authenticate } from './utils'
 
 export const MAX_PER_LINE = 99
-export const CART_HEADER = 'x-cart-id'
+const CART_HEADER = 'x-cart-id'
 const CART_ID = /^[a-zA-Z0-9-]{8,64}$/
 
 export interface CartOwner {

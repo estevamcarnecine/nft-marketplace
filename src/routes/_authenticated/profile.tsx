@@ -15,26 +15,26 @@ function ProfilePage() {
 
   return (
     <AccountLayout active="profile">
-        {profile.isPending ? (
-          <div aria-busy="true" aria-label="Carregando perfil" className="flex min-w-px flex-1 flex-col gap-[24px]">
-            <Skeleton className="h-[16px] w-[220px]" />
-            {Array.from({ length: 3 }, (_, index) => (
-              <div key={index} className="flex justify-between max-xl:flex-col max-xl:gap-[12px]">
-                <Skeleton className="h-[79px] w-[417px] max-xl:w-full" />
-                <Skeleton className="h-[79px] w-[417px] max-xl:w-full" />
-              </div>
-            ))}
-          </div>
-        ) : profile.isError ? (
-          <p role="alert" className="text-[14px] leading-[24px] text-text-secondary">
-            Não foi possível carregar seu perfil.{' '}
-            <button type="button" onClick={() => void profile.refetch()} className="font-bold text-text-accent underline">
-              Tentar novamente
-            </button>
-          </p>
-        ) : (
-          <ProfileForm profile={profile.data} />
-        )}
+      {profile.isPending ? (
+        <div aria-busy="true" aria-label="Carregando perfil" className="flex min-w-px flex-1 flex-col gap-[24px]">
+          <Skeleton className="h-[16px] w-[220px]" />
+          {Array.from({ length: 3 }, (_, index) => (
+            <div key={index} className="flex justify-between max-xl:flex-col max-xl:gap-[12px]">
+              <Skeleton className="h-[79px] w-[417px] max-xl:w-full" />
+              <Skeleton className="h-[79px] w-[417px] max-xl:w-full" />
+            </div>
+          ))}
+        </div>
+      ) : profile.isError ? (
+        <p role="alert" className="text-[14px] leading-[24px] text-text-secondary">
+          Não foi possível carregar seu perfil.{' '}
+          <button type="button" onClick={() => void profile.refetch()} className="font-bold text-text-accent underline">
+            Tentar novamente
+          </button>
+        </p>
+      ) : (
+        <ProfileForm profile={profile.data} />
+      )}
     </AccountLayout>
   )
 }

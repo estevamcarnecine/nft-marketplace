@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 
-import { Hero } from '@/components/home/Hero'
 import { MobileShell } from '@/components/layout/MobileShell'
 import { MobileTabBar } from '@/components/layout/MobileTabBar'
 import { PageShell } from '@/components/layout/PageShell'
@@ -11,6 +10,7 @@ import { MobileCatalog, MobileSearchBar } from '@/features/catalog/components/Mo
 import { MobileFeatured } from '@/features/catalog/components/MobileFeatured'
 import { useIsDesktop } from '@/lib/use-media-query'
 import { Blog } from './components/Blog'
+import { Hero } from './components/Hero'
 import { MobileHero } from './components/MobileHero'
 import { Promos } from './components/Promos'
 
@@ -18,7 +18,11 @@ function DesktopHome() {
   return (
     <PageShell active="home">
       <Hero />
-      <section id="mercado" aria-labelledby="mercado-title" className="flex w-full scroll-mt-[24px] items-start gap-[48px]">
+      <section
+        id="mercado"
+        aria-labelledby="mercado-title"
+        className="flex w-full scroll-mt-[24px] items-start gap-[48px]"
+      >
         <h2 id="mercado-title" className="sr-only">
           Mercado
         </h2>
@@ -38,7 +42,10 @@ function MobileHome() {
   const searchRef = useRef<HTMLInputElement>(null)
 
   function focusSearch() {
-    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+    window.scrollTo({
+      top: 0,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    })
     searchRef.current?.focus()
   }
 

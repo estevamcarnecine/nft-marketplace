@@ -8,10 +8,7 @@ import { errorResponse, json, readJson, str, validationError, withScenario } fro
 
 function parseQuantity(value: unknown, fallback?: number): number | null {
   const quantity = value === undefined ? fallback : value
-  return typeof quantity === 'number' &&
-    Number.isInteger(quantity) &&
-    quantity >= 1 &&
-    quantity <= MAX_PER_LINE
+  return typeof quantity === 'number' && Number.isInteger(quantity) && quantity >= 1 && quantity <= MAX_PER_LINE
     ? quantity
     : null
 }

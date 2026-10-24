@@ -27,7 +27,8 @@ export const profileFormSchema = z
   .superRefine((values, context) => {
     const { currentPassword, newPassword, confirmPassword } = values
     if (!currentPassword && !newPassword && !confirmPassword) return
-    if (!currentPassword) context.addIssue({ code: 'custom', path: ['currentPassword'], message: 'Informe sua senha atual' })
+    if (!currentPassword)
+      context.addIssue({ code: 'custom', path: ['currentPassword'], message: 'Informe sua senha atual' })
     if (!(newPassword.length >= 8 && /[a-z]/i.test(newPassword) && /\d/.test(newPassword))) {
       context.addIssue({ code: 'custom', path: ['newPassword'], message: PASSWORD_RULE })
     } else if (newPassword === currentPassword) {

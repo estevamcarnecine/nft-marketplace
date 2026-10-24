@@ -67,7 +67,10 @@ export function CollectorForm({ stacked = false }: { stacked?: boolean }) {
 
   return (
     <section aria-labelledby="collector-heading" className="flex min-w-px flex-1 flex-col items-start gap-[12px]">
-      <h2 id="collector-heading" className={stacked ? 'sr-only' : 'w-full text-[17px] leading-[16px] font-bold text-foreground'}>
+      <h2
+        id="collector-heading"
+        className={stacked ? 'sr-only' : 'w-full text-[17px] leading-[16px] font-bold text-foreground'}
+      >
         Perfil do colecionador
       </h2>
       <div className="flex w-full flex-col items-start gap-[24px]">
@@ -161,7 +164,11 @@ export function CollectorForm({ stacked = false }: { stacked?: boolean }) {
             <div className="flex min-h-[69px] w-full flex-col items-start justify-end">
               <input
                 id="secondaryWallet"
-                aria-label={useAnotherWallet ? 'ENS ou carteira secundária (obrigatório)' : 'ENS ou carteira secundária (opcional)'}
+                aria-label={
+                  useAnotherWallet
+                    ? 'ENS ou carteira secundária (obrigatório)'
+                    : 'ENS ou carteira secundária (opcional)'
+                }
                 placeholder="ENS ou carteira secundária (opcional)"
                 autoComplete="off"
                 spellCheck={false}

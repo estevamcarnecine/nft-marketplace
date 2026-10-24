@@ -50,11 +50,7 @@ function CartRow({ line }: { line: CartLine }) {
 
   return (
     <li aria-busy={busy} className={ROW} data-unavailable={unavailable || undefined}>
-      <Link
-        to="/nft/$id"
-        params={{ id: line.nft.id }}
-        className={`${COLUMNS.nft} flex h-full items-center gap-[16px]`}
-      >
+      <Link to="/nft/$id" params={{ id: line.nft.id }} className={`${COLUMNS.nft} flex h-full items-center gap-[16px]`}>
         <NftImage
           alt=""
           src={line.nft.image}
@@ -80,7 +76,11 @@ function CartRow({ line }: { line: CartLine }) {
         <span className="sr-only">Preço unitário: </span>
         {formatEthLabel(line.nft.price)}
       </p>
-      <div role="group" aria-label={`Quantidade de ${name}`} className={`${COLUMNS.quantity} flex items-center justify-between`}>
+      <div
+        role="group"
+        aria-label={`Quantidade de ${name}`}
+        className={`${COLUMNS.quantity} flex items-center justify-between`}
+      >
         <StepButton
           icon={minus}
           label={`Diminuir quantidade de ${line.nft.name}`}
@@ -129,7 +129,10 @@ function CartRow({ line }: { line: CartLine }) {
 
 function TableHeader() {
   return (
-    <div aria-hidden className="flex w-full items-center justify-between pr-[24px] text-[16px] leading-[16px] whitespace-nowrap text-foreground">
+    <div
+      aria-hidden
+      className="flex w-full items-center justify-between pr-[24px] text-[16px] leading-[16px] whitespace-nowrap text-foreground"
+    >
       <span className={`${COLUMNS.nft} font-bold`}>NFTs</span>
       <span className={`${COLUMNS.price} font-medium`}>Preço</span>
       <span className={`${COLUMNS.quantity} font-bold`}>Edições</span>
@@ -149,7 +152,10 @@ export function CartTable({
   onRetry: () => void
 }) {
   return (
-    <section aria-label="Itens do carrinho" className="flex w-[782px] shrink-0 flex-col items-start gap-[12px] overflow-clip">
+    <section
+      aria-label="Itens do carrinho"
+      className="flex w-[782px] shrink-0 flex-col items-start gap-[12px] overflow-clip"
+    >
       <TableHeader />
       <Hairline src={divider} />
       {status === 'pending' ? (
@@ -161,7 +167,10 @@ export function CartTable({
           ))}
         </ul>
       ) : status === 'error' ? (
-        <div role="alert" className={`${ROW} justify-start gap-[16px] px-[24px] text-[14px] leading-[24px] text-text-secondary`}>
+        <div
+          role="alert"
+          className={`${ROW} justify-start gap-[16px] px-[24px] text-[14px] leading-[24px] text-text-secondary`}
+        >
           Não foi possível carregar seu carrinho.
           <button type="button" onClick={onRetry} className="font-bold text-text-accent underline">
             Tentar novamente

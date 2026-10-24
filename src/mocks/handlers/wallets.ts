@@ -21,7 +21,9 @@ const LABEL_MAX = 40
 
 type WalletInput = { label: string; type: WalletType; network: NetworkId; address: string }
 
-function validateWallet(body: Record<string, unknown>): { ok: true; value: WalletInput } | { ok: false; errors: Record<string, string> } {
+function validateWallet(
+  body: Record<string, unknown>,
+): { ok: true; value: WalletInput } | { ok: false; errors: Record<string, string> } {
   const type = str(body.type)
   const network = str(body.network)
   const address = str(body.address)

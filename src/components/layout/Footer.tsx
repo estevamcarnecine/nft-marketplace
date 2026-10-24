@@ -94,7 +94,13 @@ export function Footer() {
           {FEATURES.map((feature, index) => (
             <div key={feature.letter} className="contents">
               {index > 0 && <Separator />}
-              <div className={index === 0 ? 'flex min-w-px flex-1 flex-col px-[16px]' : 'flex w-[264.667px] shrink-0 flex-col px-[16px]'}>
+              <div
+                className={
+                  index === 0
+                    ? 'flex min-w-px flex-1 flex-col px-[16px]'
+                    : 'flex w-[264.667px] shrink-0 flex-col px-[16px]'
+                }
+              >
                 <div className="flex w-full flex-col items-start gap-[12px]">
                   <span
                     aria-hidden
@@ -127,7 +133,10 @@ export function Footer() {
               criadores e cultura
             </p>
             <div className="flex min-w-px flex-1 items-center">
-              <a href="mailto:contato@email.com" className="text-[14px] leading-[22px] whitespace-nowrap text-foreground">
+              <a
+                href="mailto:contato@email.com"
+                className="text-[14px] leading-[22px] whitespace-nowrap text-foreground"
+              >
                 contato@email.com
               </a>
             </div>
@@ -161,13 +170,17 @@ export function Footer() {
                   Central de ajuda
                 </h2>
                 <div className="w-full">
-                  {['Central de ajuda', 'Como comprar NFTs', 'Carteira e segurança', 'Política do mercado', 'Denunciar item'].map(
-                    (label) => (
-                      <ComingSoon key={label} className={LINK}>
-                        {label}
-                      </ComingSoon>
-                    ),
-                  )}
+                  {[
+                    'Central de ajuda',
+                    'Como comprar NFTs',
+                    'Carteira e segurança',
+                    'Política do mercado',
+                    'Denunciar item',
+                  ].map((label) => (
+                    <ComingSoon key={label} className={LINK}>
+                      {label}
+                    </ComingSoon>
+                  ))}
                 </div>
               </nav>
               <nav aria-labelledby="footer-collections" className="flex min-w-px flex-1 flex-col items-start gap-[8px]">

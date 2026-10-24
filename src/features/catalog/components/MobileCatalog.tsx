@@ -23,7 +23,9 @@ export function MobileSearchBar({ inputRef }: { inputRef?: Ref<HTMLInputElement>
   const [filtersOpen, setFiltersOpen] = useState(false)
   const tab = search.tab ?? 'all'
   const sort = search.sort ?? (tab === 'trending' ? 'trending' : 'recent')
-  const active = [search.collections?.length, search.networks?.length, search.minPrice, search.maxPrice].filter(Boolean).length
+  const active = [search.collections?.length, search.networks?.length, search.minPrice, search.maxPrice].filter(
+    Boolean,
+  ).length
 
   return (
     <div className="flex h-[45px] w-full items-start gap-[8px]">
@@ -55,9 +57,16 @@ export function MobileSearchBar({ inputRef }: { inputRef?: Ref<HTMLInputElement>
           className="relative flex size-[45px] shrink-0 items-center justify-center rounded-[14px] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           style={{ backgroundImage: FILTER_BUTTON }}
         >
-          <img alt="" src={filterIcon} className="absolute top-[15.53px] left-[15.53px] block h-[16.107px] w-[16.146px] max-w-none" />
+          <img
+            alt=""
+            src={filterIcon}
+            className="absolute top-[15.53px] left-[15.53px] block h-[16.107px] w-[16.146px] max-w-none"
+          />
           {active > 0 && (
-            <span aria-hidden className="absolute -top-[4px] -right-[4px] flex size-[16px] items-center justify-center rounded-full bg-text-accent text-[10px] font-medium text-ink">
+            <span
+              aria-hidden
+              className="absolute -top-[4px] -right-[4px] flex size-[16px] items-center justify-center rounded-full bg-text-accent text-[10px] font-medium text-ink"
+            >
               {active}
             </span>
           )}
@@ -67,7 +76,9 @@ export function MobileSearchBar({ inputRef }: { inputRef?: Ref<HTMLInputElement>
           className="max-h-[85dvh] gap-[20px] overflow-y-auto rounded-t-[20px] border-border bg-background px-[24px] pt-[24px] pb-[calc(24px+env(safe-area-inset-bottom))] md:mx-auto md:max-w-[560px]"
         >
           <div className="flex flex-col gap-[4px]">
-            <SheetTitle className="text-[18px] leading-[24px] font-bold text-foreground">Filtros e ordenação</SheetTitle>
+            <SheetTitle className="text-[18px] leading-[24px] font-bold text-foreground">
+              Filtros e ordenação
+            </SheetTitle>
             <SheetDescription className="text-[13px] leading-[18px] text-text-secondary">
               A lista é atualizada a cada mudança.
             </SheetDescription>
@@ -76,7 +87,10 @@ export function MobileSearchBar({ inputRef }: { inputRef?: Ref<HTMLInputElement>
           <fieldset className="flex flex-col gap-[8px]">
             <legend className="mb-[8px] text-[16px] leading-[16px] font-bold text-foreground">Ordenar por</legend>
             {SORTS.map((item) => (
-              <label key={item.id} className="flex min-h-[40px] cursor-pointer items-center gap-[12px] text-[14px] leading-[16px] text-foreground">
+              <label
+                key={item.id}
+                className="flex min-h-[40px] cursor-pointer items-center gap-[12px] text-[14px] leading-[16px] text-foreground"
+              >
                 <input
                   type="radio"
                   name="mobile-sort"
@@ -105,10 +119,16 @@ export function MobileCatalog() {
   const list = useQuery(catalogQuery(toCatalogParams(search)))
   const tab = search.tab ?? 'all'
   const page = list.data?.page ?? search.page ?? 1
-  const filtered = Boolean(search.q || search.collections || search.networks || search.minPrice || search.maxPrice || search.tab)
+  const filtered = Boolean(
+    search.q || search.collections || search.networks || search.minPrice || search.maxPrice || search.tab,
+  )
 
   return (
-    <section id="mercado" aria-labelledby="mercado-title" className="flex w-full scroll-mt-[16px] flex-col items-start gap-[16px]">
+    <section
+      id="mercado"
+      aria-labelledby="mercado-title"
+      className="flex w-full scroll-mt-[16px] flex-col items-start gap-[16px]"
+    >
       <h2 id="mercado-title" className="sr-only">
         Mercado
       </h2>
@@ -127,7 +147,10 @@ export function MobileCatalog() {
               aria-selected={selected}
               aria-controls="catalog-results"
               onClick={() => update({ tab: item.id === 'all' ? undefined : item.id, sort: undefined })}
-              className={cn('flex flex-col gap-[4px] pb-[2px] first:-mr-[12px]', selected ? 'font-bold text-text-accent' : 'text-foreground')}
+              className={cn(
+                'flex flex-col gap-[4px] pb-[2px] first:-mr-[12px]',
+                selected ? 'font-bold text-text-accent' : 'text-foreground',
+              )}
             >
               {item.label}
               <span aria-hidden className={cn('relative h-0 w-full', !selected && 'invisible')}>
@@ -145,7 +168,11 @@ export function MobileCatalog() {
           <span>
             Resultados para “<span className="text-foreground">{search.q}</span>”
           </span>
-          <button type="button" onClick={() => update({ q: undefined })} className="font-bold text-text-accent underline">
+          <button
+            type="button"
+            onClick={() => update({ q: undefined })}
+            className="font-bold text-text-accent underline"
+          >
             Limpar busca
           </button>
         </p>
@@ -159,7 +186,10 @@ export function MobileCatalog() {
             ))}
           </ul>
         ) : list.isError && !list.data ? (
-          <div role="alert" className="flex w-full flex-col items-start gap-[12px] rounded-[12px] bg-surface-card p-[20px]">
+          <div
+            role="alert"
+            className="flex w-full flex-col items-start gap-[12px] rounded-[12px] bg-surface-card p-[20px]"
+          >
             <p className="text-[16px] leading-[22px] font-bold text-foreground">Não foi possível carregar os NFTs.</p>
             <p className="text-[13px] leading-[20px] text-text-secondary">Verifique sua conexão e tente novamente.</p>
             <button type="button" onClick={() => void list.refetch()} className={PANEL_BUTTON}>
@@ -185,7 +215,11 @@ export function MobileCatalog() {
             </p>
             <ul
               aria-label="NFTs"
-              className={cn(GRID, 'transition-opacity motion-reduce:transition-none', list.isPlaceholderData && 'opacity-60')}
+              className={cn(
+                GRID,
+                'transition-opacity motion-reduce:transition-none',
+                list.isPlaceholderData && 'opacity-60',
+              )}
             >
               {list.data?.items.map((nft, index) => (
                 <MobileProductCard key={nft.id} nft={nft} eager={index < 2} />
@@ -194,7 +228,11 @@ export function MobileCatalog() {
             {list.isError && (
               <p role="alert" className="mt-[16px] text-[13px] leading-[20px] text-text-secondary">
                 Não foi possível atualizar a lista.{' '}
-                <button type="button" onClick={() => void list.refetch()} className="font-bold text-text-accent underline">
+                <button
+                  type="button"
+                  onClick={() => void list.refetch()}
+                  className="font-bold text-text-accent underline"
+                >
                   Tentar novamente
                 </button>
               </p>

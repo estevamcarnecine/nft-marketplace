@@ -35,7 +35,11 @@ function Icon({ src, box, inset }: { src: string; box: string; inset?: string })
 const SECTION_ICONS: Record<AccountSection, (active: boolean) => ReactNode> = {
   profile: (active) => <Icon src={active ? userIcon : userIconInactive} box="size-[18px]" />,
   wallets: (active) => (
-    <Icon src={active ? locationIconActive : locationIcon} box="size-[20px]" inset="inset-[8.33%_14.59%_10.42%_16.67%]" />
+    <Icon
+      src={active ? locationIconActive : locationIcon}
+      box="size-[20px]"
+      inset="inset-[8.33%_14.59%_10.42%_16.67%]"
+    />
   ),
 }
 
@@ -47,7 +51,17 @@ const ICONS = {
   support: <Icon src={dangerIcon} box="size-[18px]" inset="inset-[12.5%_10.42%]" />,
 }
 
-function Row({ active, wide, icon, children }: { active?: boolean; wide?: boolean; icon: ReactNode; children: ReactNode }) {
+function Row({
+  active,
+  wide,
+  icon,
+  children,
+}: {
+  active?: boolean
+  wide?: boolean
+  icon: ReactNode
+  children: ReactNode
+}) {
   return (
     <span
       className={cn(
@@ -95,8 +109,14 @@ export function AccountSidebar({ active }: { active: AccountSection }) {
   )
 
   return (
-    <nav aria-labelledby="account-nav-title" className="flex w-[310px] shrink-0 flex-col items-start bg-surface-card py-[8px]">
-      <h2 id="account-nav-title" className="p-[10px] text-[18px] leading-[16px] font-bold whitespace-nowrap text-foreground">
+    <nav
+      aria-labelledby="account-nav-title"
+      className="flex w-[310px] shrink-0 flex-col items-start bg-surface-card py-[8px]"
+    >
+      <h2
+        id="account-nav-title"
+        className="p-[10px] text-[18px] leading-[16px] font-bold whitespace-nowrap text-foreground"
+      >
         Meu perfil
       </h2>
       {link('profile', 'Dados do perfil')}

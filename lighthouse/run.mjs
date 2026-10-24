@@ -27,7 +27,10 @@ async function waitForServer() {
 }
 
 if (!process.argv.includes('--no-build')) execSync('npm run build', { stdio: 'inherit' })
-const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { shell: true, stdio: 'ignore' })
+const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], {
+  shell: true,
+  stdio: 'ignore',
+})
 
 try {
   await waitForServer()
@@ -41,7 +44,11 @@ try {
       for (let run = 1; run <= RUNS; run += 1) {
         const chrome = await chromeLauncher.launch({ chromeFlags: ['--headless=new', '--no-first-run'] })
         try {
-          const result = await lighthouse(`${BASE}${page.path}`, { port: chrome.port, output: ['html', 'json'], logLevel: 'error' }, config)
+          const result = await lighthouse(
+            `${BASE}${page.path}`,
+            { port: chrome.port, output: ['html', 'json'], logLevel: 'error' },
+            config,
+          )
           if (!result) throw new Error('no Lighthouse result')
           const { lhr, report } = result
           chromeVersion = lhr.environment.hostUserAgent
@@ -49,7 +56,9 @@ try {
           await writeFile(`${base}.report.html`, report[0])
           await writeFile(`${base}.report.json`, report[1])
           runs.push({
-            scores: Object.fromEntries(CATEGORIES.map((id) => [id, Math.round((lhr.categories[id]?.score ?? 0) * 100)])),
+            scores: Object.fromEntries(
+              CATEGORIES.map((id) => [id, Math.round((lhr.categories[id]?.score ?? 0) * 100)]),
+            ),
             lcp: lhr.audits['largest-contentful-paint'].numericValue,
             cls: lhr.audits['cumulative-layout-shift'].numericValue,
             tbt: lhr.audits['total-blocking-time'].numericValue,
@@ -83,21 +92,27 @@ try {
   }
   await writeFile(path.join(OUT, 'summary.json'), JSON.stringify({ environment, targets: TARGETS, results }, null, 2))
 
-  const header = '| Page | Profile | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |\n|---|---|---|---|---|---|---|---|---|'
+  const header =
+    '| Page | Profile | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |\n|---|---|---|---|---|---|---|---|---|'
   const rows = results.map(
     (item) =>
       `| ${item.page} | ${item.profile} | ${item.median.performance} | ${item.median.accessibility} | ${item.median['best-practices']} | ${item.median.seo} | ${(item.lcpMs / 1000).toFixed(2)} s | ${item.cls} | ${item.tbtMs} ms |`,
   )
-  const markdown = `# Lighthouse — ${environment.date}\n\nMedian of ${RUNS} runs per page and profile.\n\n${header}\n${rows.join('\n')}\n\n` +
-    `Targets: ${Object.entries(TARGETS).map(([id, value]) => `${id} ≥ ${value}`).join(', ')}.\n\n` +
+  const markdown =
+    `# Lighthouse — ${environment.date}\n\nMedian of ${RUNS} runs per page and profile.\n\n${header}\n${rows.join('\n')}\n\n` +
+    `Targets: ${Object.entries(TARGETS)
+      .map(([id, value]) => `${id} ≥ ${value}`)
+      .join(', ')}.\n\n` +
     `Lighthouse ${environment.lighthouse} · ${environment.chrome} · Node ${environment.node} · ${environment.os} · ${environment.cpu}\n\n${environment.conditions}.\n`
-  await writeFile(path.join(OUT, 'summary.md'), markdown)
   console.log(`\n${markdown}\nReports: ${OUT}`)
 } finally {
   server.kill()
   if (process.platform === 'win32') {
     try {
-      execSync(`for /f "tokens=5" %a in ('netstat -ano ^| findstr :${PORT} ^| findstr LISTENING') do taskkill /PID %a /F`, { stdio: 'ignore', shell: 'cmd.exe' })
+      execSync(
+        `for /f "tokens=5" %a in ('netstat -ano ^| findstr :${PORT} ^| findstr LISTENING') do taskkill /PID %a /F`,
+        { stdio: 'ignore', shell: 'cmd.exe' },
+      )
     } catch {}
   }
 }

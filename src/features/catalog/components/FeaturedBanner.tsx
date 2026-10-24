@@ -20,10 +20,16 @@ export function FeaturedBanner() {
           <h2 id="featured-title" className="w-full px-[20px] text-[24px] leading-[32px] font-bold text-text-accent">
             NFT EM DESTAQUE
           </h2>
-          <p className="w-full px-[20px] text-center text-[22px] leading-[16px] font-bold text-foreground">OFERTA LIMITADA</p>
+          <p className="w-full px-[20px] text-center text-[22px] leading-[16px] font-bold text-foreground">
+            OFERTA LIMITADA
+          </p>
         </div>
         {featured.data ? (
-          <Link to="/nft/$id" params={{ id: featured.data.id }} className="relative block h-[368px] w-full rounded-[22px]">
+          <Link
+            to="/nft/$id"
+            params={{ id: featured.data.id }}
+            className="relative block h-[368px] w-full rounded-[22px]"
+          >
             <NftImage
               alt={`${featured.data.name}, em destaque`}
               src={featured.data.image}
@@ -38,9 +44,20 @@ export function FeaturedBanner() {
           <Skeleton className="h-[368px] w-full rounded-[22px]" />
         )}
       </div>
-      <span aria-hidden className="absolute top-[299px] left-[16px] size-[22px] rounded-[7px] border-2 border-[#46a358] opacity-20" />
-      <span aria-hidden className="absolute top-[343px] left-[248px] size-[45px] rounded-[29px]" style={{ backgroundImage: ORB }} />
-      <span aria-hidden className="absolute top-[105px] left-[38px] size-[15px] rounded-[29px]" style={{ backgroundImage: ORB }} />
+      <span
+        aria-hidden
+        className="absolute top-[299px] left-[16px] size-[22px] rounded-[7px] border-2 border-[#46a358] opacity-20"
+      />
+      <span
+        aria-hidden
+        className="absolute top-[343px] left-[248px] size-[45px] rounded-[29px]"
+        style={{ backgroundImage: ORB }}
+      />
+      <span
+        aria-hidden
+        className="absolute top-[105px] left-[38px] size-[15px] rounded-[29px]"
+        style={{ backgroundImage: ORB }}
+      />
     </section>
   )
 }

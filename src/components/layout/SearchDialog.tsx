@@ -47,7 +47,10 @@ export function SearchDialog() {
             autoComplete="off"
             className="h-[40px] min-w-px flex-1 rounded-[3px] border border-border bg-transparent px-[12px] text-[14px] leading-[16px] text-foreground outline-none placeholder:text-secondary focus:border-primary"
           />
-          <button type="submit" className="flex h-[40px] items-center rounded-[3px] bg-primary px-[20px] text-[14px] leading-[16px] font-bold text-ink">
+          <button
+            type="submit"
+            className="flex h-[40px] items-center rounded-[3px] bg-primary px-[20px] text-[14px] leading-[16px] font-bold text-ink"
+          >
             Buscar
           </button>
         </form>

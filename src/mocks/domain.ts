@@ -18,7 +18,7 @@ import { schedulePersist } from './persistence'
 import { scenario } from './scenario'
 import { emitNftUpdated, emitOrderUpdated } from './socket'
 
-export const NETWORK_FEE = '0.016'
+const NETWORK_FEE = '0.016'
 interface CouponRule {
   percent: number
   expiresAt: number
@@ -26,15 +26,14 @@ interface CouponRule {
 
 const DAY_MS = 86_400_000
 
-export const COUPONS: Record<string, CouponRule> = {
+const COUPONS: Record<string, CouponRule> = {
   KURIO10: { percent: 10, expiresAt: FIXTURE_EPOCH + 3650 * DAY_MS },
   BEMVINDO5: { percent: 5, expiresAt: FIXTURE_EPOCH + 3650 * DAY_MS },
   NATAL2025: { percent: 15, expiresAt: FIXTURE_EPOCH - 290 * DAY_MS },
 }
 
-export type CouponCheck =
-  | { ok: true; coupon: AppliedCoupon }
-  | { ok: false; code: 'COUPON_INVALID' | 'COUPON_EXPIRED'; message: string }
+type CouponCheck =
+  { ok: true; coupon: AppliedCoupon } | { ok: false; code: 'COUPON_INVALID' | 'COUPON_EXPIRED'; message: string }
 
 export function checkCoupon(raw: string, now = Date.now()): CouponCheck {
   const code = raw.trim().toUpperCase()

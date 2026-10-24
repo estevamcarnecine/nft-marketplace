@@ -19,7 +19,8 @@ import star from '@/assets/mobile/detail/star.svg'
 
 const HERO = 'linear-gradient(137.64deg, #241612 12%, #2f1d15 106.59%)'
 const BUY = 'linear-gradient(100.37deg, #d28a4c 3.96%, rgba(210, 138, 76, 0.8) 121.97%)'
-const ROUND = 'flex size-[35px] shrink-0 items-center justify-center rounded-[17.5px] border border-border bg-surface-raised'
+const ROUND =
+  'flex size-[35px] shrink-0 items-center justify-center rounded-[17.5px] border border-border bg-surface-raised'
 const STEP =
   'relative flex h-[30px] w-[20px] items-center justify-center rounded-[20px] border border-ink bg-primary drop-shadow-[0px_4px_6px_rgba(20,13,10,0.15)] disabled:opacity-50 before:absolute before:inset-[-7px_-12px] before:content-[""]'
 
@@ -33,7 +34,11 @@ export function MobileBackButton({ label = 'Voltar', tone = 'muted' }: { label?:
       onClick={() => (canGoBack ? router.history.back() : void router.navigate({ to: '/' }))}
       className={cn(ROUND, 'relative before:absolute before:-inset-[5px] before:content-[""]')}
     >
-      <img alt="" src={tone === 'light' ? arrowLeft : arrowLeftMuted} className="block h-[7.333px] w-[13.167px] max-w-none rotate-90" />
+      <img
+        alt=""
+        src={tone === 'light' ? arrowLeft : arrowLeftMuted}
+        className="block h-[7.333px] w-[13.167px] max-w-none rotate-90"
+      />
     </button>
   )
 }
@@ -54,7 +59,11 @@ export function MobileNftDetail({ nft }: { nft: NftDetail }) {
               disabled={purchase.favoritePending}
               aria-pressed={nft.favorited}
               aria-label={nft.favorited ? 'Favoritado' : 'Favoritar'}
-              className={cn(ROUND, 'relative before:absolute before:-inset-[5px] before:content-[""]', nft.favorited && 'border-primary bg-surface-dark')}
+              className={cn(
+                ROUND,
+                'relative before:absolute before:-inset-[5px] before:content-[""]',
+                nft.favorited && 'border-primary bg-surface-dark',
+              )}
             >
               <img alt="" src={heart} className="block h-[14.235px] w-[16px] max-w-none" />
             </button>
@@ -77,12 +86,18 @@ export function MobileNftDetail({ nft }: { nft: NftDetail }) {
             className="flex h-[27px] shrink-0 items-center gap-[4px] rounded-[32px] border border-primary px-[5px] text-[14px] leading-[16px]"
           >
             <span aria-hidden className="relative size-[14px]">
-              <img alt="" src={star} className="absolute inset-[10.42%_8.32%_10.41%_8.33%] block size-auto max-w-none" />
+              <img
+                alt=""
+                src={star}
+                className="absolute inset-[10.42%_8.32%_10.41%_8.33%] block size-auto max-w-none"
+              />
             </span>
             <span aria-hidden className="font-medium text-foreground">
               {formatRating(nft.rating)}
             </span>
-            <span aria-hidden className="text-text-secondary">({nft.reviewCount})</span>
+            <span aria-hidden className="text-text-secondary">
+              ({nft.reviewCount})
+            </span>
           </p>
         </div>
 
@@ -147,7 +162,13 @@ export function MobileNftDetail({ nft }: { nft: NftDetail }) {
                 Qtd.
               </span>
               <div role="group" aria-labelledby="quantity-label" className="flex items-center gap-[12px]">
-                <button type="button" aria-label="Diminuir quantidade" disabled={quantity <= 1} onClick={purchase.decrement} className={STEP}>
+                <button
+                  type="button"
+                  aria-label="Diminuir quantidade"
+                  disabled={quantity <= 1}
+                  onClick={purchase.decrement}
+                  className={STEP}
+                >
                   <img alt="" src={minus} className="block size-[16px] max-w-none" />
                 </button>
                 <output aria-live="polite" className="text-[18px] leading-[25px] font-medium text-foreground">

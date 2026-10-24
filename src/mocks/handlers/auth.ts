@@ -1,7 +1,15 @@
 import { HttpResponse, http } from 'msw'
 import { mergeGuestCart } from '../carts'
 import { db, nextId, type StoredUser } from '../db'
-import { bearerToken, checkSession, createSession, hashPassword, newSalt, revokeSession, verifyPassword } from '../session'
+import {
+  bearerToken,
+  checkSession,
+  createSession,
+  hashPassword,
+  newSalt,
+  revokeSession,
+  verifyPassword,
+} from '../session'
 import {
   authenticate,
   errorResponse,
@@ -18,7 +26,10 @@ import { PASSWORD_RULE, RESERVED_USERNAMES, USERNAME_PATTERN, isStrongPassword }
 
 function sessionResponse(user: StoredUser, status = 200) {
   const session = createSession(user.id)
-  return json({ token: session.token, expiresAt: new Date(session.expiresAt).toISOString(), user: publicUser(user) }, status)
+  return json(
+    { token: session.token, expiresAt: new Date(session.expiresAt).toISOString(), user: publicUser(user) },
+    status,
+  )
 }
 
 export const authHandlers = [

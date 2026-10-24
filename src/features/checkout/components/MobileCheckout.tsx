@@ -22,7 +22,9 @@ const SECTION = 'text-[16px] leading-[16px] font-bold whitespace-nowrap text-for
 
 const OPTION_MARK: Record<WalletType, string | null> = { walletconnect: 'W', metamask: 'M', coinbase: null }
 const OPTION_ORDER: WalletType[] = ['walletconnect', 'metamask', 'coinbase']
-const OPTIONS = OPTION_ORDER.map((id) => WALLET_TYPES.find((type) => type.id === id)).filter((type) => type !== undefined)
+const OPTIONS = OPTION_ORDER.map((id) => WALLET_TYPES.find((type) => type.id === id)).filter(
+  (type) => type !== undefined,
+)
 
 function networkLabel(id: string): string {
   return NETWORKS.find((network) => network.id === id)?.label ?? id
@@ -34,7 +36,10 @@ export function MobileCheckout({ flow }: { flow: CheckoutFlow }) {
   const [detailsOpen, setDetailsOpen] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
   const { errors, submitCount } = useFormState({ control: form.control })
-  const [address, network, walletType] = useWatch({ control: form.control, name: ['walletAddress', 'network', 'walletType'] })
+  const [address, network, walletType] = useWatch({
+    control: form.control,
+    name: ['walletAddress', 'network', 'walletType'],
+  })
   const hasErrors = Object.keys(errors).length > 0
 
   const open = detailsOpen || hasErrors
@@ -66,7 +71,10 @@ export function MobileCheckout({ flow }: { flow: CheckoutFlow }) {
           <div className="flex w-full flex-col items-start gap-[16px]">
             <header className="relative flex h-[44px] w-full items-start gap-[24px]">
               <MobileBackButton />
-              <h1 id="checkout-title" className="pt-[9px] text-[20px] leading-[16px] font-bold whitespace-nowrap text-foreground">
+              <h1
+                id="checkout-title"
+                className="pt-[9px] text-[20px] leading-[16px] font-bold whitespace-nowrap text-foreground"
+              >
                 Pagamento com carteira
               </h1>
             </header>
@@ -147,7 +155,11 @@ export function MobileCheckout({ flow }: { flow: CheckoutFlow }) {
               </div>
             )}
 
-            <div role="radiogroup" aria-labelledby="wallet-type-heading" className="flex w-full flex-col items-start gap-[16px]">
+            <div
+              role="radiogroup"
+              aria-labelledby="wallet-type-heading"
+              className="flex w-full flex-col items-start gap-[16px]"
+            >
               <h2 id="wallet-type-heading" className={SECTION}>
                 Carteira e rede
               </h2>
@@ -163,10 +175,15 @@ export function MobileCheckout({ flow }: { flow: CheckoutFlow }) {
                       type="radio"
                       name="walletType"
                       checked={checked}
-                      onChange={() => form.setValue('walletType', type.id, { shouldDirty: true, shouldValidate: submitCount > 0 })}
+                      onChange={() =>
+                        form.setValue('walletType', type.id, { shouldDirty: true, shouldValidate: submitCount > 0 })
+                      }
                       className="peer sr-only"
                     />
-                    <span aria-hidden className="absolute top-[13px] left-[14px] flex size-[40px] items-center justify-center">
+                    <span
+                      aria-hidden
+                      className="absolute top-[13px] left-[14px] flex size-[40px] items-center justify-center"
+                    >
                       <img alt="" src={optionCircle} className="absolute inset-0 block size-full max-w-none" />
                       {mark ? (
                         <span className="relative text-[14px] leading-[normal] font-bold text-text-accent">{mark}</span>
@@ -214,7 +231,9 @@ export function MobileCheckout({ flow }: { flow: CheckoutFlow }) {
                 {cart.isPending ? (
                   <Skeleton className="h-[16px] w-[90px]" />
                 ) : (
-                  <span className="text-right text-[18px] text-text-accent">{formatEthLabel(cart.data?.total ?? '0')}</span>
+                  <span className="text-right text-[18px] text-text-accent">
+                    {formatEthLabel(cart.data?.total ?? '0')}
+                  </span>
                 )}
               </p>
             </div>
@@ -222,9 +241,15 @@ export function MobileCheckout({ flow }: { flow: CheckoutFlow }) {
 
           <div className="flex w-full flex-col items-center gap-[12px]">
             {session && (
-              <div role="status" className="flex w-full items-center justify-between gap-[12px] rounded-[15px] bg-surface-card px-[16px] py-[12px]">
+              <div
+                role="status"
+                className="flex w-full items-center justify-between gap-[12px] rounded-[15px] bg-surface-card px-[16px] py-[12px]"
+              >
                 <span className="min-w-px text-[13px] leading-[18px] text-text-secondary">
-                  Conectada: <span className="text-foreground">{WALLET_TYPES.find((type) => type.id === session.type)?.label}</span>{' '}
+                  Conectada:{' '}
+                  <span className="text-foreground">
+                    {WALLET_TYPES.find((type) => type.id === session.type)?.label}
+                  </span>{' '}
                   · {shortAddress(session.address)} · {networkLabel(session.network)}
                 </span>
                 <button

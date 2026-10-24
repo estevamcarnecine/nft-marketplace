@@ -68,11 +68,17 @@ test.describe('loading states, failure feedback and retry', () => {
       const before = await app.cart()
       const line = before.items[0]
       if (!line) throw new Error('fixture cart is empty')
-      await page.getByRole('button', { name: `Aumentar quantidade de ${line.nft.name}` }).first().click()
+      await page
+        .getByRole('button', { name: `Aumentar quantidade de ${line.nft.name}` })
+        .first()
+        .click()
       await expect(page.getByText('O serviço está temporariamente indisponível. Tente novamente.')).toBeVisible()
       expect((await app.cart()).count).toBe(before.count)
 
-      await page.getByRole('button', { name: `Aumentar quantidade de ${line.nft.name}` }).first().click()
+      await page
+        .getByRole('button', { name: `Aumentar quantidade de ${line.nft.name}` })
+        .first()
+        .click()
       await expect.poll(async () => (await app.cart()).count).toBe(before.count + 1)
     })
   })

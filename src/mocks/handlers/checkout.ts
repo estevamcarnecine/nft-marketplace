@@ -1,30 +1,13 @@
 import { HttpResponse, delay, http } from 'msw'
 import type { Order } from '@/types'
 import { getCart } from '../carts'
-import {
-  adjustNftPrice,
-  db,
-  findEdition,
-  findNft,
-  nextId,
-  syncAvailability,
-  userCartKey,
-} from '../db'
+import { adjustNftPrice, db, findEdition, findNft, nextId, syncAvailability, userCartKey } from '../db'
 import { buildCart, checkCoupon, createQuote, quoteFingerprint, scheduleOrderProgress } from '../domain'
 import { schedulePersist } from '../persistence'
 import { validateCollector } from '../validation'
 import { TIMEOUT_DELAY_MS, scenario } from '../scenario'
 import { emitNftUpdated } from '../socket'
-import {
-  authenticate,
-  errorResponse,
-  json,
-  readJson,
-  str,
-  unauthorized,
-  validationError,
-  withScenario,
-} from '../utils'
+import { authenticate, errorResponse, json, readJson, str, unauthorized, validationError, withScenario } from '../utils'
 
 export const checkoutHandlers = [
   http.post(

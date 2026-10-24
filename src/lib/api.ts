@@ -68,8 +68,7 @@ export const api = {
     (await http.put<T>(url, body, config)).data,
   patch: async <T>(url: string, body?: unknown, config?: AxiosRequestConfig) =>
     (await http.patch<T>(url, body, config)).data,
-  delete: async <T>(url: string, config?: AxiosRequestConfig) =>
-    (await http.delete<T>(url, config)).data,
+  delete: async <T>(url: string, config?: AxiosRequestConfig) => (await http.delete<T>(url, config)).data,
 }
 
 export function newIdempotencyKey(): string {

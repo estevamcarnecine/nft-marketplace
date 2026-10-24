@@ -8,7 +8,11 @@ export function MobileAuthPage({ title, footer, children }: { title: string; foo
       className="mx-auto flex min-h-dvh w-full max-w-[560px] flex-col items-start gap-[40px] px-[28px] pt-[80px] pb-[calc(24px+env(safe-area-inset-bottom))]"
     >
       <div className="flex h-[136px] w-full items-center justify-center">
-        <Link to="/" aria-label="Kurio, voltar ao início" className="text-[32px] leading-[normal] font-bold tracking-[3.2px] text-foreground">
+        <Link
+          to="/"
+          aria-label="Kurio, voltar ao início"
+          className="text-[32px] leading-[normal] font-bold tracking-[3.2px] text-foreground"
+        >
           KURIO
         </Link>
       </div>

@@ -43,7 +43,7 @@ export const realtimeHandler = link.addEventListener('connection', (connection) 
   scheduleDrop()
 })
 
-export function dropAllSockets(): void {
+function dropAllSockets(): void {
   for (const client of [...clients]) client.io.rawClient.close(4000, 'simulated drop')
   clients.clear()
 }

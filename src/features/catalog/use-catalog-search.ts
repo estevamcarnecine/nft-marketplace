@@ -20,11 +20,19 @@ export function useCatalogSearch() {
   const navigate = useNavigate()
 
   function update(patch: Partial<CatalogSearch>) {
-    void navigate({ to: '/', search: (previous) => clean({ ...catalogSearchSchema.parse(previous), ...patch, page: undefined }), resetScroll: false })
+    void navigate({
+      to: '/',
+      search: (previous) => clean({ ...catalogSearchSchema.parse(previous), ...patch, page: undefined }),
+      resetScroll: false,
+    })
   }
 
   function goToPage(page: number) {
-    void navigate({ to: '/', search: (previous) => clean({ ...catalogSearchSchema.parse(previous), page }), resetScroll: false })
+    void navigate({
+      to: '/',
+      search: (previous) => clean({ ...catalogSearchSchema.parse(previous), page }),
+      resetScroll: false,
+    })
   }
 
   function reset() {

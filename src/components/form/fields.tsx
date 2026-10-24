@@ -7,7 +7,17 @@ import arrowDown from '@/assets/checkout/arrow-down.svg'
 export const CONTROL =
   'h-[40px] w-full rounded-[3px] border border-border bg-transparent px-[12px] text-[14px] leading-[15px] text-foreground outline-none placeholder:text-secondary aria-invalid:border-destructive'
 
-export function FieldLabel({ htmlFor, id, children, required }: { htmlFor?: string; id?: string; children: ReactNode; required?: boolean }) {
+export function FieldLabel({
+  htmlFor,
+  id,
+  children,
+  required,
+}: {
+  htmlFor?: string
+  id?: string
+  children: ReactNode
+  required?: boolean
+}) {
   const Tag = htmlFor ? 'label' : 'span'
   return (
     <Tag htmlFor={htmlFor} id={id} className="flex items-center whitespace-nowrap">
@@ -98,7 +108,10 @@ export function SelectField<T extends string>({
           aria-required="true"
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${id}-error` : undefined}
-          className={cn(CONTROL, 'flex items-center justify-between py-[12px] pr-[8px] text-left data-[placeholder]:text-secondary')}
+          className={cn(
+            CONTROL,
+            'flex items-center justify-between py-[12px] pr-[8px] text-left data-[placeholder]:text-secondary',
+          )}
         >
           <Select.Value placeholder={placeholder} />
           <Select.Icon asChild>

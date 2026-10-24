@@ -83,7 +83,7 @@ function keyFor(input: CreateOrderInput): string {
   return next.key
 }
 
-export function clearOrderAttempt(): void {
+function clearOrderAttempt(): void {
   writeAttempt(null)
 }
 

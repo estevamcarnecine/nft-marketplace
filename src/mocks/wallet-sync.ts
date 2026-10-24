@@ -16,7 +16,10 @@ export function syncProfileFromDefault(userId: string): void {
         walletAddress: primary.address,
       }
     : { ...profile, walletNickname: '', walletType: '', network: '', walletAddress: '' }
-  if (next.useAnotherWallet && !wallets.some((wallet) => !wallet.isDefault && wallet.address === next.secondaryWallet)) {
+  if (
+    next.useAnotherWallet &&
+    !wallets.some((wallet) => !wallet.isDefault && wallet.address === next.secondaryWallet)
+  ) {
     next.useAnotherWallet = false
     next.secondaryWallet = ''
   }

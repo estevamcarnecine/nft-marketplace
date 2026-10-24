@@ -25,7 +25,11 @@ function Rating({ rating, count }: { rating: number; count: number }) {
         {Array.from({ length: 5 }, (_, index) => (
           <span key={index} className="relative size-[15px] shrink-0">
             <span className="absolute inset-[10.42%_8.32%_10.41%_8.33%]">
-              <img alt="" src={index < filled ? star : starEmpty} className="absolute inset-0 block size-full max-w-none" />
+              <img
+                alt=""
+                src={index < filled ? star : starEmpty}
+                className="absolute inset-0 block size-full max-w-none"
+              />
             </span>
           </span>
         ))}
@@ -142,12 +146,7 @@ export function NftPurchasePanel({ nft }: { nft: NftDetail }) {
 
       <div className="flex w-full items-start justify-between">
         <div role="group" aria-label="Quantidade" className="flex items-center gap-[12px]">
-          <StepButton
-            icon={minus}
-            label="Diminuir quantidade"
-            disabled={quantity <= 1}
-            onClick={purchase.decrement}
-          />
+          <StepButton icon={minus} label="Diminuir quantidade" disabled={quantity <= 1} onClick={purchase.decrement} />
           <output aria-live="polite" className="text-[20px] leading-[28px] whitespace-nowrap text-foreground">
             {quantity}
           </output>
@@ -232,7 +231,6 @@ export function NftPurchasePanel({ nft }: { nft: NftDetail }) {
           </a>
         </div>
       </div>
-
     </div>
   )
 }

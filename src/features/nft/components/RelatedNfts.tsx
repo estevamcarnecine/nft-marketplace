@@ -100,7 +100,11 @@ export function RelatedNfts({
         ) : source.isError ? (
           <p role="alert" className="flex items-center gap-[12px] text-[14px] leading-[24px] text-text-secondary">
             Não foi possível carregar as sugestões.
-            <button type="button" onClick={() => void source.refetch()} className="font-bold text-text-accent underline">
+            <button
+              type="button"
+              onClick={() => void source.refetch()}
+              className="font-bold text-text-accent underline"
+            >
               Tentar novamente
             </button>
           </p>

@@ -26,9 +26,15 @@ export function MobileHero() {
                 <br />
                 CULTURA DIGITAL
               </h1>
-              <p className="text-[12px] leading-[18px] text-text-secondary">Descubra NFTs selecionados de criadores do mundo todo.</p>
+              <p className="text-[12px] leading-[18px] text-text-secondary">
+                Descubra NFTs selecionados de criadores do mundo todo.
+              </p>
             </div>
-            <button type="button" onClick={explore} className="flex items-center gap-[8px] py-[4px] text-[12px] leading-[14px] font-bold text-text-accent">
+            <button
+              type="button"
+              onClick={explore}
+              className="flex items-center gap-[8px] py-[4px] text-[12px] leading-[14px] font-bold text-text-accent"
+            >
               EXPLORAR
               <span aria-hidden className="relative flex size-[16px] items-center justify-center">
                 <img alt="" src={arrowRight} className="block h-[11.5px] w-[9.533px] max-w-none -rotate-90" />
@@ -36,8 +42,19 @@ export function MobileHero() {
             </button>
           </div>
           <div aria-hidden className="relative h-[146px] w-[138px] shrink-0">
-            <NftImage alt="" src="/nft/emerald-ape.png" sizes="138px" fetchPriority="high" className="absolute top-0 left-0 size-[138px] rounded-[16px] object-cover" />
-            <NftImage alt="" src="/nft/cosmic-bloom.png" sizes="58px" className="absolute top-[88px] left-[14px] size-[58px] rounded-[16px] object-cover" />
+            <NftImage
+              alt=""
+              src="/nft/emerald-ape.png"
+              sizes="138px"
+              fetchPriority="high"
+              className="absolute top-0 left-0 size-[138px] rounded-[16px] object-cover"
+            />
+            <NftImage
+              alt=""
+              src="/nft/cosmic-bloom.png"
+              sizes="58px"
+              className="absolute top-[88px] left-[14px] size-[58px] rounded-[16px] object-cover"
+            />
           </div>
         </div>
         <img alt="" src={heroDots} className="block h-[7px] w-[33px] max-w-none" />

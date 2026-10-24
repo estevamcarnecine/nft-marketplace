@@ -5,7 +5,7 @@ export const USERS = {
   ana: { email: 'colecionador@kurio.io', name: 'Ana Colecionadora' },
 } as const
 export const PASSWORD = 'Kurio@2026'
-export type UserKey = keyof typeof USERS
+type UserKey = keyof typeof USERS
 
 const SCENARIO_KEY = 'kurio.mock.scenario'
 
@@ -109,9 +109,11 @@ export class App {
   }
 
   cardNames() {
-    return this.page.locator('ul[aria-label="NFTs"] > li > a').evaluateAll((links) =>
-      links.map((link) => link.querySelector('span:last-child > span:first-child')?.textContent ?? ''),
-    )
+    return this.page
+      .locator('ul[aria-label="NFTs"] > li > a')
+      .evaluateAll((links) =>
+        links.map((link) => link.querySelector('span:last-child > span:first-child')?.textContent ?? ''),
+      )
   }
 
   async ready() {
@@ -143,10 +145,11 @@ export class App {
       changePrice: (nftId: string, percent: number) =>
         page.evaluate(([id, pct]) => window.__mock.realtime.changePrice(id, pct), [nftId, percent] as const),
       setStock: (nftId: string, editionId: string, available: number) =>
-        page.evaluate(
-          ([id, edition, units]) => window.__mock.realtime.setStock(id, edition, units),
-          [nftId, editionId, available] as const,
-        ),
+        page.evaluate(([id, edition, units]) => window.__mock.realtime.setStock(id, edition, units), [
+          nftId,
+          editionId,
+          available,
+        ] as const),
       dropSockets: () => page.evaluate(() => window.__mock.realtime.dropSockets()),
       sockets: () => page.evaluate(() => window.__mock.realtime.connectedSockets()),
     }

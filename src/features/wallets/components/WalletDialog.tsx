@@ -15,7 +15,15 @@ const FIELDS: FieldPath<WalletFormValues>[] = ['label', 'type', 'network', 'addr
 
 export type WalletDialogMode = { kind: 'create'; primary: boolean } | { kind: 'edit'; wallet: Wallet }
 
-export function WalletDialog({ mode, onClose, onSaved }: { mode: WalletDialogMode; onClose: () => void; onSaved: (message: string) => void }) {
+export function WalletDialog({
+  mode,
+  onClose,
+  onSaved,
+}: {
+  mode: WalletDialogMode
+  onClose: () => void
+  onSaved: (message: string) => void
+}) {
   const create = useCreateWallet()
   const update = useUpdateWallet()
   const editing = mode.kind === 'edit' ? mode.wallet : null
@@ -32,7 +40,11 @@ export function WalletDialog({ mode, onClose, onSaved }: { mode: WalletDialogMod
       : { label: '', type: '', network: '', address: '' },
   })
 
-  const title = editing ? 'Editar carteira' : mode.kind === 'create' && mode.primary ? 'Nova carteira principal' : 'Nova carteira secundária'
+  const title = editing
+    ? 'Editar carteira'
+    : mode.kind === 'create' && mode.primary
+      ? 'Nova carteira principal'
+      : 'Nova carteira secundária'
 
   const submit = handleSubmit(async (values) => {
     if (!values.type || !values.network) return
@@ -43,14 +55,23 @@ export function WalletDialog({ mode, onClose, onSaved }: { mode: WalletDialogMod
         onSaved('Carteira atualizada.')
       } else {
         await create.mutateAsync({ ...input, isDefault: mode.kind === 'create' && mode.primary })
-        onSaved(mode.kind === 'create' && mode.primary ? 'Nova carteira principal adicionada.' : 'Carteira secundária adicionada.')
+        onSaved(
+          mode.kind === 'create' && mode.primary
+            ? 'Nova carteira principal adicionada.'
+            : 'Carteira secundária adicionada.',
+        )
       }
     } catch (error) {
       const fields = FIELDS.filter((field) => isApiError(error) && error.errors?.[field])
       fields.forEach((field, index) =>
-        setError(field, { type: 'server', message: isApiError(error) ? error.errors?.[field] : '' }, { shouldFocus: index === 0 }),
+        setError(
+          field,
+          { type: 'server', message: isApiError(error) ? error.errors?.[field] : '' },
+          { shouldFocus: index === 0 },
+        ),
       )
-      if (fields.length === 0) setError('root', { message: isApiError(error) ? error.message : 'Não foi possível salvar a carteira.' })
+      if (fields.length === 0)
+        setError('root', { message: isApiError(error) ? error.message : 'Não foi possível salvar a carteira.' })
     }
   })
 
@@ -66,32 +87,82 @@ export function WalletDialog({ mode, onClose, onSaved }: { mode: WalletDialogMod
           </DialogDescription>
         </div>
         <form noValidate onSubmit={submit} className="flex flex-col gap-[16px]">
-          <TextField id="wallet-label" label="Apelido da carteira" required autoComplete="off" className="[&>:first-child]:-mb-[4px]" error={errors.label?.message} {...register('label')} />
+          <TextField
+            id="wallet-label"
+            label="Apelido da carteira"
+            required
+            autoComplete="off"
+            className="[&>:first-child]:-mb-[4px]"
+            error={errors.label?.message}
+            {...register('label')}
+          />
           <Controller
             control={control}
             name="type"
             render={({ field }) => (
-              <SelectField id="wallet-type" label="Tipo de carteira" placeholder="Selecione uma carteira" value={field.value} options={WALLET_TYPES} icon={ARROW} className="[&>:first-child]:-mb-[4px]" error={errors.type?.message} onChange={field.onChange} onBlur={field.onBlur} />
+              <SelectField
+                id="wallet-type"
+                label="Tipo de carteira"
+                placeholder="Selecione uma carteira"
+                value={field.value}
+                options={WALLET_TYPES}
+                icon={ARROW}
+                className="[&>:first-child]:-mb-[4px]"
+                error={errors.type?.message}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
             )}
           />
           <Controller
             control={control}
             name="network"
             render={({ field }) => (
-              <SelectField id="wallet-network" label="Rede" placeholder="Selecione uma rede" value={field.value} options={NETWORKS} icon={ARROW} className="[&>:first-child]:-mb-[4px]" error={errors.network?.message} onChange={field.onChange} onBlur={field.onBlur} />
+              <SelectField
+                id="wallet-network"
+                label="Rede"
+                placeholder="Selecione uma rede"
+                value={field.value}
+                options={NETWORKS}
+                icon={ARROW}
+                className="[&>:first-child]:-mb-[4px]"
+                error={errors.network?.message}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
             )}
           />
-          <TextField id="wallet-address" label="Endereço da carteira" required placeholder="Endereço 0x da carteira" autoComplete="off" spellCheck={false} className="[&>:first-child]:-mb-[4px]" error={errors.address?.message} {...register('address')} />
+          <TextField
+            id="wallet-address"
+            label="Endereço da carteira"
+            required
+            placeholder="Endereço 0x da carteira"
+            autoComplete="off"
+            spellCheck={false}
+            className="[&>:first-child]:-mb-[4px]"
+            error={errors.address?.message}
+            {...register('address')}
+          />
           {errors.root && (
             <p role="alert" className="text-[13px] leading-[16px] text-destructive">
               {errors.root.message}
             </p>
           )}
           <div className="mt-[8px] flex justify-end gap-[8px]">
-            <button type="button" onClick={onClose} disabled={isSubmitting} className="flex h-[40px] items-center rounded-[3px] border border-primary px-[20px] text-[14px] leading-[16px] font-medium text-text-accent disabled:opacity-60">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="flex h-[40px] items-center rounded-[3px] border border-primary px-[20px] text-[14px] leading-[16px] font-medium text-text-accent disabled:opacity-60"
+            >
               Cancelar
             </button>
-            <button type="submit" disabled={isSubmitting} aria-busy={isSubmitting} className="flex h-[40px] items-center rounded-[3px] bg-primary px-[20px] text-[14px] leading-[16px] font-bold text-ink disabled:opacity-60">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+              className="flex h-[40px] items-center rounded-[3px] bg-primary px-[20px] text-[14px] leading-[16px] font-bold text-ink disabled:opacity-60"
+            >
               {isSubmitting ? 'Salvando…' : 'Salvar carteira'}
             </button>
           </div>

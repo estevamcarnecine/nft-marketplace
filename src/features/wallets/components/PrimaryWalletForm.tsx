@@ -37,7 +37,10 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
     reset,
     setError,
     formState: { errors, isDirty, isSubmitting },
-  } = useForm<PrimaryWalletValues>({ resolver: zodResolver(primaryWalletSchema), defaultValues: profileToPrimary(profile) })
+  } = useForm<PrimaryWalletValues>({
+    resolver: zodResolver(primaryWalletSchema),
+    defaultValues: profileToPrimary(profile),
+  })
 
   useEffect(() => {
     if (!isDirty) reset(profileToPrimary(profile))
@@ -59,14 +62,23 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
     } catch (error) {
       const fields = FIELDS.filter((field) => isApiError(error) && error.errors?.[field])
       fields.forEach((field, index) =>
-        setError(field, { type: 'server', message: isApiError(error) ? error.errors?.[field] : '' }, { shouldFocus: index === 0 }),
+        setError(
+          field,
+          { type: 'server', message: isApiError(error) ? error.errors?.[field] : '' },
+          { shouldFocus: index === 0 },
+        ),
       )
       if (fields.length === 0) toast.error(isApiError(error) ? error.message : 'Não foi possível salvar a carteira.')
     }
   })
 
   return (
-    <form noValidate onSubmit={submit} aria-labelledby="primary-wallet-title" className="flex w-full flex-col items-start gap-[32px]">
+    <form
+      noValidate
+      onSubmit={submit}
+      aria-labelledby="primary-wallet-title"
+      className="flex w-full flex-col items-start gap-[32px]"
+    >
       <div className="flex w-full flex-col items-start gap-[8px] overflow-clip whitespace-nowrap max-xl:whitespace-normal">
         <div className="flex w-full items-start justify-between leading-[16px]">
           <h1 id="primary-wallet-title" className="text-[17px] font-bold text-foreground">
@@ -83,21 +95,65 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
 
       <div className="flex w-full flex-col items-start gap-[24px] overflow-clip">
         <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
-          <TextField id="displayName" label="Nome de exibição" required autoComplete="name" className={FIELD} error={errors.displayName?.message} {...register('displayName')} />
-          <TextField id="walletNickname" label="Apelido da carteira" required autoComplete="off" className={FIELD} error={errors.walletNickname?.message} {...register('walletNickname')} />
+          <TextField
+            id="displayName"
+            label="Nome de exibição"
+            required
+            autoComplete="name"
+            className={FIELD}
+            error={errors.displayName?.message}
+            {...register('displayName')}
+          />
+          <TextField
+            id="walletNickname"
+            label="Apelido da carteira"
+            required
+            autoComplete="off"
+            className={FIELD}
+            error={errors.walletNickname?.message}
+            {...register('walletNickname')}
+          />
         </div>
         <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
           <Controller
             control={control}
             name="network"
             render={({ field }) => (
-              <SelectField id="network" label="Rede" placeholder="Selecione uma rede" value={field.value} options={NETWORKS} icon={ARROW} className={FIELD} error={errors.network?.message} onChange={field.onChange} onBlur={field.onBlur} />
+              <SelectField
+                id="network"
+                label="Rede"
+                placeholder="Selecione uma rede"
+                value={field.value}
+                options={NETWORKS}
+                icon={ARROW}
+                className={FIELD}
+                error={errors.network?.message}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
             )}
           />
-          <TextField id="profileName" label="Nome do perfil" required className={FIELD} error={errors.profileName?.message} {...register('profileName')} />
+          <TextField
+            id="profileName"
+            label="Nome do perfil"
+            required
+            className={FIELD}
+            error={errors.profileName?.message}
+            {...register('profileName')}
+          />
         </div>
         <div className="flex w-full items-end justify-between max-xl:flex-col max-xl:items-start max-xl:gap-[24px]">
-          <TextField id="walletAddress" label="Endereço da carteira" required placeholder="Endereço 0x da carteira" autoComplete="off" spellCheck={false} className={FIELD} error={errors.walletAddress?.message} {...register('walletAddress')} />
+          <TextField
+            id="walletAddress"
+            label="Endereço da carteira"
+            required
+            placeholder="Endereço 0x da carteira"
+            autoComplete="off"
+            spellCheck={false}
+            className={FIELD}
+            error={errors.walletAddress?.message}
+            {...register('walletAddress')}
+          />
           <div className="flex w-[417px] max-xl:w-full flex-col">
             <input
               id="secondaryWallet"
@@ -118,13 +174,41 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
             control={control}
             name="walletType"
             render={({ field }) => (
-              <SelectField id="walletType" label="Tipo de carteira" placeholder="Selecione uma carteira" value={field.value} options={WALLET_TYPES} icon={ARROW} className={FIELD} error={errors.walletType?.message} onChange={field.onChange} onBlur={field.onBlur} />
+              <SelectField
+                id="walletType"
+                label="Tipo de carteira"
+                placeholder="Selecione uma carteira"
+                value={field.value}
+                options={WALLET_TYPES}
+                icon={ARROW}
+                className={FIELD}
+                error={errors.walletType?.message}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
             )}
           />
-          <TextField id="referralCode" label="Código de indicação" required autoComplete="off" className={FIELD} error={errors.referralCode?.message} {...register('referralCode')} />
+          <TextField
+            id="referralCode"
+            label="Código de indicação"
+            required
+            autoComplete="off"
+            className={FIELD}
+            error={errors.referralCode?.message}
+            {...register('referralCode')}
+          />
         </div>
         <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
-          <TextField id="email" type="email" label="E-mail" required autoComplete="email" className={FIELD} error={errors.email?.message} {...register('email')} />
+          <TextField
+            id="email"
+            type="email"
+            label="E-mail"
+            required
+            autoComplete="email"
+            className={FIELD}
+            error={errors.email?.message}
+            {...register('email')}
+          />
           <div className="flex w-[417px] max-xl:w-full flex-col items-start">
             <span className="-mb-[4px] flex items-center gap-[4px] whitespace-nowrap">
               <label htmlFor="ensName" className="text-[15px] leading-[15px] text-foreground">
@@ -140,18 +224,32 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
                 name="ensSuffix"
                 render={({ field }) => (
                   <Select.Root value={field.value} onValueChange={() => field.onChange('.eth')}>
-                    <Select.Trigger aria-label="Sufixo ENS" className="relative h-[40px] w-[78px] shrink-0 rounded-[3px] border border-border text-left text-[15px] leading-[15px] text-foreground outline-none">
+                    <Select.Trigger
+                      aria-label="Sufixo ENS"
+                      className="relative h-[40px] w-[78px] shrink-0 rounded-[3px] border border-border text-left text-[15px] leading-[15px] text-foreground outline-none"
+                    >
                       <span className="absolute top-[12px] left-[9px]">
                         <Select.Value />
                       </span>
                       <Select.Icon asChild>
-                        <img alt="" src={arrowDownEns} className="absolute top-[9px] left-[52px] block size-[20px] max-w-none" />
+                        <img
+                          alt=""
+                          src={arrowDownEns}
+                          className="absolute top-[9px] left-[52px] block size-[20px] max-w-none"
+                        />
                       </Select.Icon>
                     </Select.Trigger>
                     <Select.Portal>
-                      <Select.Content position="popper" sideOffset={4} className="z-50 rounded-[3px] border border-border bg-surface-card p-[4px]">
+                      <Select.Content
+                        position="popper"
+                        sideOffset={4}
+                        className="z-50 rounded-[3px] border border-border bg-surface-card p-[4px]"
+                      >
                         <Select.Viewport>
-                          <Select.Item value=".eth" className="cursor-pointer rounded-[3px] px-[8px] py-[10px] text-[15px] leading-[15px] text-text-accent outline-none data-[highlighted]:bg-surface-dark">
+                          <Select.Item
+                            value=".eth"
+                            className="cursor-pointer rounded-[3px] px-[8px] py-[10px] text-[15px] leading-[15px] text-text-accent outline-none data-[highlighted]:bg-surface-dark"
+                          >
                             <Select.ItemText>.eth</Select.ItemText>
                           </Select.Item>
                         </Select.Viewport>

@@ -6,7 +6,7 @@ import { clearToken } from '@/lib/auth'
 import { rotateGuestCartId } from '@/lib/cart-id'
 import type { Profile } from '@/types'
 
-export interface ProfileUpdate {
+interface ProfileUpdate {
   displayName: string
   username: string
   email: string
@@ -41,8 +41,7 @@ export function useRemoveAvatar() {
 
 export function useChangePassword() {
   return useMutation({
-    mutationFn: (input: { currentPassword: string; newPassword: string }) =>
-      api.post<void>('/profile/password', input),
+    mutationFn: (input: { currentPassword: string; newPassword: string }) => api.post<void>('/profile/password', input),
   })
 }
 

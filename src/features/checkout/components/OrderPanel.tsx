@@ -25,7 +25,11 @@ const WALLET_OPTIONS: { id: WalletType; label: ReactNode; name: string }[] = [
       </span>
     ),
   },
-  { id: 'metamask', name: 'MetaMask', label: <span className="text-[15px] leading-[normal] text-foreground">MetaMask</span> },
+  {
+    id: 'metamask',
+    name: 'MetaMask',
+    label: <span className="text-[15px] leading-[normal] text-foreground">MetaMask</span>,
+  },
   {
     id: 'coinbase',
     name: 'Coinbase Wallet',
@@ -76,7 +80,11 @@ function OrderLines({ cart, loading }: { cart: Cart | undefined; loading: boolea
 }
 
 function Amount({ loading, children, className }: { loading: boolean; children: ReactNode; className?: string }) {
-  return loading ? <Skeleton className="h-[16px] w-[96px]" /> : <span className={cn('block', className)}>{children}</span>
+  return loading ? (
+    <Skeleton className="h-[16px] w-[96px]" />
+  ) : (
+    <span className={cn('block', className)}>{children}</span>
+  )
 }
 
 export function OrderPanel({
@@ -107,7 +115,10 @@ export function OrderPanel({
       </h2>
       <div className="flex w-full flex-col items-start gap-[12px]">
         <div className="flex w-full flex-col items-start gap-[12px]">
-          <div aria-hidden className="flex w-full items-center justify-between text-[16px] leading-[16px] whitespace-nowrap text-foreground">
+          <div
+            aria-hidden
+            className="flex w-full items-center justify-between text-[16px] leading-[16px] whitespace-nowrap text-foreground"
+          >
             <span className="font-bold">NFTs</span>
             <span className="font-medium">Subtotal</span>
           </div>
@@ -128,7 +139,9 @@ export function OrderPanel({
         <div aria-live="polite" className="flex w-full flex-col items-center gap-[12px]">
           <p className="min-w-full text-center text-[14px] leading-[16px] text-foreground">
             {cart?.coupon ? (
-              <>Código {cart.coupon.code} aplicado ({cart.coupon.percent}%)</>
+              <>
+                Código {cart.coupon.code} aplicado ({cart.coupon.percent}%)
+              </>
             ) : (
               <>
                 Tem um código promocional?{' '}
@@ -212,7 +225,10 @@ export function OrderPanel({
             {(session || walletError) && (
               <p
                 role={walletError ? 'alert' : 'status'}
-                className={cn('-mt-[8px] w-full text-[12px] leading-[16px]', walletError ? 'text-destructive' : 'text-text-secondary')}
+                className={cn(
+                  '-mt-[8px] w-full text-[12px] leading-[16px]',
+                  walletError ? 'text-destructive' : 'text-text-secondary',
+                )}
               >
                 {walletError ?? (
                   <>

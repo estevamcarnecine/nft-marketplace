@@ -82,7 +82,9 @@ function AvatarField({ profile }: { profile: Profile }) {
     upload.mutate(file, {
       onSuccess: () => toast.success('Avatar atualizado.'),
       onError: (failure) =>
-        setError(isApiError(failure) ? (failure.errors?.avatar ?? failure.message) : 'Não foi possível enviar a imagem.'),
+        setError(
+          isApiError(failure) ? (failure.errors?.avatar ?? failure.message) : 'Não foi possível enviar a imagem.',
+        ),
     })
   }
 
@@ -99,7 +101,12 @@ function AvatarField({ profile }: { profile: Profile }) {
       <span id="avatar-label" className="text-[15px] leading-[15px] whitespace-nowrap text-foreground">
         Avatar
       </span>
-      <div role="group" aria-labelledby="avatar-label" aria-describedby={error ? 'avatar-error' : undefined} className="flex items-center gap-[24px]">
+      <div
+        role="group"
+        aria-labelledby="avatar-label"
+        aria-describedby={error ? 'avatar-error' : undefined}
+        className="flex items-center gap-[24px]"
+      >
         <span
           aria-busy={busy}
           className="relative flex size-[50px] shrink-0 items-start overflow-hidden rounded-[25px] border border-border bg-surface-raised p-[12px]"
@@ -134,7 +141,15 @@ function AvatarField({ profile }: { profile: Profile }) {
             Remover
           </button>
         </span>
-        <input ref={input} type="file" accept={AVATAR_ACCEPT} onChange={handleFile} className="sr-only" tabIndex={-1} aria-hidden />
+        <input
+          ref={input}
+          type="file"
+          accept={AVATAR_ACCEPT}
+          onChange={handleFile}
+          className="sr-only"
+          tabIndex={-1}
+          aria-hidden
+        />
       </div>
       {error && (
         <p id="avatar-error" role="alert" className="text-[12px] leading-[16px] text-destructive">
@@ -187,7 +202,12 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         try {
           await changePassword.mutateAsync({ currentPassword: values.currentPassword, newPassword: values.newPassword })
         } catch (error) {
-          reset({ ...profileToValues(saved), currentPassword: values.currentPassword, newPassword: values.newPassword, confirmPassword: values.confirmPassword })
+          reset({
+            ...profileToValues(saved),
+            currentPassword: values.currentPassword,
+            newPassword: values.newPassword,
+            confirmPassword: values.confirmPassword,
+          })
           if (!isApiError(error) || !applyServerErrors(error, ['currentPassword', 'newPassword'])) {
             toast.error('Perfil salvo, mas não foi possível alterar a senha.')
           }
@@ -204,18 +224,48 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   })
 
   return (
-    <form noValidate onSubmit={submit} aria-labelledby="profile-title" className="flex min-w-px flex-1 flex-col items-start gap-[32px] overflow-clip">
+    <form
+      noValidate
+      onSubmit={submit}
+      aria-labelledby="profile-title"
+      className="flex min-w-px flex-1 flex-col items-start gap-[32px] overflow-clip"
+    >
       <h1 id="profile-title" className="text-[16px] leading-[16px] font-bold whitespace-nowrap text-foreground">
         Perfil do colecionador
       </h1>
 
       <div className="flex w-full flex-col items-start gap-[24px] overflow-clip">
         <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
-          <TextField id="displayName" label="Nome de exibição" required autoComplete="name" className={FIELD} error={errors.displayName?.message} {...register('displayName')} />
-          <TextField id="username" label="Nome de usuário" required autoComplete="username" className={FIELD} error={errors.username?.message} {...register('username')} />
+          <TextField
+            id="displayName"
+            label="Nome de exibição"
+            required
+            autoComplete="name"
+            className={FIELD}
+            error={errors.displayName?.message}
+            {...register('displayName')}
+          />
+          <TextField
+            id="username"
+            label="Nome de usuário"
+            required
+            autoComplete="username"
+            className={FIELD}
+            error={errors.username?.message}
+            {...register('username')}
+          />
         </div>
         <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
-          <TextField id="email" type="email" label="E-mail" required autoComplete="email" className={FIELD} error={errors.email?.message} {...register('email')} />
+          <TextField
+            id="email"
+            type="email"
+            label="E-mail"
+            required
+            autoComplete="email"
+            className={FIELD}
+            error={errors.email?.message}
+            {...register('email')}
+          />
           <div className="flex w-[417px] max-xl:w-full flex-col items-start gap-[10px] overflow-clip">
             <span className="flex items-center gap-[4px] whitespace-nowrap">
               <label htmlFor="ensName" className="text-[15px] leading-[15px] text-foreground">
@@ -239,13 +289,24 @@ export function ProfileForm({ profile }: { profile: Profile }) {
                         <Select.Value />
                       </span>
                       <Select.Icon asChild>
-                        <img alt="" src={arrowDown} className="absolute top-[9px] left-[52px] block size-[20px] max-w-none" />
+                        <img
+                          alt=""
+                          src={arrowDown}
+                          className="absolute top-[9px] left-[52px] block size-[20px] max-w-none"
+                        />
                       </Select.Icon>
                     </Select.Trigger>
                     <Select.Portal>
-                      <Select.Content position="popper" sideOffset={4} className="z-50 rounded-[3px] border border-border bg-surface-card p-[4px]">
+                      <Select.Content
+                        position="popper"
+                        sideOffset={4}
+                        className="z-50 rounded-[3px] border border-border bg-surface-card p-[4px]"
+                      >
                         <Select.Viewport>
-                          <Select.Item value=".eth" className="cursor-pointer rounded-[3px] px-[8px] py-[10px] text-[15px] leading-[15px] text-text-accent outline-none data-[highlighted]:bg-surface-dark">
+                          <Select.Item
+                            value=".eth"
+                            className="cursor-pointer rounded-[3px] px-[8px] py-[10px] text-[15px] leading-[15px] text-text-accent outline-none data-[highlighted]:bg-surface-dark"
+                          >
                             <Select.ItemText>.eth</Select.ItemText>
                           </Select.Item>
                         </Select.Viewport>
@@ -269,16 +330,44 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           </div>
         </div>
         <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
-          <TextField id="walletNickname" label="Apelido da carteira" required autoComplete="off" className={FIELD} error={errors.walletNickname?.message} {...register('walletNickname')} />
+          <TextField
+            id="walletNickname"
+            label="Apelido da carteira"
+            required
+            autoComplete="off"
+            className={FIELD}
+            error={errors.walletNickname?.message}
+            {...register('walletNickname')}
+          />
           <AvatarField profile={profile} />
         </div>
       </div>
 
       <fieldset className="flex w-full flex-col items-start gap-[24px] overflow-clip">
-        <legend className="mb-[24px] text-[16px] leading-[16px] font-medium whitespace-nowrap text-foreground">Alterar senha</legend>
-        <PasswordField id="currentPassword" label="Senha atual" autoComplete="current-password" error={errors.currentPassword?.message} register={register} />
-        <PasswordField id="newPassword" label="Nova senha" autoComplete="new-password" error={errors.newPassword?.message} register={register} />
-        <PasswordField id="confirmPassword" label="Confirmar nova senha" autoComplete="new-password" error={errors.confirmPassword?.message} register={register} />
+        <legend className="mb-[24px] text-[16px] leading-[16px] font-medium whitespace-nowrap text-foreground">
+          Alterar senha
+        </legend>
+        <PasswordField
+          id="currentPassword"
+          label="Senha atual"
+          autoComplete="current-password"
+          error={errors.currentPassword?.message}
+          register={register}
+        />
+        <PasswordField
+          id="newPassword"
+          label="Nova senha"
+          autoComplete="new-password"
+          error={errors.newPassword?.message}
+          register={register}
+        />
+        <PasswordField
+          id="confirmPassword"
+          label="Confirmar nova senha"
+          autoComplete="new-password"
+          error={errors.confirmPassword?.message}
+          register={register}
+        />
       </fieldset>
 
       <button

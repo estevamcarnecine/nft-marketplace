@@ -25,10 +25,24 @@ function MobileCartLine({ line }: { line: CartLine }) {
 
   return (
     <li aria-busy={busy} className={CARD} data-unavailable={unavailable || undefined}>
-      <Link to="/nft/$id" params={{ id: line.nft.id }} className="absolute inset-y-0 left-0 flex w-[calc(100%-38px)] items-start">
+      <Link
+        to="/nft/$id"
+        params={{ id: line.nft.id }}
+        className="absolute inset-y-0 left-0 flex w-[calc(100%-38px)] items-start"
+      >
         <span className="relative size-[100px] shrink-0">
-          <NftImage alt="" src={line.nft.image} sizes="100px" className="absolute inset-0 size-full rounded-l-[14px] object-cover" />
-          <NftImage alt="" src={line.nft.image} sizes="100px" className="absolute inset-0 size-full rounded-[14px] object-cover mix-blend-multiply" />
+          <NftImage
+            alt=""
+            src={line.nft.image}
+            sizes="100px"
+            className="absolute inset-0 size-full rounded-l-[14px] object-cover"
+          />
+          <NftImage
+            alt=""
+            src={line.nft.image}
+            sizes="100px"
+            className="absolute inset-0 size-full rounded-[14px] object-cover mix-blend-multiply"
+          />
         </span>
         <span className="flex min-w-px flex-1 flex-col items-start pt-[13px] pl-[9px] leading-[16px]">
           <span className="w-full truncate text-[15px] font-bold text-foreground">{line.nft.name}</span>
@@ -46,7 +60,11 @@ function MobileCartLine({ line }: { line: CartLine }) {
         </span>
       </Link>
 
-      <div role="group" aria-label={`Quantidade de ${name}`} className="absolute top-[38px] right-[16px] flex items-center">
+      <div
+        role="group"
+        aria-label={`Quantidade de ${name}`}
+        className="absolute top-[38px] right-[16px] flex items-center"
+      >
         <button
           type="button"
           aria-label={`Diminuir quantidade de ${line.nft.name}`}
@@ -54,7 +72,11 @@ function MobileCartLine({ line }: { line: CartLine }) {
           onClick={() => changeQuantity(line.quantity - 1)}
           className={`${HIT} relative size-[24px] disabled:cursor-not-allowed`}
         >
-          <img alt="" src={line.quantity <= 1 ? minusDisabledIcon : minusIcon} className="block size-[24px] max-w-none" />
+          <img
+            alt=""
+            src={line.quantity <= 1 ? minusDisabledIcon : minusIcon}
+            className="block size-[24px] max-w-none"
+          />
         </button>
         <output aria-live="polite" className="w-[33px] text-center text-[16px] leading-[22px] text-foreground">
           {line.quantity}
@@ -148,7 +170,11 @@ function MobileCartSummary({ cart, loading }: { cart: Cart | undefined; loading:
           <div className={ROW}>
             <dt className="text-[15px] leading-[normal]">Subtotal</dt>
             <dd>
-              <Amount loading={loading} value={formatEthLabel(cart?.subtotal ?? '0')} className="text-[16px] leading-[16px]" />
+              <Amount
+                loading={loading}
+                value={formatEthLabel(cart?.subtotal ?? '0')}
+                className="text-[16px] leading-[16px]"
+              />
             </dd>
           </div>
           <div className={`${ROW} text-[15px] leading-[normal]`}>
@@ -161,7 +187,11 @@ function MobileCartSummary({ cart, loading }: { cart: Cart | undefined; loading:
             <div className={`${ROW} items-center`}>
               <dt className="text-[15px] leading-[normal]">Taxa de rede</dt>
               <dd>
-                <Amount loading={loading} value={formatEthLabel(cart?.networkFee ?? '0')} className="text-[16px] leading-[16px]" />
+                <Amount
+                  loading={loading}
+                  value={formatEthLabel(cart?.networkFee ?? '0')}
+                  className="text-[16px] leading-[16px]"
+                />
               </dd>
             </div>
             <p className="text-[12px] leading-[16px] text-text-accent">Taxa estimada</p>
@@ -169,7 +199,11 @@ function MobileCartSummary({ cart, loading }: { cart: Cart | undefined; loading:
           <div className={`${ROW} leading-[16px] font-bold`}>
             <dt className="text-[16px]">Total</dt>
             <dd>
-              <Amount loading={loading} value={formatEthLabel(cart?.total ?? '0')} className="text-[18px] text-text-accent" />
+              <Amount
+                loading={loading}
+                value={formatEthLabel(cart?.total ?? '0')}
+                className="text-[18px] text-text-accent"
+              />
             </dd>
           </div>
         </dl>
@@ -196,7 +230,15 @@ function MobileCartSummary({ cart, loading }: { cart: Cart | undefined; loading:
   )
 }
 
-export function MobileCart({ cart, status, onRetry }: { cart: Cart | undefined; status: 'pending' | 'error' | 'success'; onRetry: () => void }) {
+export function MobileCart({
+  cart,
+  status,
+  onRetry,
+}: {
+  cart: Cart | undefined
+  status: 'pending' | 'error' | 'success'
+  onRetry: () => void
+}) {
   const lines = cart?.items ?? []
 
   return (
@@ -219,7 +261,10 @@ export function MobileCart({ cart, status, onRetry }: { cart: Cart | undefined; 
               ))}
             </ul>
           ) : status === 'error' ? (
-            <div role="alert" className="flex flex-col items-start gap-[8px] rounded-[14px] bg-surface-card p-[16px] text-[14px] leading-[22px] text-text-secondary">
+            <div
+              role="alert"
+              className="flex flex-col items-start gap-[8px] rounded-[14px] bg-surface-card p-[16px] text-[14px] leading-[22px] text-text-secondary"
+            >
               Não foi possível carregar seu carrinho.
               <button type="button" onClick={onRetry} className="font-bold text-text-accent underline">
                 Tentar novamente

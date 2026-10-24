@@ -19,10 +19,7 @@ export function NftGallery({ name, images }: { name: string; images: string[] })
               onClick={() => setSelected(index)}
               aria-label={`Ver imagem ${index + 1} de ${images.length}`}
               aria-pressed={index === selected}
-              className={cn(
-                'relative block size-full rounded-[8px]',
-                index === selected && 'border border-primary',
-              )}
+              className={cn('relative block size-full rounded-[8px]', index === selected && 'border border-primary')}
             >
               <NftImage
                 alt=""
@@ -61,7 +58,12 @@ export function NftGallery({ name, images }: { name: string; images: string[] })
         </DialogTrigger>
         <DialogContent className="w-auto max-w-[min(90vw,720px)] border-border bg-surface-card p-[16px] sm:max-w-[min(90vw,720px)]">
           <DialogTitle className="sr-only">{name}</DialogTitle>
-          <NftImage alt={name} src={current} sizes="min(90vw, 720px)" className="max-h-[80vh] w-full rounded-[24px] object-contain" />
+          <NftImage
+            alt={name}
+            src={current}
+            sizes="min(90vw, 720px)"
+            className="max-h-[80vh] w-full rounded-[24px] object-contain"
+          />
         </DialogContent>
       </Dialog>
     </div>

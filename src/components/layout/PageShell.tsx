@@ -23,7 +23,10 @@ export function PageShell({
       <MobileShell narrow className="gap-[24px]">
         <header className="relative flex h-[35px] w-full items-center">
           <MobileBackButton />
-          <Link to="/" className="absolute left-1/2 -translate-x-1/2 text-[16px] leading-[normal] font-bold tracking-[1.6px] text-foreground">
+          <Link
+            to="/"
+            className="absolute left-1/2 -translate-x-1/2 text-[16px] leading-[normal] font-bold tracking-[1.6px] text-foreground"
+          >
             KURIO
           </Link>
         </header>

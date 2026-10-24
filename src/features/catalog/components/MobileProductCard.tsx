@@ -36,7 +36,9 @@ export function MobileProductCard({ nft, eager }: { nft: Nft; eager?: boolean })
         </span>
         <span className="flex w-full flex-col items-start pl-[8px]">
           <span className="w-full truncate text-[15px] leading-[normal] text-foreground">{nft.name}</span>
-          <span className="w-full text-[16px] leading-[16px] font-bold text-text-accent">{formatEthLabel(nft.price)}</span>
+          <span className="w-full text-[16px] leading-[16px] font-bold text-text-accent">
+            {formatEthLabel(nft.price)}
+          </span>
         </span>
       </Link>
       <button

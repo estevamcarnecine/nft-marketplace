@@ -1,13 +1,13 @@
 import type { CollectorInput } from '@/types'
 import { isEmail, isNetwork, isRecord, isValidAddress, isWalletType, str } from './utils'
 
-export type Validation<T> = { ok: true; value: T } | { ok: false; errors: Record<string, string> }
+type Validation<T> = { ok: true; value: T } | { ok: false; errors: Record<string, string> }
 
 const REQUIRED = 'Campo obrigatório'
 export const USERNAME_PATTERN = /^[a-z0-9_]{3,20}$/i
-export const REFERRAL_PATTERN = /^[A-Z0-9]{6,12}$/
+const REFERRAL_PATTERN = /^[A-Z0-9]{6,12}$/
 const ENS_PATTERN = /^[a-z0-9-]{3,63}\.eth$/i
-export const NOTE_MAX = 500
+const NOTE_MAX = 500
 export const RESERVED_USERNAMES = ['admin', 'kurio', 'support']
 export const PASSWORD_RULE = 'Use ao menos 8 caracteres, com letras e números'
 

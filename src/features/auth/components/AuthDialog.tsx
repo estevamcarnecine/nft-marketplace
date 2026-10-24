@@ -12,7 +12,7 @@ const FRAMES = {
   signup: { box: 'my-[158px] min-h-[656px] overflow-clip rounded-[8px]', close: 'top-[13px] right-[13px]' },
 } as const
 
-export type AuthMode = keyof typeof FRAMES
+type AuthMode = keyof typeof FRAMES
 
 export function AuthDialog({
   mode,
@@ -32,7 +32,12 @@ export function AuthDialog({
     target === mode ? (
       <Dialog.Title className={`${TAB} text-text-accent`}>{label}</Dialog.Title>
     ) : (
-      <Link to={target === 'login' ? '/login' : '/signup'} search={{ redirect }} replace className={`${TAB} text-foreground`}>
+      <Link
+        to={target === 'login' ? '/login' : '/signup'}
+        search={{ redirect }}
+        replace
+        className={`${TAB} text-foreground`}
+      >
         {label}
       </Link>
     )
@@ -43,7 +48,8 @@ export function AuthDialog({
         <Dialog.Overlay className="fixed inset-0 z-50 overflow-y-auto">
           <Dialog.Content
             onOpenAutoFocus={(event) => {
-              const field = event.currentTarget instanceof HTMLElement ? event.currentTarget.querySelector('input') : null
+              const field =
+                event.currentTarget instanceof HTMLElement ? event.currentTarget.querySelector('input') : null
               if (field) {
                 event.preventDefault()
                 field.focus()

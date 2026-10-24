@@ -7,7 +7,11 @@ import { nftDetailQuery } from '@/features/nft/api'
 import { NftDetailsTabs } from '@/features/nft/components/NftDetailsTabs'
 import { NftGallery } from '@/features/nft/components/NftGallery'
 import { NftPurchasePanel } from '@/features/nft/components/NftPurchasePanel'
-import { MobileNftDetail, MobileNftDetailMessage, MobileNftDetailSkeleton } from '@/features/nft/components/MobileNftDetail'
+import {
+  MobileNftDetail,
+  MobileNftDetailMessage,
+  MobileNftDetailSkeleton,
+} from '@/features/nft/components/MobileNftDetail'
 import { RelatedNfts } from '@/features/nft/components/RelatedNfts'
 import { isApiError } from '@/lib/api'
 import { useIsDesktop } from '@/lib/use-media-query'
@@ -75,14 +79,20 @@ function NftDetailPage() {
           <MobileNftDetailSkeleton />
         ) : notFound ? (
           <MobileNftDetailMessage title="NFT não encontrado">
-            <p className="text-[14px] leading-[22px] text-text-secondary">O NFT que você procura não existe ou foi removido do mercado.</p>
+            <p className="text-[14px] leading-[22px] text-text-secondary">
+              O NFT que você procura não existe ou foi removido do mercado.
+            </p>
           </MobileNftDetailMessage>
         ) : detail.isError ? (
           <MobileNftDetailMessage title="Não foi possível carregar este NFT">
             <p role="alert" className="text-[14px] leading-[22px] text-text-secondary">
               {isApiError(detail.error) ? detail.error.message : 'Verifique sua conexão e tente novamente.'}
             </p>
-            <button type="button" onClick={() => void detail.refetch()} className="h-[44px] rounded-[6px] bg-primary px-[24px] text-[14px] leading-[20px] font-bold text-ink">
+            <button
+              type="button"
+              onClick={() => void detail.refetch()}
+              className="h-[44px] rounded-[6px] bg-primary px-[24px] text-[14px] leading-[20px] font-bold text-ink"
+            >
               TENTAR NOVAMENTE
             </button>
           </MobileNftDetailMessage>

@@ -2,7 +2,7 @@ import { useSyncExternalStore } from 'react'
 
 const TOKEN_KEY = 'nft.token'
 
-export type TokenChangeReason = 'login' | 'logout' | 'expired' | 'external'
+type TokenChangeReason = 'login' | 'logout' | 'expired' | 'external'
 
 type TokenListener = (token: string | null, reason: TokenChangeReason) => void
 const listeners = new Set<TokenListener>()

@@ -44,8 +44,18 @@ export function Blog() {
       </div>
       <ul className="flex w-full items-stretch gap-[24px] overflow-clip">
         {POSTS.map((post) => (
-          <li key={post.title} className="flex w-[268px] shrink-0 flex-col items-start overflow-clip rounded-[8px] bg-surface-card">
-            <img alt="" src={post.image} width={268} height={195} loading="lazy" className="h-[195px] w-full max-w-none object-cover" />
+          <li
+            key={post.title}
+            className="flex w-[268px] shrink-0 flex-col items-start overflow-clip rounded-[8px] bg-surface-card"
+          >
+            <img
+              alt=""
+              src={post.image}
+              width={268}
+              height={195}
+              loading="lazy"
+              className="h-[195px] w-full max-w-none object-cover"
+            />
             <article className="flex w-full flex-1 flex-col items-start gap-[8px] overflow-clip px-[16px] pt-[12px] pb-[16px]">
               <p className="w-full text-[12px] leading-[16px] font-medium whitespace-pre-wrap text-text-secondary">
                 {`${post.date}  |  ${post.reading}`}

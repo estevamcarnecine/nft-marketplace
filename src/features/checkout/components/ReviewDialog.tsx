@@ -45,20 +45,30 @@ export function ReviewDialog({
         className="w-[500px] max-w-[calc(100vw-32px)] gap-[20px] rounded-[6px] border-border bg-background p-[32px] sm:max-w-[500px]"
       >
         <div className="flex flex-col gap-[8px]">
-          <DialogTitle className="text-[24px] leading-[normal] font-bold text-foreground">Revise seu pedido</DialogTitle>
+          <DialogTitle className="text-[24px] leading-[normal] font-bold text-foreground">
+            Revise seu pedido
+          </DialogTitle>
           <DialogDescription className="text-[14px] leading-[22px] text-text-secondary">
             Confira os valores atualizados antes de assinar o pagamento na sua carteira.
           </DialogDescription>
         </div>
 
         {staleNotice ? (
-          <p role="alert" className="rounded-[3px] border border-primary bg-surface-dark p-[12px] text-[14px] leading-[20px] text-text-accent">
+          <p
+            role="alert"
+            className="rounded-[3px] border border-primary bg-surface-dark p-[12px] text-[14px] leading-[20px] text-text-accent"
+          >
             {staleNotice}
           </p>
-        ) : changedNotice && (
-          <p role="alert" className="rounded-[3px] border border-primary bg-surface-dark p-[12px] text-[14px] leading-[20px] text-text-accent">
-            {changedNotice}
-          </p>
+        ) : (
+          changedNotice && (
+            <p
+              role="alert"
+              className="rounded-[3px] border border-primary bg-surface-dark p-[12px] text-[14px] leading-[20px] text-text-accent"
+            >
+              {changedNotice}
+            </p>
+          )
         )}
 
         {quote && (
@@ -67,7 +77,10 @@ export function ReviewDialog({
               {quote.lines.map((line) => (
                 <li key={`${line.nftId}-${line.editionId}`} className={ROW}>
                   <span className="min-w-px flex-1 truncate">
-                    {line.name} <span className="text-secondary">· {line.editionLabel} · x{line.quantity}</span>
+                    {line.name}{' '}
+                    <span className="text-secondary">
+                      · {line.editionLabel} · x{line.quantity}
+                    </span>
                   </span>
                   <span className="shrink-0 font-bold text-text-accent">{formatEthLabel(line.lineTotal)}</span>
                 </li>

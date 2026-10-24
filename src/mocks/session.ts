@@ -1,7 +1,7 @@
 import { db, type StoredUser } from './db'
 import { scenario } from './scenario'
 
-export const SESSION_TTL_MS = 30 * 60 * 1000
+const SESSION_TTL_MS = 30 * 60 * 1000
 
 function toHex(buffer: ArrayBuffer): string {
   return [...new Uint8Array(buffer)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
@@ -39,8 +39,7 @@ export function bearerToken(request: Request): string {
 }
 
 type SessionCheck =
-  | { status: 'valid'; user: StoredUser; token: string; expiresAt: number }
-  | { status: 'expired' | 'missing' }
+  { status: 'valid'; user: StoredUser; token: string; expiresAt: number } | { status: 'expired' | 'missing' }
 
 function isExpired(createdAt: number, expiresAt: number, now: number): boolean {
   if (expiresAt <= now) return true

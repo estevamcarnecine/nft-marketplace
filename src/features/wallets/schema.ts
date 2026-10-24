@@ -9,7 +9,7 @@ const EVM_ADDRESS = /^0x[a-fA-F0-9]{40}$/
 const SOLANA_ADDRESS = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/
 const ENS_NAME = /^[a-z0-9-]{3,63}\.eth$/i
 
-export function isAddressFor(network: NetworkId | '', address: string): boolean {
+function isAddressFor(network: NetworkId | '', address: string): boolean {
   return network === 'solana' ? SOLANA_ADDRESS.test(address) : EVM_ADDRESS.test(address)
 }
 
@@ -44,8 +44,16 @@ export const primaryWalletSchema = z
     if (value.walletAddress && !isAddressFor(value.network, value.walletAddress)) {
       context.addIssue({ code: 'custom', path: ['walletAddress'], message: 'Endereço de carteira inválido' })
     }
-    if (value.secondaryWallet && !ENS_NAME.test(value.secondaryWallet) && !isAddressFor(value.network, value.secondaryWallet)) {
-      context.addIssue({ code: 'custom', path: ['secondaryWallet'], message: 'Informe um nome .eth ou um endereço válido' })
+    if (
+      value.secondaryWallet &&
+      !ENS_NAME.test(value.secondaryWallet) &&
+      !isAddressFor(value.network, value.secondaryWallet)
+    ) {
+      context.addIssue({
+        code: 'custom',
+        path: ['secondaryWallet'],
+        message: 'Informe um nome .eth ou um endereço válido',
+      })
     }
   })
 

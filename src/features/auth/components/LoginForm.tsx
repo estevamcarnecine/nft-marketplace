@@ -32,7 +32,13 @@ export function LoginForm({ onSuccess, variant = 'dialog' }: { onSuccess: () => 
 
   return (
     <form noValidate onSubmit={submit} aria-label="Entrar" className="flex w-full flex-col items-start">
-      <div className={page ? 'flex w-full flex-col items-start gap-[12px]' : 'flex w-full flex-col items-start gap-[12px] overflow-clip px-[80px] pt-[24px]'}>
+      <div
+        className={
+          page
+            ? 'flex w-full flex-col items-start gap-[12px]'
+            : 'flex w-full flex-col items-start gap-[12px] overflow-clip px-[80px] pt-[24px]'
+        }
+      >
         <AuthInput
           id="login-email"
           type="email"
@@ -53,11 +59,19 @@ export function LoginForm({ onSuccess, variant = 'dialog' }: { onSuccess: () => 
           {...register('password')}
         />
         <div className="flex w-full items-start justify-end overflow-clip">
-          <ComingSoon className="text-[14px] leading-[16px] whitespace-nowrap text-text-accent">Esqueceu a senha?</ComingSoon>
+          <ComingSoon className="text-[14px] leading-[16px] whitespace-nowrap text-text-accent">
+            Esqueceu a senha?
+          </ComingSoon>
         </div>
       </div>
 
-      <div className={page ? 'flex w-full flex-col items-start gap-[12px] pt-[40px]' : 'flex w-full flex-col items-start gap-[12px] overflow-clip px-[80px] pt-[24px]'}>
+      <div
+        className={
+          page
+            ? 'flex w-full flex-col items-start gap-[12px] pt-[40px]'
+            : 'flex w-full flex-col items-start gap-[12px] overflow-clip px-[80px] pt-[24px]'
+        }
+      >
         {errors.root && (
           <p role="alert" className="w-full text-center text-[13px] leading-[16px] text-destructive">
             {errors.root.message}
@@ -67,7 +81,10 @@ export function LoginForm({ onSuccess, variant = 'dialog' }: { onSuccess: () => 
           type="submit"
           disabled={login.isPending}
           aria-busy={login.isPending}
-          className={cn('flex w-full items-center justify-center overflow-clip bg-primary text-[16px] leading-[16px] font-bold whitespace-nowrap text-ink disabled:opacity-60', page ? 'h-[60px] rounded-[10px]' : 'h-[45px] rounded-[5px]')}
+          className={cn(
+            'flex w-full items-center justify-center overflow-clip bg-primary text-[16px] leading-[16px] font-bold whitespace-nowrap text-ink disabled:opacity-60',
+            page ? 'h-[60px] rounded-[10px]' : 'h-[45px] rounded-[5px]',
+          )}
         >
           {login.isPending ? 'Entrando…' : 'Entrar'}
         </button>

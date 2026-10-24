@@ -54,7 +54,12 @@ export function AccountLayout({ active, children }: { active: AccountSection; ch
             key={section}
             to={to}
             aria-current={active === section ? 'page' : undefined}
-            className={cn(TAB, active === section ? 'border-primary bg-surface-dark font-bold text-text-accent' : 'border-border text-foreground')}
+            className={cn(
+              TAB,
+              active === section
+                ? 'border-primary bg-surface-dark font-bold text-text-accent'
+                : 'border-border text-foreground',
+            )}
           >
             {label}
           </Link>

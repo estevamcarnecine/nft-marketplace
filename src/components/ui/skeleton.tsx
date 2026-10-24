@@ -1,11 +1,11 @@
-import { cn } from "cn"
+import { cn } from 'cn'
 
-function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
+function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="skeleton"
       aria-hidden
-      className={cn("skeleton-shimmer rounded-md bg-surface-card", className)}
+      className={cn('skeleton-shimmer rounded-md bg-surface-card', className)}
       {...props}
     />
   )

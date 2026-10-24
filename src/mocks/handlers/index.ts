@@ -6,7 +6,7 @@ import { catalogHandlers } from './catalog'
 import { checkoutHandlers } from './checkout'
 import { explorerHandlers } from './explorer'
 import { profileHandlers } from './profile'
-import { walletSessionHandlers } from './walletSessions'
+import { walletSessionHandlers } from './wallet-sessions'
 import { walletHandlers } from './wallets'
 
 export const handlers = [

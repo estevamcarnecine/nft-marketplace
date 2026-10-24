@@ -67,7 +67,10 @@ function PriceFilter({ min, max }: { min: string; max: string }) {
     search.minPrice ? toHundredths(search.minPrice) : bounds[0],
     search.maxPrice ? toHundredths(search.maxPrice) : bounds[1],
   ]
-  const [draft, setDraft] = useState<{ key: string; value: [number, number] }>({ key: applied.join('-'), value: applied })
+  const [draft, setDraft] = useState<{ key: string; value: [number, number] }>({
+    key: applied.join('-'),
+    value: applied,
+  })
   const value = draft.key === applied.join('-') ? draft.value : applied
 
   function apply() {
@@ -78,7 +81,11 @@ function PriceFilter({ min, max }: { min: string; max: string }) {
   }
 
   return (
-    <div role="group" aria-labelledby="price-filter-title" className="flex w-full flex-col items-start gap-[12px] overflow-clip">
+    <div
+      role="group"
+      aria-labelledby="price-filter-title"
+      className="flex w-full flex-col items-start gap-[12px] overflow-clip"
+    >
       <h3 id="price-filter-title" className={HEADING}>
         Faixa de preço
       </h3>
@@ -124,9 +131,16 @@ export function FiltersPanel({ className }: { className?: string }) {
   const { search, update } = useCatalogSearch()
 
   return (
-    <section aria-label="Filtros" className={cn('flex w-[310px] shrink-0 flex-col items-start overflow-clip bg-surface-card p-[20px]', className)}>
+    <section
+      aria-label="Filtros"
+      className={cn('flex w-[310px] shrink-0 flex-col items-start overflow-clip bg-surface-card p-[20px]', className)}
+    >
       <div className="flex w-full flex-col items-start gap-[40px]">
-        <div role="group" aria-labelledby="collections-filter-title" className="flex w-full flex-col items-start gap-[12px] overflow-clip">
+        <div
+          role="group"
+          aria-labelledby="collections-filter-title"
+          className="flex w-full flex-col items-start gap-[12px] overflow-clip"
+        >
           <h3 id="collections-filter-title" className={HEADING}>
             Coleções
           </h3>
@@ -147,12 +161,20 @@ export function FiltersPanel({ className }: { className?: string }) {
         </div>
 
         {facets.data ? (
-          <PriceFilter key={`${facets.data.price.min}-${facets.data.price.max}`} min={facets.data.price.min} max={facets.data.price.max} />
+          <PriceFilter
+            key={`${facets.data.price.min}-${facets.data.price.max}`}
+            min={facets.data.price.min}
+            max={facets.data.price.max}
+          />
         ) : (
           <Skeleton className="h-[117px] w-full" />
         )}
 
-        <div role="group" aria-labelledby="networks-filter-title" className="flex w-full flex-col items-start gap-[12px] overflow-clip">
+        <div
+          role="group"
+          aria-labelledby="networks-filter-title"
+          className="flex w-full flex-col items-start gap-[12px] overflow-clip"
+        >
           <h3 id="networks-filter-title" className={HEADING}>
             Rede
           </h3>
@@ -174,7 +196,11 @@ export function FiltersPanel({ className }: { className?: string }) {
         {facets.isError && (
           <p role="alert" className="text-[13px] leading-[18px] text-text-secondary">
             Não foi possível carregar os filtros.{' '}
-            <button type="button" onClick={() => void facets.refetch()} className="font-bold text-text-accent underline">
+            <button
+              type="button"
+              onClick={() => void facets.refetch()}
+              className="font-bold text-text-accent underline"
+            >
               Tentar novamente
             </button>
           </p>

@@ -79,7 +79,13 @@ export function ProductCard({ nft, eager, firstRow }: { nft: Nft; eager?: boolea
           'opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none',
         )}
       >
-        <button type="button" onClick={addToCart} disabled={quickAdd.isPending} aria-label={`Adicionar ${nft.name} ao carrinho`} className={ACTION}>
+        <button
+          type="button"
+          onClick={addToCart}
+          disabled={quickAdd.isPending}
+          aria-label={`Adicionar ${nft.name} ao carrinho`}
+          className={ACTION}
+        >
           <img alt="" src={cartIcon} className="block size-[20px] max-w-none" />
         </button>
         <button

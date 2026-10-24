@@ -36,7 +36,10 @@ function DesktopCheckout({ flow }: { flow: CheckoutFlow }) {
           aria-labelledby="checkout-title"
           className="flex w-full flex-col items-start gap-[32px]"
         >
-          <nav aria-label="Você está em" className="text-[15px] leading-[16px] font-bold whitespace-nowrap text-foreground">
+          <nav
+            aria-label="Você está em"
+            className="text-[15px] leading-[16px] font-bold whitespace-nowrap text-foreground"
+          >
             <Link to="/">Início</Link>
             {' / '}
             <Link to="/" hash="mercado">
@@ -52,7 +55,11 @@ function DesktopCheckout({ flow }: { flow: CheckoutFlow }) {
           {profile.isError ? (
             <p role="alert" className="text-[14px] leading-[24px] text-text-secondary">
               Não foi possível carregar seus dados.{' '}
-              <button type="button" onClick={() => void profile.refetch()} className="font-bold text-text-accent underline">
+              <button
+                type="button"
+                onClick={() => void profile.refetch()}
+                className="font-bold text-text-accent underline"
+              >
                 Tentar novamente
               </button>
             </p>

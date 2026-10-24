@@ -1,6 +1,6 @@
 import type { NftUpdatedEvent, OrderUpdatedEvent } from '@/types'
 
-export type RealtimeEvent = NftUpdatedEvent | OrderUpdatedEvent
+type RealtimeEvent = NftUpdatedEvent | OrderUpdatedEvent
 
 const MAX_SEEN_EVENTS = 500
 

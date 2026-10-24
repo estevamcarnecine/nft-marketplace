@@ -6,7 +6,6 @@ import type {
   Nft,
   NftDetail,
   NftEdition,
-  NetworkId,
   Order,
   Profile,
   Quote,
@@ -82,7 +81,7 @@ const KURIO_LEGENDS = {
   contractAddress: '0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD',
 } as const
 
-export const ARTWORKS = ['/nft/emerald-ape.png', '/nft/cosmic-bloom.png', '/nft/ivory-baron.png', '/nft/golden-beat.png']
+const ARTWORKS = ['/nft/emerald-ape.png', '/nft/cosmic-bloom.png', '/nft/ivory-baron.png', '/nft/golden-beat.png']
 
 const SPECIAL_NFTS: SpecialNft[] = [
   {
@@ -102,14 +101,95 @@ const SPECIAL_NFTS: SpecialNft[] = [
       'A propriedade inclui a arte em alta resolução, lançamentos exclusivos para colecionadores e um registro permanente de procedência registrada na rede. Nova Sato recebe 5% de direitos autorais nas vendas secundárias, apoiando novos trabalhos e lançamentos da comunidade.',
     ],
   },
-  { ...KURIO_LEGENDS, adjective: 'Sage', noun: 'Nomad', number: 9, price: '1.69', image: '/nft/cosmic-bloom.png', attributes: ['Chapéu', 'Sálvia', 'Incomum'], rating: 4.3, reviewCount: 9 },
-  { ...KURIO_LEGENDS, adjective: 'Neon', noun: 'Vessel', number: 552, price: '1.99', compareAtPrice: '2.29', image: '/nft/ivory-baron.png', attributes: ['Gola alta', 'Neon', 'Raro'], rating: 4.7, reviewCount: 15 },
-  { ...KURIO_APES, adjective: 'Cosmic', noun: 'Bloom', number: 118, price: '1.29', image: '/nft/cosmic-bloom.png', attributes: ['Chapéu', 'Moletom', 'Comum'], rating: 4.6, reviewCount: 12 },
-  { ...KURIO_APES, adjective: 'Violet', noun: 'Nomad', number: 314, price: '1.39', image: '/nft/cosmic-bloom.png', attributes: ['Chapéu', 'Violeta', 'Incomum'], rating: 4.1, reviewCount: 8 },
-  { ...KURIO_APES, adjective: 'Ivory', noun: 'Baron', number: 88, price: '1.79', image: '/nft/ivory-baron.png', attributes: ['Gola alta', 'Marfim', 'Raro'], rating: 4.8, reviewCount: 27 },
-  { ...KURIO_APES, adjective: 'Golden', noun: 'Beat', number: 207, price: '0.99', image: '/nft/golden-beat.png', attributes: ['Fones', 'Dourado', 'Comum'], rating: 3.9, reviewCount: 6 },
-  { ...KURIO_LEGENDS, adjective: 'Golden', noun: 'Frequency', number: 71, price: '0.59', image: '/nft/golden-beat.png', attributes: ['Fones', 'Dourado', 'Lendário'], rating: 4.4, reviewCount: 11 },
-  { ...KURIO_APES, adjective: 'Golden', noun: 'Signal', number: 160, price: '0.39', image: '/nft/golden-beat.png', attributes: ['Fones', 'Dourado', 'Incomum'], rating: 4.0, reviewCount: 4 },
+  {
+    ...KURIO_LEGENDS,
+    adjective: 'Sage',
+    noun: 'Nomad',
+    number: 9,
+    price: '1.69',
+    image: '/nft/cosmic-bloom.png',
+    attributes: ['Chapéu', 'Sálvia', 'Incomum'],
+    rating: 4.3,
+    reviewCount: 9,
+  },
+  {
+    ...KURIO_LEGENDS,
+    adjective: 'Neon',
+    noun: 'Vessel',
+    number: 552,
+    price: '1.99',
+    compareAtPrice: '2.29',
+    image: '/nft/ivory-baron.png',
+    attributes: ['Gola alta', 'Neon', 'Raro'],
+    rating: 4.7,
+    reviewCount: 15,
+  },
+  {
+    ...KURIO_APES,
+    adjective: 'Cosmic',
+    noun: 'Bloom',
+    number: 118,
+    price: '1.29',
+    image: '/nft/cosmic-bloom.png',
+    attributes: ['Chapéu', 'Moletom', 'Comum'],
+    rating: 4.6,
+    reviewCount: 12,
+  },
+  {
+    ...KURIO_APES,
+    adjective: 'Violet',
+    noun: 'Nomad',
+    number: 314,
+    price: '1.39',
+    image: '/nft/cosmic-bloom.png',
+    attributes: ['Chapéu', 'Violeta', 'Incomum'],
+    rating: 4.1,
+    reviewCount: 8,
+  },
+  {
+    ...KURIO_APES,
+    adjective: 'Ivory',
+    noun: 'Baron',
+    number: 88,
+    price: '1.79',
+    image: '/nft/ivory-baron.png',
+    attributes: ['Gola alta', 'Marfim', 'Raro'],
+    rating: 4.8,
+    reviewCount: 27,
+  },
+  {
+    ...KURIO_APES,
+    adjective: 'Golden',
+    noun: 'Beat',
+    number: 207,
+    price: '0.99',
+    image: '/nft/golden-beat.png',
+    attributes: ['Fones', 'Dourado', 'Comum'],
+    rating: 3.9,
+    reviewCount: 6,
+  },
+  {
+    ...KURIO_LEGENDS,
+    adjective: 'Golden',
+    noun: 'Frequency',
+    number: 71,
+    price: '0.59',
+    image: '/nft/golden-beat.png',
+    attributes: ['Fones', 'Dourado', 'Lendário'],
+    rating: 4.4,
+    reviewCount: 11,
+  },
+  {
+    ...KURIO_APES,
+    adjective: 'Golden',
+    noun: 'Signal',
+    number: 160,
+    price: '0.39',
+    image: '/nft/golden-beat.png',
+    attributes: ['Fones', 'Dourado', 'Incomum'],
+    rating: 4.0,
+    reviewCount: 4,
+  },
 ]
 
 const PRICE_OVERRIDES: Record<number, string> = { 9: '0.02', 10: '12.30' }
@@ -119,7 +199,17 @@ export const FEATURED_NFT_ID = 'nft-0009'
 const ADJECTIVES = ['Amber', 'Crimson', 'Cobalt', 'Onyx', 'Golden', 'Silver', 'Rustic', 'Neon', 'Velvet', 'Copper']
 const NOUNS = ['Fox', 'Oracle', 'Totem', 'Drifter', 'Specter', 'Pilgrim', 'Warden', 'Mirage', 'Cipher', 'Sentinel']
 const CREATORS = ['Lia Monteiro', 'Caio Andrade', 'Studio Ônix', 'Maya Ferraz', 'Rafa Linhares', 'Nina Duarte']
-const ATTRIBUTES = ['Holográfico', 'Neon', 'Dourado', 'Animado', 'Minimalista', 'Raro', 'Comum', 'Lendário', 'Texturizado']
+const ATTRIBUTES = [
+  'Holográfico',
+  'Neon',
+  'Dourado',
+  'Animado',
+  'Minimalista',
+  'Raro',
+  'Comum',
+  'Lendário',
+  'Texturizado',
+]
 
 const EDITION_SPECS: { id: EditionId; label: string; supply: number }[] = [
   { id: '1-1', label: '1/1', supply: 1 },
@@ -200,8 +290,7 @@ function createNfts(): NftRecord[] {
     const noun = special ? special.noun : pick(NOUNS, rng)
     const network = special ? 'ethereum' : pick(['ethereum', 'ethereum', 'polygon', 'solana', 'solana'] as const, rng)
     const editions = createEditions(Boolean(special), rng)
-    const price =
-      special?.price ?? PRICE_OVERRIDES[index] ?? formatHundredths(2 + Math.floor(rng() * 1229))
+    const price = special?.price ?? PRICE_OVERRIDES[index] ?? formatHundredths(2 + Math.floor(rng() * 1229))
     const collectionLabel = COLLECTIONS.find((c) => c.id === collection)?.label ?? collection
     const networkLabel = NETWORKS.find((n) => n.id === network)?.label ?? network
     const name = `${adjective} ${noun} #${String(number % 1000).padStart(3, '0')}`
@@ -363,7 +452,7 @@ function createState() {
   }
 }
 
-export type Db = ReturnType<typeof createState>
+type Db = ReturnType<typeof createState>
 
 export const db: Db = createState()
 
@@ -440,8 +529,4 @@ export function adjustNftPrice(id: string, percent: number): NftRecord | undefin
   nft.price = fromWei(next)
   nft.version += 1
   return nft
-}
-
-export function isNetworkId(value: string): value is NetworkId {
-  return NETWORKS.some((network) => network.id === value)
 }

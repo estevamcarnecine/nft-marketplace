@@ -8,8 +8,7 @@ export const queryClient = new QueryClient({
     queries: {
       staleTime: 30_000,
       retry: (failureCount, error) =>
-        failureCount < MAX_QUERY_RETRIES &&
-        !(isApiError(error) && error.status >= 400 && error.status < 500),
+        failureCount < MAX_QUERY_RETRIES && !(isApiError(error) && error.status >= 400 && error.status < 500),
       refetchOnWindowFocus: false,
     },
   },

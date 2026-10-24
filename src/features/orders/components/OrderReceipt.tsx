@@ -37,7 +37,9 @@ function MetaSeparator() {
 
 function Meta({ label, value, bold, minWidth }: { label: string; value: ReactNode; bold?: boolean; minWidth: string }) {
   return (
-    <div className={`flex shrink-0 flex-col items-start whitespace-nowrap text-text-secondary max-sm:min-w-0 ${minWidth}`}>
+    <div
+      className={`flex shrink-0 flex-col items-start whitespace-nowrap text-text-secondary max-sm:min-w-0 ${minWidth}`}
+    >
       <dt className={`text-[14px] leading-[16px] ${bold ? 'font-bold' : ''}`}>{label}</dt>
       <dd className="text-[15px] leading-[normal]">{value}</dd>
     </div>
@@ -56,7 +58,11 @@ function Header({ order }: { order: Order | undefined }) {
     ) : status === 'rejected' ? (
       <CircleX aria-hidden strokeWidth={1.5} className="size-[64px] text-text-coral" />
     ) : (
-      <LoaderCircle aria-hidden strokeWidth={1.5} className="size-[64px] animate-spin text-primary motion-reduce:animate-none" />
+      <LoaderCircle
+        aria-hidden
+        strokeWidth={1.5}
+        className="size-[64px] animate-spin text-primary motion-reduce:animate-none"
+      />
     )
   const title =
     status === 'confirmed'
@@ -79,7 +85,10 @@ function Lines({ order }: { order: Order }) {
   return (
     <ul aria-label="Itens comprados" className="flex w-full flex-col items-start gap-[12px] overflow-clip">
       {order.lines.map((line) => (
-        <li key={`${line.nftId}-${line.editionId}`} className="flex h-[70px] w-full items-center justify-between bg-surface-card">
+        <li
+          key={`${line.nftId}-${line.editionId}`}
+          className="flex h-[70px] w-full items-center justify-between bg-surface-card"
+        >
           <span className="flex min-w-px items-center gap-[12px]">
             <NftImage
               alt=""
@@ -177,7 +186,10 @@ export function OrderReceipt({
             ) : (
               <>
                 <div className="flex h-[65px] w-full shrink-0 flex-col items-start px-[36px] py-[4px] max-sm:h-auto max-sm:px-[20px] max-sm:py-[12px]">
-                  <dl id="order-receipt-summary" className="flex min-h-px w-full flex-1 items-center justify-between max-sm:grid max-sm:grid-cols-2 max-sm:gap-[12px]">
+                  <dl
+                    id="order-receipt-summary"
+                    className="flex min-h-px w-full flex-1 items-center justify-between max-sm:grid max-sm:grid-cols-2 max-sm:gap-[12px]"
+                  >
                     <Meta
                       bold
                       label="ID da transação"
@@ -200,7 +212,9 @@ export function OrderReceipt({
                     <Meta
                       label="Data"
                       minWidth="min-w-[109px]"
-                      value={order ? formatShortDate(order.createdAt) : <Skeleton className="mt-[2px] h-[16px] w-[100px]" />}
+                      value={
+                        order ? formatShortDate(order.createdAt) : <Skeleton className="mt-[2px] h-[16px] w-[100px]" />
+                      }
                     />
                     <MetaSeparator />
                     <Meta
@@ -228,7 +242,10 @@ export function OrderReceipt({
                       <div className="flex w-full flex-col items-end gap-[12px]">
                         <div className="flex w-full flex-col items-start gap-[12px]">
                           <div className="flex w-full flex-col items-start gap-[12px]">
-                            <div aria-hidden className="flex w-full items-center justify-between text-[16px] leading-[16px] whitespace-nowrap text-foreground">
+                            <div
+                              aria-hidden
+                              className="flex w-full items-center justify-between text-[16px] leading-[16px] whitespace-nowrap text-foreground"
+                            >
                               <span className="font-bold">NFTs</span>
                               <span className="flex items-center gap-[48px] max-sm:gap-[12px]">
                                 <span className="w-[67px] text-center font-bold max-sm:hidden">Edições</span>
@@ -264,7 +281,10 @@ export function OrderReceipt({
                       </div>
                       <Hairline src={divider} />
                     </div>
-                    <div aria-live="polite" className="flex min-h-px w-full flex-1 flex-col items-center justify-between gap-[20px] overflow-clip">
+                    <div
+                      aria-live="polite"
+                      className="flex min-h-px w-full flex-1 flex-col items-center justify-between gap-[20px] overflow-clip"
+                    >
                       {order && <Footer order={order} />}
                     </div>
                   </div>
@@ -273,10 +293,7 @@ export function OrderReceipt({
               </>
             )}
 
-            <Dialog.Close
-              aria-label="Fechar"
-              className="absolute top-[16.75px] right-[14px] h-[17.345px] w-[18px]"
-            >
+            <Dialog.Close aria-label="Fechar" className="absolute top-[16.75px] right-[14px] h-[17.345px] w-[18px]">
               <img alt="" src={closeIcon} className="absolute inset-0 block size-full max-w-none" />
             </Dialog.Close>
           </Dialog.Content>

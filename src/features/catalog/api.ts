@@ -6,7 +6,7 @@ import { api } from '@/lib/api'
 import type { Cart, Facets, Nft, NftDetail, Paginated } from '@/types'
 import type { CatalogSearch } from './search'
 
-export const PAGE_SIZE = 9
+const PAGE_SIZE = 9
 
 export function toCatalogParams(search: CatalogSearch) {
   return {
@@ -22,7 +22,7 @@ export function toCatalogParams(search: CatalogSearch) {
   }
 }
 
-export type CatalogParams = ReturnType<typeof toCatalogParams>
+type CatalogParams = ReturnType<typeof toCatalogParams>
 
 export function catalogQuery(params: CatalogParams) {
   return queryOptions({
@@ -75,7 +75,9 @@ export function useToggleListFavorite() {
 
   return useMutation({
     mutationFn: ({ id, favorited }: { id: string; favorited: boolean }) =>
-      api.put<{ id: string; favorited: boolean; favorites: number }>(`/nfts/${encodeURIComponent(id)}/favorite`, { favorited }),
+      api.put<{ id: string; favorited: boolean; favorites: number }>(`/nfts/${encodeURIComponent(id)}/favorite`, {
+        favorited,
+      }),
     onMutate: async ({ id, favorited }) => {
       await queryClient.cancelQueries({ queryKey: listKey })
       const snapshot: ListSnapshot = queryClient.getQueriesData<Paginated<Nft>>({ queryKey: listKey })

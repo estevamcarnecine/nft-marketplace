@@ -54,7 +54,9 @@ export function AccountMenu() {
           <span className="truncate text-[14px] leading-[20px] font-bold text-foreground">
             {user?.name ?? 'Carregando…'}
           </span>
-          {user && <span className="truncate text-[12px] leading-[16px] font-normal text-text-secondary">{user.email}</span>}
+          {user && (
+            <span className="truncate text-[12px] leading-[16px] font-normal text-text-secondary">{user.email}</span>
+          )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-border" />
         <DropdownMenuItem asChild className={ITEM}>

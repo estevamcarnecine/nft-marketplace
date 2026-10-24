@@ -10,7 +10,7 @@ export const walletsQuery = queryOptions({
   select: (data) => data.items,
 })
 
-export interface WalletInput {
+interface WalletInput {
   label: string
   type: WalletType
   network: NetworkId
@@ -29,7 +29,9 @@ function useWalletMutation<TInput>(request: (input: TInput) => Promise<{ items: 
 }
 
 export function useCreateWallet() {
-  return useWalletMutation((input: WalletInput & { isDefault: boolean }) => api.post<{ items: Wallet[] }>('/wallets', input))
+  return useWalletMutation((input: WalletInput & { isDefault: boolean }) =>
+    api.post<{ items: Wallet[] }>('/wallets', input),
+  )
 }
 
 export function useUpdateWallet() {

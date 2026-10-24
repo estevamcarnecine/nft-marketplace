@@ -63,7 +63,13 @@ export function SocialButtons({ gap = 12, variant = 'dialog' }: { gap?: 12 | 16;
   const page = variant === 'page'
   const spacing = page || gap === 16 ? 'gap-[16px]' : 'gap-[12px]'
   return (
-    <div className={page ? 'flex w-full flex-col items-start gap-[12px] overflow-clip' : `flex w-full flex-col items-start overflow-clip pt-[24px] ${spacing}`}>
+    <div
+      className={
+        page
+          ? 'flex w-full flex-col items-start gap-[12px] overflow-clip'
+          : `flex w-full flex-col items-start overflow-clip pt-[24px] ${spacing}`
+      }
+    >
       <div className={`flex w-full items-center overflow-clip ${page ? 'gap-[10px]' : 'gap-[12px]'}`}>
         <span aria-hidden className="relative h-0 min-w-px flex-1">
           <span className="absolute inset-[-1px_0_0_0]">

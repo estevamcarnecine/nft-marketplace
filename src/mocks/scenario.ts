@@ -1,4 +1,4 @@
-export interface Scenario {
+interface Scenario {
   latencyMs: number
   jitter: [number, number] | null
   outOfOrder: boolean
@@ -101,7 +101,10 @@ export function latencyFor(key: string): number {
 }
 
 function apply(raw: string): void {
-  for (const token of raw.split(',').map((part) => part.trim()).filter(Boolean)) {
+  for (const token of raw
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean)) {
     const [name, a, b, c] = token.split(':')
     switch (name) {
       case 'latency': {
@@ -183,7 +186,11 @@ export function applyScenarioFromUrl(search: string): boolean {
     resetScenario()
     return raw === 'reset'
   }
-  let tokens = raw?.replace(/session:expire(?::(\d+))?/g, (_match, ms?: string) => `session:expireat:${Date.now() + Number(ms ?? 0)}`) ?? null
+  let tokens =
+    raw?.replace(
+      /session:expire(?::(\d+))?/g,
+      (_match, ms?: string) => `session:expireat:${Date.now() + Number(ms ?? 0)}`,
+    ) ?? null
   try {
     if (tokens) sessionStorage.setItem(STORAGE_KEY, tokens)
     else tokens = sessionStorage.getItem(STORAGE_KEY)
