@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
 const PORT = 4173
-const BASE_URL = `http://localhost:${PORT}`
+// PLAYWRIGHT_BASE_URL runs the suite against a deployed copy (e.g. the Vercel URL) instead of a local build.
+const EXTERNAL_URL = process.env.PLAYWRIGHT_BASE_URL
+const BASE_URL = EXTERNAL_URL ?? `http://localhost:${PORT}`
 
 /**
  * E2E against the production build (`vite preview`) with the MSW mocks it ships with. Every test
@@ -41,10 +43,12 @@ export default defineConfig({
       use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 } },
     },
   ],
-  webServer: {
-    command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
-    url: BASE_URL,
-    reuseExistingServer: !process.env.CI,
-    timeout: 180_000,
-  },
+  webServer: EXTERNAL_URL
+    ? undefined
+    : {
+        command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
+        url: BASE_URL,
+        reuseExistingServer: !process.env.CI,
+        timeout: 180_000,
+      },
 })

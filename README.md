@@ -3,7 +3,7 @@
 A front-end delivery of an NFT marketplace, built from a Figma file with a fully simulated back end: REST through MSW, real-time events through a mock Socket.IO server. It runs end to end from a clean checkout, with no private service or real API.
 
 - **Design:** [Figma file](https://www.figma.com/design/Ff0SksUi7UFtPWUO8kyNtw/Frontend-Challenge?node-id=0-1) (15 frames: 9 desktop, 6 mobile)
-- **Live demo:** _URL added after the Vercel deploy_
+- **Live demo:** https://nft-marketplace-pearl-eight.vercel.app (Vercel; mocks and real time included, every route works on direct access and refresh)
 - **Architecture, contracts and Figma deviations:** [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Author:** Estevam Carnecine Silva ([@estevamcarnecine](https://github.com/estevamcarnecine))
 
@@ -44,6 +44,7 @@ Copy `.env.example` to `.env.local` to change them. No secret is needed.
 | `npm run e2e` | Full Playwright suite: desktop (1440) and mobile (390) projects; builds and serves the app on port 4173 |
 | `npm run e2e:desktop` / `npm run e2e:mobile` | One project |
 | `npm run e2e:update` | Re-record visual baselines (see below) |
+| `PLAYWRIGHT_BASE_URL=<url> npm run e2e` | Run the suite against a deployed copy instead of a local build (e.g. the live demo) |
 | `npm run e2e:report` | Open the HTML report (traces and videos of failures are attached) |
 | `npm run lighthouse` | Build, serve and audit home and NFT detail (mobile + desktop, 3 runs each); reports in `lighthouse/reports/<date>/` |
 | `npm run images` | Regenerate the AVIF/WebP artwork variants in `public/nft/opt/` |
