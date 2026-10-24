@@ -47,6 +47,7 @@ Copy `.env.example` to `.env.local` to change them. No secret is needed.
 | `PLAYWRIGHT_BASE_URL=<url> npm run e2e` | Run the suite against a deployed copy instead of a local build (e.g. the live demo) |
 | `npm run e2e:report` | Open the HTML report (traces and videos of failures are attached) |
 | `npm run lighthouse` | Build, serve and audit home and NFT detail (mobile + desktop, 3 runs each); reports in `lighthouse/reports/<date>/` |
+| `npm run format` / `npm run format:check` | Prettier (write / check) |
 | `npm run images` | Regenerate the AVIF/WebP artwork variants in `public/nft/opt/` |
 
 ## Fictitious accounts
@@ -136,7 +137,7 @@ Handler keys for `offline`, `timeout` and `fail`:
 
 ## Performance
 
-Latest audit: `lighthouse/reports/2026-10-24T01-25-31/summary.md` (median of 3 runs).
+Latest audit: `lighthouse/reports/2026-10-24T01-25-31/` (HTML/JSON per run, medians in `summary.json`).
 
 | Page | Profile | Perf. | A11y | Best pr. | SEO | LCP | CLS | TBT |
 |---|---|---|---|---|---|---|---|---|
@@ -145,7 +146,7 @@ Latest audit: `lighthouse/reports/2026-10-24T01-25-31/summary.md` (median of 3 r
 | NFT detail | mobile | 84 | 100 | 100 | 100 | 3.79 s | 0 | 10 ms |
 | NFT detail | desktop | 98 | 100 | 100 | 100 | 1.02 s | 0 | 0 ms |
 
-Mobile performance is below the 90 target. The causes, what was done about them and what would close the gap are in [ARCHITECTURE.md § Performance](ARCHITECTURE.md#performance).
+Mobile performance is below the 90 target. The causes and what would close the gap are in [ARCHITECTURE.md](ARCHITECTURE.md#performance).
 
 ## Project structure
 
