@@ -14,7 +14,7 @@ import arrowDown from '@/assets/account/arrow-down.svg'
 import hideIcon from '@/assets/account/hide.svg'
 import imageIcon from '@/assets/account/image.svg'
 
-const FIELD = 'w-[417px] gap-[10px]'
+const FIELD = 'w-[417px] max-xl:w-full gap-[10px]'
 const AVATAR_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif'
 const PROFILE_FIELDS: FieldPath<ProfileFormValues>[] = ['displayName', 'username', 'email', 'ensName', 'walletNickname']
 
@@ -33,7 +33,7 @@ function PasswordField({
 }) {
   const [visible, setVisible] = useState(false)
   return (
-    <div className="flex w-[417px] flex-col items-start gap-[12px] overflow-clip">
+    <div className="flex w-[417px] max-xl:w-full flex-col items-start gap-[12px] overflow-clip">
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <div className="relative w-full">
         <input
@@ -95,7 +95,7 @@ function AvatarField({ profile }: { profile: Profile }) {
   }
 
   return (
-    <div className="flex w-[417px] flex-col items-start gap-[10px] overflow-clip">
+    <div className="flex w-[417px] max-xl:w-full flex-col items-start gap-[10px] overflow-clip">
       <span id="avatar-label" className="text-[15px] leading-[15px] whitespace-nowrap text-foreground">
         Avatar
       </span>
@@ -211,13 +211,13 @@ export function ProfileForm({ profile }: { profile: Profile }) {
       </h1>
 
       <div className="flex w-full flex-col items-start gap-[24px] overflow-clip">
-        <div className="flex w-full items-start justify-between">
+        <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
           <TextField id="displayName" label="Nome de exibição" required autoComplete="name" className={FIELD} error={errors.displayName?.message} {...register('displayName')} />
           <TextField id="username" label="Nome de usuário" required autoComplete="username" className={FIELD} error={errors.username?.message} {...register('username')} />
         </div>
-        <div className="flex w-full items-start justify-between">
+        <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
           <TextField id="email" type="email" label="E-mail" required autoComplete="email" className={FIELD} error={errors.email?.message} {...register('email')} />
-          <div className="flex w-[417px] flex-col items-start gap-[10px] overflow-clip">
+          <div className="flex w-[417px] max-xl:w-full flex-col items-start gap-[10px] overflow-clip">
             <span className="flex items-center gap-[4px] whitespace-nowrap">
               <label htmlFor="ensName" className="text-[15px] leading-[15px] text-foreground">
                 Nome ENS
@@ -269,7 +269,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
             <FieldError id="ensName-error" message={errors.ensName?.message} />
           </div>
         </div>
-        <div className="flex w-full items-start justify-between">
+        <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
           <TextField id="walletNickname" label="Apelido da carteira" required autoComplete="off" className={FIELD} error={errors.walletNickname?.message} {...register('walletNickname')} />
           <AvatarField profile={profile} />
         </div>

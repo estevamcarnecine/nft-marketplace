@@ -111,11 +111,11 @@ export function SecondaryWallets({
         aria-busy={delivery.isPending}
         className="flex w-full flex-col items-start gap-[12px]"
       >
-        <div className="flex w-full items-start justify-between">
+        <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
           <h2 id="secondary-wallet-title" className="text-[17px] leading-[16px] font-bold whitespace-nowrap text-foreground">
             Carteira secundária
           </h2>
-          <div className="relative h-[16px] w-[343px] shrink-0">
+          <div className="relative h-[16px] w-[343px] shrink-0 max-xl:w-full">
             <Radio value={PRIMARY} label="Igual à carteira principal" className="absolute top-0 left-0" />
             <span aria-hidden className="absolute top-0 left-[24px] text-[14px] leading-[16px] whitespace-nowrap text-foreground">
               Igual à carteira principal
@@ -130,7 +130,7 @@ export function SecondaryWallets({
           </div>
         </div>
         {secondary.length === 0 ? (
-          <p className="text-[14px] leading-[15px] whitespace-nowrap text-text-secondary">
+          <p className="text-[14px] leading-[15px] whitespace-nowrap text-text-secondary max-xl:whitespace-normal">
             Você ainda não adicionou uma carteira secundária.
           </p>
         ) : (

@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
-import { PageShell } from '@/components/layout/PageShell'
 import { Skeleton } from '@/components/ui/skeleton'
-import { AccountSidebar } from '@/features/account/components/AccountSidebar'
+import { AccountLayout } from '@/features/account/components/AccountLayout'
 import { ProfileForm } from '@/features/account/components/ProfileForm'
 import { profileQuery } from '@/features/checkout/api'
 
@@ -15,16 +14,14 @@ function ProfilePage() {
   const profile = useQuery(profileQuery)
 
   return (
-    <PageShell active="home" footer={false}>
-      <div className="flex w-full items-start gap-[28px] overflow-clip">
-        <AccountSidebar active="profile" />
+    <AccountLayout active="profile">
         {profile.isPending ? (
           <div aria-busy="true" aria-label="Carregando perfil" className="flex min-w-px flex-1 flex-col gap-[24px]">
             <Skeleton className="h-[16px] w-[220px]" />
             {Array.from({ length: 3 }, (_, index) => (
-              <div key={index} className="flex justify-between">
-                <Skeleton className="h-[79px] w-[417px]" />
-                <Skeleton className="h-[79px] w-[417px]" />
+              <div key={index} className="flex justify-between max-xl:flex-col max-xl:gap-[12px]">
+                <Skeleton className="h-[79px] w-[417px] max-xl:w-full" />
+                <Skeleton className="h-[79px] w-[417px] max-xl:w-full" />
               </div>
             ))}
           </div>
@@ -38,7 +35,6 @@ function ProfilePage() {
         ) : (
           <ProfileForm profile={profile.data} />
         )}
-      </div>
-    </PageShell>
+    </AccountLayout>
   )
 }

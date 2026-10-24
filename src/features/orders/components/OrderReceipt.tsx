@@ -28,7 +28,7 @@ function networkLabel(network: NetworkId): string {
 
 function MetaSeparator() {
   return (
-    <span aria-hidden className="flex h-[31px] w-0 shrink-0 items-center justify-center">
+    <span aria-hidden className="flex h-[31px] w-0 shrink-0 items-center justify-center max-sm:hidden">
       <img alt="" src={metaSeparator} className="block h-px w-[31px] max-w-none rotate-90" />
     </span>
   )
@@ -36,7 +36,7 @@ function MetaSeparator() {
 
 function Meta({ label, value, bold, minWidth }: { label: string; value: ReactNode; bold?: boolean; minWidth: string }) {
   return (
-    <div className={`flex shrink-0 flex-col items-start whitespace-nowrap text-text-secondary ${minWidth}`}>
+    <div className={`flex shrink-0 flex-col items-start whitespace-nowrap text-text-secondary max-sm:min-w-0 ${minWidth}`}>
       <dt className={`text-[14px] leading-[16px] ${bold ? 'font-bold' : ''}`}>{label}</dt>
       <dd className="text-[15px] leading-[normal]">{value}</dd>
     </div>
@@ -67,7 +67,7 @@ function Header({ order }: { order: Order | undefined }) {
   return (
     <div className="flex h-[156px] w-full shrink-0 flex-col items-center justify-center gap-[16px] overflow-clip">
       {icon}
-      <Dialog.Title className="text-center text-[16px] leading-[16px] font-bold whitespace-nowrap text-text-secondary">
+      <Dialog.Title className="text-center text-[16px] leading-[16px] font-bold whitespace-nowrap text-text-secondary max-sm:px-[40px] max-sm:leading-[22px] max-sm:whitespace-normal">
         {order ? title : 'Carregando pedido…'}
       </Dialog.Title>
     </div>
@@ -87,18 +87,18 @@ function Lines({ order }: { order: Order }) {
               height={70}
               className="size-[70px] max-w-none shrink-0 rounded-[8px] object-cover"
             />
-            <span className="flex w-[164px] flex-col items-start gap-[6px] leading-[16px]">
+            <span className="flex w-[164px] flex-col items-start gap-[6px] leading-[16px] max-sm:w-auto max-sm:min-w-px">
               <span className="w-full text-[16px] font-bold text-foreground">{line.name}</span>
               <span className="w-full text-[14px] text-secondary">
                 Token {line.tokenId} · {line.editionLabel}
               </span>
             </span>
           </span>
-          <span className="flex shrink-0 items-center gap-[48px] leading-[16px] whitespace-nowrap">
-            <span className="w-[67px] text-center text-[14px] text-text-secondary">
+          <span className="flex shrink-0 items-center gap-[48px] leading-[16px] whitespace-nowrap max-sm:flex-col max-sm:items-end max-sm:gap-[6px] max-sm:pr-[8px]">
+            <span className="w-[67px] text-center text-[14px] text-text-secondary max-sm:w-auto">
               <span className="sr-only">Quantidade: </span>(x {line.quantity})
             </span>
-            <span className="w-[100px] text-right text-[18px] font-bold text-text-accent">
+            <span className="w-[100px] text-right text-[18px] font-bold text-text-accent max-sm:w-auto max-sm:text-[16px]">
               {formatEthLabel(line.lineTotal)}
             </span>
           </span>
@@ -164,7 +164,7 @@ export function OrderReceipt({
         <Dialog.Overlay className="fixed inset-0 z-50 overflow-y-auto bg-ink">
           <Dialog.Content
             aria-describedby="order-receipt-summary"
-            className="relative mx-auto my-[166px] flex w-[578px] max-w-[calc(100vw-32px)] flex-col items-start bg-surface-card outline-none"
+            className="relative mx-auto my-[166px] flex w-[578px] max-w-[calc(100vw-32px)] flex-col items-start bg-surface-card outline-none max-sm:my-[16px]"
           >
             <Header order={order} />
             <span aria-hidden className="h-px w-full shrink-0 bg-primary" />
@@ -175,8 +175,8 @@ export function OrderReceipt({
               </div>
             ) : (
               <>
-                <div className="flex h-[65px] w-full shrink-0 flex-col items-start px-[36px] py-[4px]">
-                  <dl id="order-receipt-summary" className="flex min-h-px w-full flex-1 items-center justify-between">
+                <div className="flex h-[65px] w-full shrink-0 flex-col items-start px-[36px] py-[4px] max-sm:h-auto max-sm:px-[20px] max-sm:py-[12px]">
+                  <dl id="order-receipt-summary" className="flex min-h-px w-full flex-1 items-center justify-between max-sm:grid max-sm:grid-cols-2 max-sm:gap-[12px]">
                     <Meta
                       bold
                       label="ID da transação"
@@ -219,7 +219,7 @@ export function OrderReceipt({
                 <span aria-hidden className="h-px w-full shrink-0 bg-primary" />
 
                 <div className="flex w-full flex-col items-start">
-                  <div className="flex min-h-[588px] w-full flex-col items-start gap-[12px] overflow-clip px-[44px] pt-[20px] pb-[48px]">
+                  <div className="flex min-h-[588px] w-full flex-col items-start gap-[12px] overflow-clip px-[44px] pt-[20px] pb-[48px] max-sm:min-h-0 max-sm:px-[16px] max-sm:pb-[32px]">
                     <h3 className="text-[15px] leading-[16px] font-bold whitespace-nowrap text-foreground">
                       Detalhes da transação
                     </h3>
@@ -229,9 +229,9 @@ export function OrderReceipt({
                           <div className="flex w-full flex-col items-start gap-[12px]">
                             <div aria-hidden className="flex w-full items-center justify-between text-[16px] leading-[16px] whitespace-nowrap text-foreground">
                               <span className="font-bold">NFTs</span>
-                              <span className="flex items-center gap-[48px]">
-                                <span className="w-[67px] text-center font-bold">Edições</span>
-                                <span className="w-[100px] text-right font-medium">Subtotal</span>
+                              <span className="flex items-center gap-[48px] max-sm:gap-[12px]">
+                                <span className="w-[67px] text-center font-bold max-sm:hidden">Edições</span>
+                                <span className="w-[100px] text-right font-medium max-sm:w-auto">Subtotal</span>
                               </span>
                             </div>
                             <Hairline src={divider} />
@@ -246,7 +246,7 @@ export function OrderReceipt({
                             </div>
                           )}
                         </div>
-                        <div className="flex w-[321px] flex-col items-end justify-center gap-[12px] whitespace-nowrap">
+                        <div className="flex w-[321px] flex-col items-end justify-center gap-[12px] whitespace-nowrap max-sm:w-full">
                           <p className="flex w-full items-center justify-between text-foreground">
                             <span className="text-[15px] leading-[normal]">Taxa de rede</span>
                             <span className="text-right text-[18px] leading-[16px]">

@@ -14,7 +14,7 @@ import arrowDown20 from '@/assets/account/arrow-down-20.svg'
 import arrowDownEns from '@/assets/account/arrow-down.svg'
 
 // In this frame each label sits 4px closer to its input than on the profile screen.
-const FIELD = 'w-[417px] [&>:first-child]:-mb-[4px]'
+const FIELD = 'w-[417px] max-xl:w-full [&>:first-child]:-mb-[4px]'
 const ARROW = { src: arrowDown20, size: 'size-[20px]' }
 const FIELDS: FieldPath<PrimaryWalletValues>[] = [
   'displayName',
@@ -70,7 +70,7 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
 
   return (
     <form noValidate onSubmit={submit} aria-labelledby="primary-wallet-title" className="flex w-full flex-col items-start gap-[32px]">
-      <div className="flex w-full flex-col items-start gap-[8px] overflow-clip whitespace-nowrap">
+      <div className="flex w-full flex-col items-start gap-[8px] overflow-clip whitespace-nowrap max-xl:whitespace-normal">
         <div className="flex w-full items-start justify-between leading-[16px]">
           <h1 id="primary-wallet-title" className="text-[17px] font-bold text-foreground">
             Carteira principal
@@ -85,11 +85,11 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
       </div>
 
       <div className="flex w-full flex-col items-start gap-[24px] overflow-clip">
-        <div className="flex w-full items-start justify-between">
+        <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
           <TextField id="displayName" label="Nome de exibição" required autoComplete="name" className={FIELD} error={errors.displayName?.message} {...register('displayName')} />
           <TextField id="walletNickname" label="Apelido da carteira" required autoComplete="off" className={FIELD} error={errors.walletNickname?.message} {...register('walletNickname')} />
         </div>
-        <div className="flex w-full items-start justify-between">
+        <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
           <Controller
             control={control}
             name="network"
@@ -99,9 +99,9 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
           />
           <TextField id="profileName" label="Nome do perfil" required className={FIELD} error={errors.profileName?.message} {...register('profileName')} />
         </div>
-        <div className="flex w-full items-end justify-between">
+        <div className="flex w-full items-end justify-between max-xl:flex-col max-xl:items-start max-xl:gap-[24px]">
           <TextField id="walletAddress" label="Endereço da carteira" required placeholder="Endereço 0x da carteira" autoComplete="off" spellCheck={false} className={FIELD} error={errors.walletAddress?.message} {...register('walletAddress')} />
-          <div className="flex w-[417px] flex-col">
+          <div className="flex w-[417px] max-xl:w-full flex-col">
             <input
               id="secondaryWallet"
               aria-label="ENS ou carteira secundária (opcional)"
@@ -116,7 +116,7 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
             <FieldError id="secondaryWallet-error" message={errors.secondaryWallet?.message} />
           </div>
         </div>
-        <div className="flex w-full items-start justify-between">
+        <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
           <Controller
             control={control}
             name="walletType"
@@ -126,9 +126,9 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
           />
           <TextField id="referralCode" label="Código de indicação" required autoComplete="off" className={FIELD} error={errors.referralCode?.message} {...register('referralCode')} />
         </div>
-        <div className="flex w-full items-start justify-between">
+        <div className="flex w-full items-start justify-between max-xl:flex-col max-xl:gap-[24px]">
           <TextField id="email" type="email" label="E-mail" required autoComplete="email" className={FIELD} error={errors.email?.message} {...register('email')} />
-          <div className="flex w-[417px] flex-col items-start">
+          <div className="flex w-[417px] max-xl:w-full flex-col items-start">
             <span className="-mb-[4px] flex items-center gap-[4px] whitespace-nowrap">
               <label htmlFor="ensName" className="text-[15px] leading-[15px] text-foreground">
                 Nome ENS
@@ -170,7 +170,7 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
                 spellCheck={false}
                 aria-invalid={Boolean(errors.ensName)}
                 aria-describedby={errors.ensName ? 'ensName-error' : undefined}
-                className={`${CONTROL} w-[329px]`}
+                className={`${CONTROL} w-[329px] max-xl:w-auto max-xl:min-w-px max-xl:flex-1`}
                 {...register('ensName')}
               />
             </div>

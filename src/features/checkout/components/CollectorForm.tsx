@@ -56,7 +56,8 @@ function EnsSuffixField() {
   )
 }
 
-export function CollectorForm() {
+/** `stacked`: one column, for the mobile checkout's collapsible section (its summary is the title). */
+export function CollectorForm({ stacked = false }: { stacked?: boolean }) {
   const {
     register,
     control,
@@ -66,12 +67,12 @@ export function CollectorForm() {
 
   return (
     <section aria-labelledby="collector-heading" className="flex min-w-px flex-1 flex-col items-start gap-[12px]">
-      <h2 id="collector-heading" className="w-full text-[17px] leading-[16px] font-bold text-foreground">
+      <h2 id="collector-heading" className={stacked ? 'sr-only' : 'w-full text-[17px] leading-[16px] font-bold text-foreground'}>
         Perfil do colecionador
       </h2>
       <div className="flex w-full flex-col items-start gap-[24px]">
-        <div className="flex w-full items-start gap-[24px]">
-          <div className="flex min-w-px flex-1 flex-col items-start gap-[12px]">
+        <div className={stacked ? 'flex w-full flex-col items-start gap-[12px]' : 'flex w-full items-start gap-[24px]'}>
+          <div className="flex w-full min-w-px flex-1 flex-col items-start gap-[12px]">
             <TextField
               id="displayName"
               label="Nome de exibição"
@@ -133,7 +134,7 @@ export function CollectorForm() {
             />
           </div>
 
-          <div className="flex min-w-px flex-1 flex-col items-start gap-[12px]">
+          <div className="flex w-full min-w-px flex-1 flex-col items-start gap-[12px]">
             <TextField
               id="username"
               label="Nome de usuário"
@@ -187,7 +188,7 @@ export function CollectorForm() {
           <span className="text-[15px] leading-[normal] whitespace-nowrap text-foreground">Usar outra carteira?</span>
         </label>
 
-        <div className="flex w-[350px] flex-col items-start gap-[12px]">
+        <div className={cn('flex flex-col items-start gap-[12px]', stacked ? 'w-full' : 'w-[350px]')}>
           <FieldLabel htmlFor="note">Observação do colecionador (opcional)</FieldLabel>
           <textarea
             id="note"

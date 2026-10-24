@@ -3,9 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { toast } from 'sonner'
 
-import { PageShell } from '@/components/layout/PageShell'
 import { Skeleton } from '@/components/ui/skeleton'
-import { AccountSidebar } from '@/features/account/components/AccountSidebar'
+import { AccountLayout } from '@/features/account/components/AccountLayout'
 import { profileQuery } from '@/features/checkout/api'
 import { walletsQuery } from '@/features/wallets/api'
 import { PrimaryWalletForm } from '@/features/wallets/components/PrimaryWalletForm'
@@ -23,9 +22,7 @@ function WalletsPage() {
   const failed = profile.isError || wallets.isError
 
   return (
-    <PageShell active="home" footer={false}>
-      <div className="flex w-full items-start gap-[28px] overflow-clip">
-        <AccountSidebar active="wallets" />
+    <AccountLayout active="wallets">
         <div className="flex min-w-px flex-1 flex-col items-start gap-[32px] overflow-clip">
           {failed ? (
             <p role="alert" className="text-[14px] leading-[24px] text-text-secondary">
@@ -45,9 +42,9 @@ function WalletsPage() {
             <div aria-busy="true" aria-label="Carregando carteiras" className="flex w-full flex-col gap-[24px]">
               <Skeleton className="h-[39px] w-full" />
               {Array.from({ length: 5 }, (_, index) => (
-                <div key={index} className="flex justify-between">
-                  <Skeleton className="h-[65px] w-[417px]" />
-                  <Skeleton className="h-[65px] w-[417px]" />
+                <div key={index} className="flex justify-between max-xl:flex-col max-xl:gap-[12px]">
+                  <Skeleton className="h-[65px] w-[417px] max-xl:w-full" />
+                  <Skeleton className="h-[65px] w-[417px] max-xl:w-full" />
                 </div>
               ))}
             </div>
@@ -63,7 +60,6 @@ function WalletsPage() {
             </>
           )}
         </div>
-      </div>
       {dialog && (
         <WalletDialog
           mode={dialog}
@@ -74,6 +70,6 @@ function WalletsPage() {
           }}
         />
       )}
-    </PageShell>
+    </AccountLayout>
   )
 }
