@@ -5,6 +5,7 @@ import { cn } from 'cn'
 import { NETWORKS, WALLET_TYPES } from '@/types'
 import type { CheckoutForm } from '../schema'
 import { CONTROL, FieldError, FieldLabel, SelectField, TextField } from '@/components/form/fields'
+import { SavedWalletsMenu } from './SavedWalletsMenu'
 import arrowDownEns from '@/assets/checkout/arrow-down-ens.svg'
 
 function EnsSuffixField() {
@@ -96,16 +97,24 @@ export function CollectorForm({ stacked = false }: { stacked?: boolean }) {
                 />
               )}
             />
-            <TextField
-              id="walletAddress"
-              label="Endereço da carteira"
-              required
-              placeholder="Endereço 0x da carteira"
-              autoComplete="off"
-              spellCheck={false}
-              error={errors.walletAddress?.message}
-              {...register('walletAddress')}
-            />
+            <div className="relative w-full">
+              <TextField
+                id="walletAddress"
+                label="Endereço da carteira"
+                required
+                placeholder="Endereço 0x da carteira"
+                autoComplete="off"
+                spellCheck={false}
+                error={errors.walletAddress?.message}
+                style={stacked ? undefined : { paddingRight: 40 }}
+                {...register('walletAddress')}
+              />
+              {!stacked && (
+                <span className="absolute top-[35px] right-[6px]">
+                  <SavedWalletsMenu />
+                </span>
+              )}
+            </div>
             <Controller
               control={control}
               name="walletType"

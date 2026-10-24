@@ -29,7 +29,7 @@ function networkLabel(id: string): string {
 }
 
 export function MobileCheckout({ flow }: { flow: CheckoutFlow }) {
-  const { form, profile, cart, walletError, busyLabel } = flow
+  const { form, profile, cart, session, walletError, busyLabel } = flow
   const wallets = useQuery(walletsQuery)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
@@ -221,6 +221,21 @@ export function MobileCheckout({ flow }: { flow: CheckoutFlow }) {
           </div>
 
           <div className="flex w-full flex-col items-center gap-[12px]">
+            {session && (
+              <div role="status" className="flex w-full items-center justify-between gap-[12px] rounded-[15px] bg-surface-card px-[16px] py-[12px]">
+                <span className="min-w-px text-[13px] leading-[18px] text-text-secondary">
+                  Conectada: <span className="text-foreground">{WALLET_TYPES.find((type) => type.id === session.type)?.label}</span>{' '}
+                  · {shortAddress(session.address)} · {networkLabel(session.network)}
+                </span>
+                <button
+                  type="button"
+                  onClick={flow.disconnect}
+                  className="shrink-0 text-[13px] leading-[18px] font-bold text-text-accent underline"
+                >
+                  Desconectar
+                </button>
+              </div>
+            )}
             {walletError && (
               <p role="alert" className="w-full text-center text-[13px] leading-[18px] text-destructive">
                 {walletError}
