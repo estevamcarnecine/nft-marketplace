@@ -1,5 +1,6 @@
-import { io, type Socket } from 'socket.io-client'
+import type { Socket } from 'socket.io-client'
 import type { NftUpdatedEvent, OrderUpdatedEvent } from '@/types'
+import { apiReady } from './api-ready'
 import { REALTIME_URL } from './config'
 
 interface ServerToClientEvents {
@@ -19,18 +20,24 @@ export type RealtimeSocket = Socket<ServerToClientEvents, ClientToServerEvents>
 let socket: RealtimeSocket | null = null
 let pendingDisconnect: ReturnType<typeof setTimeout> | undefined
 
-export function getSocket(): RealtimeSocket {
-  if (!socket) {
-    socket = io(REALTIME_URL, { transports: ['websocket'], autoConnect: false })
-  }
+export function getSocket(): RealtimeSocket | null {
   return socket
 }
 
-export function connectSocket(): RealtimeSocket {
+/**
+ * socket.io-client is loaded on first use: its WebSocket transport reads the global `WebSocket`
+ * when the module is evaluated, which must happen after the mocks patch it. Loading it lazily also
+ * keeps it out of the bundle the first paint waits for.
+ */
+export async function connectSocket(): Promise<RealtimeSocket> {
   clearTimeout(pendingDisconnect)
-  const instance = getSocket()
-  if (!instance.active) instance.connect()
-  return instance
+  if (!socket) {
+    await apiReady
+    const { io } = await import('socket.io-client')
+    socket ??= io(REALTIME_URL, { transports: ['websocket'], autoConnect: false })
+  }
+  if (!socket.active) socket.connect()
+  return socket
 }
 
 /**

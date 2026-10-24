@@ -124,9 +124,9 @@ export class App {
     )
   }
 
-  /** The app mounts only after MSW starts; before that, fetch and window.__mock are not there. */
+  /** The app paints before MSW starts; API calls (and window.__mock) are usable once it has. */
   async ready() {
-    await this.page.waitForFunction(() => document.querySelector('#root > *') !== null)
+    await this.page.waitForFunction(() => document.documentElement.dataset.apiReady === 'true')
   }
 
   /** Reads server state through the app's own MSW handlers (same headers as the app). */

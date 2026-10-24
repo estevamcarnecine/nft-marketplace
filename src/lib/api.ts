@@ -2,6 +2,7 @@ import axios, { type AxiosRequestConfig } from 'axios'
 import type { ApiErrorBody } from '@/types'
 import { clearToken, getToken } from './auth'
 import { getGuestCartId } from './cart-id'
+import { apiReady } from './api-ready'
 import { API_BASE_URL } from './config'
 
 export class ApiError extends Error {
@@ -31,7 +32,8 @@ export const http = axios.create({
   timeout: 10_000,
 })
 
-http.interceptors.request.use((config) => {
+http.interceptors.request.use(async (config) => {
+  await apiReady
   const token = getToken()
   if (token) config.headers.set('Authorization', `Bearer ${token}`)
   config.headers.set('X-Cart-Id', getGuestCartId())
