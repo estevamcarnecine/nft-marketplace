@@ -8,6 +8,7 @@ import { CatalogGrid } from '@/features/catalog/components/CatalogGrid'
 import { FeaturedBanner } from '@/features/catalog/components/FeaturedBanner'
 import { FiltersPanel } from '@/features/catalog/components/FiltersPanel'
 import { MobileCatalog, MobileSearchBar } from '@/features/catalog/components/MobileCatalog'
+import { MobileFeatured } from '@/features/catalog/components/MobileFeatured'
 import { useIsDesktop } from '@/lib/use-media-query'
 import { Blog } from './components/Blog'
 import { MobileHero } from './components/MobileHero'
@@ -47,6 +48,7 @@ function MobileHome() {
         <main id="conteudo" className="flex w-full flex-col items-start gap-[16px]">
           <MobileSearchBar inputRef={searchRef} />
           <MobileHero />
+          <MobileFeatured />
           <MobileCatalog />
         </main>
       </MobileShell>

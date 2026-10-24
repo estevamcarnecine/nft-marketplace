@@ -3,12 +3,12 @@ import { Link, useCanGoBack, useRouter } from '@tanstack/react-router'
 import { RadioGroup } from 'radix-ui'
 import { cn } from 'cn'
 
-import { NftImage } from '@/components/common/NftImage'
 import { Skeleton } from '@/components/ui/skeleton'
 import { mulEthInt } from '@/lib/eth'
 import { formatEthLabel, formatRating } from '@/lib/format'
 import type { NftDetail } from '@/types'
 import { useNftPurchase } from '../use-nft-purchase'
+import { MobileGallery } from './MobileGallery'
 import arrowLeft from '@/assets/mobile/detail/arrow-left.svg'
 import arrowLeftMuted from '@/assets/mobile/cart/arrow-left.svg'
 import heart from '@/assets/mobile/detail/heart.svg'
@@ -59,13 +59,7 @@ export function MobileNftDetail({ nft }: { nft: NftDetail }) {
               <img alt="" src={heart} className="block h-[14.235px] w-[16px] max-w-none" />
             </button>
           </div>
-          <NftImage
-            alt={nft.name}
-            src={nft.images[0] ?? nft.image}
-            sizes="(min-width: 560px) 504px, calc(100vw - 56px)"
-            fetchPriority="high"
-            className="block h-[356px] w-full rounded-[24px] object-cover"
-          />
+          <MobileGallery name={nft.name} images={nft.images.length > 0 ? nft.images : [nft.image]} />
         </div>
       </div>
 
