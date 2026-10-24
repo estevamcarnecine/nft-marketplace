@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { cn } from 'cn'
 
+import { NftImage } from '@/components/common/NftImage'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatEthLabel } from '@/lib/format'
 import type { Nft } from '@/types'
@@ -27,9 +28,12 @@ export function MobileProductCard({ nft, eager }: { nft: Nft; eager?: boolean })
           className="flex w-full items-start rounded-[20px] px-[4px] pt-[12px] pb-[20px] max-md:group-even/card:pt-[20px] max-md:group-even/card:pb-[12px]"
           style={{ backgroundImage: BOX }}
         >
-          <img
+          <NftImage
             alt=""
             src={nft.image}
+            sizes="(min-width: 1024px) 220px, (min-width: 768px) 30vw, 46vw"
+            width={168}
+            height={168}
             loading={eager ? 'eager' : 'lazy'}
             className="block aspect-square w-full rounded-[16px] object-cover"
           />

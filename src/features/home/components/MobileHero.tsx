@@ -1,3 +1,4 @@
+import { NftImage } from '@/components/common/NftImage'
 import heroMask from '@/assets/mobile/home/hero-mask.svg'
 import arrowRight from '@/assets/mobile/home/arrow-right.svg'
 import heroDots from '@/assets/mobile/home/hero-dots.svg'
@@ -37,8 +38,8 @@ export function MobileHero() {
             </button>
           </div>
           <div aria-hidden className="relative h-[146px] w-[138px] shrink-0">
-            <img alt="" src="/nft/emerald-ape.png" className="absolute top-0 left-0 size-[138px] rounded-[16px] object-cover" />
-            <img alt="" src="/nft/cosmic-bloom.png" className="absolute top-[88px] left-[14px] size-[58px] rounded-[16px] object-cover" />
+            <NftImage alt="" src="/nft/emerald-ape.png" sizes="138px" fetchPriority="high" className="absolute top-0 left-0 size-[138px] rounded-[16px] object-cover" />
+            <NftImage alt="" src="/nft/cosmic-bloom.png" sizes="58px" className="absolute top-[88px] left-[14px] size-[58px] rounded-[16px] object-cover" />
           </div>
         </div>
         <img alt="" src={heroDots} className="block h-[7px] w-[33px] max-w-none" />

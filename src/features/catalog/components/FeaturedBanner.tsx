@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 
+import { NftImage } from '@/components/common/NftImage'
 import { Skeleton } from '@/components/ui/skeleton'
 import { featuredQuery } from '../api'
 
@@ -23,9 +24,10 @@ export function FeaturedBanner() {
         </div>
         {featured.data ? (
           <Link to="/nft/$id" params={{ id: featured.data.id }} className="relative block h-[368px] w-full rounded-[22px]">
-            <img
+            <NftImage
               alt={`${featured.data.name}, em destaque`}
               src={featured.data.image}
+              sizes="310px"
               width={310}
               height={368}
               loading="lazy"

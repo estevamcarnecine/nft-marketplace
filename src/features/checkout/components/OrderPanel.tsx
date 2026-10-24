@@ -4,6 +4,7 @@ import { Controller, useFormContext } from 'react-hook-form'
 import { RadioGroup } from 'radix-ui'
 import { cn } from 'cn'
 
+import { NftImage } from '@/components/common/NftImage'
 import { Hairline } from '@/components/common/Hairline'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatEth } from '@/lib/eth'
@@ -48,9 +49,10 @@ function OrderLines({ cart, loading }: { cart: Cart | undefined; loading: boolea
     <ul className="flex w-full flex-col items-start gap-[12px]">
       {cart?.items.map((line) => (
         <li key={line.id} className="flex h-[70px] w-full items-center gap-[8px] bg-surface-card pr-[16px] pl-[4px]">
-          <img
+          <NftImage
             alt=""
             src={line.nft.image}
+            sizes="70px"
             width={70}
             height={70}
             className="size-[70px] max-w-none shrink-0 rounded-[8px] object-cover"

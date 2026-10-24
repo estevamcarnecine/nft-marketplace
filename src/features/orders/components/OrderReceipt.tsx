@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { Dialog } from 'radix-ui'
 import { CircleX, LoaderCircle } from 'lucide-react'
 
+import { NftImage } from '@/components/common/NftImage'
 import { Hairline } from '@/components/common/Hairline'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatEthLabel, formatShortDate, shortHash } from '@/lib/format'
@@ -80,9 +81,10 @@ function Lines({ order }: { order: Order }) {
       {order.lines.map((line) => (
         <li key={`${line.nftId}-${line.editionId}`} className="flex h-[70px] w-full items-center justify-between bg-surface-card">
           <span className="flex min-w-px items-center gap-[12px]">
-            <img
+            <NftImage
               alt=""
               src={line.image}
+              sizes="70px"
               width={70}
               height={70}
               className="size-[70px] max-w-none shrink-0 rounded-[8px] object-cover"

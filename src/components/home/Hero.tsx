@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 
 import carouselDots from '@/assets/home/carousel-dots.svg'
-import heroArt from '@/assets/home/hero-art.png'
+import { NftImage } from '@/components/common/NftImage'
 import heroBg from '@/assets/home/hero-bg.svg'
 
 export function Hero() {
@@ -36,9 +36,14 @@ export function Hero() {
           <img alt="" src={carouselDots} className="block h-[8px] w-[40px] max-w-none" />
         </div>
 
-        <img
+        {/* The largest element above the fold on desktop: fetched first. */}
+        <NftImage
           alt="Macaco de óculos escuros e jaqueta verde"
-          src={heroArt}
+          src="/nft/emerald-ape.png"
+          sizes="450px"
+          width={450}
+          height={450}
+          fetchPriority="high"
           className="size-[450px] shrink-0 rounded-[24px] object-cover"
         />
       </div>

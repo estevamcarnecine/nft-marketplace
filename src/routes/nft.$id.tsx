@@ -133,7 +133,12 @@ function NftDetailPage() {
         )}
       </div>
 
-      {detail.isSuccess && <NftDetailsTabs nft={detail.data} />}
+      {detail.isSuccess ? (
+        <NftDetailsTabs nft={detail.data} />
+      ) : (
+        // Holds the tabs' place while loading, so the sections below do not shift when they arrive.
+        detail.isPending && <Skeleton aria-hidden className="h-[340px] w-full rounded-[6px]" />
+      )}
       {!notFound && <RelatedNfts title="Mais desta coleção" nftId={id} />}
     </PageShell>
   )

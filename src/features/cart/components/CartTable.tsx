@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 
 import { Hairline } from '@/components/common/Hairline'
+import { NftImage } from '@/components/common/NftImage'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatEthLabel } from '@/lib/format'
 import type { CartLine } from '@/types'
@@ -54,9 +55,10 @@ function CartRow({ line }: { line: CartLine }) {
         params={{ id: line.nft.id }}
         className={`${COLUMNS.nft} flex h-full items-center gap-[16px]`}
       >
-        <img
+        <NftImage
           alt=""
           src={line.nft.image}
+          sizes="70px"
           width={70}
           height={70}
           className="size-[70px] max-w-none shrink-0 rounded-[6px] object-cover"

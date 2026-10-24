@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { cn } from 'cn'
 
+import { NftImage } from '@/components/common/NftImage'
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import zoomIcon from '@/assets/nft-detail/zoom.svg'
 
@@ -23,9 +24,10 @@ export function NftGallery({ name, images }: { name: string; images: string[] })
                 index === selected && 'border border-primary',
               )}
             >
-              <img
+              <NftImage
                 alt=""
                 src={image}
+                sizes="100px"
                 width={100}
                 height={100}
                 className="pointer-events-none absolute inset-0 size-full max-w-none rounded-[8px] object-cover"
@@ -36,9 +38,10 @@ export function NftGallery({ name, images }: { name: string; images: string[] })
       </ul>
 
       <div className="flex size-[444px] shrink-0 items-center justify-center rounded-[6px] bg-surface-card p-[16px]">
-        <img
+        <NftImage
           alt={name}
           src={current}
+          sizes="404px"
           width={404}
           height={404}
           fetchPriority="high"
@@ -58,7 +61,7 @@ export function NftGallery({ name, images }: { name: string; images: string[] })
         </DialogTrigger>
         <DialogContent className="w-auto max-w-[min(90vw,720px)] border-border bg-surface-card p-[16px] sm:max-w-[min(90vw,720px)]">
           <DialogTitle className="sr-only">{name}</DialogTitle>
-          <img alt={name} src={current} className="max-h-[80vh] w-full rounded-[24px] object-contain" />
+          <NftImage alt={name} src={current} sizes="min(90vw, 720px)" className="max-h-[80vh] w-full rounded-[24px] object-contain" />
         </DialogContent>
       </Dialog>
     </div>

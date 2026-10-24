@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { cn } from 'cn'
 
+import { NftImage } from '@/components/common/NftImage'
 import { Hairline } from '@/components/common/Hairline'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatEthLabel } from '@/lib/format'
@@ -30,9 +31,10 @@ function RelatedCard({ nft, variant }: { nft: Nft; variant: Variant }) {
     <li className="w-[219px]">
       <Link to="/nft/$id" params={{ id: nft.id }} className={cn('flex w-full flex-col items-start', styles.card)}>
         <span className={cn('flex h-[255px] w-full bg-surface-card', styles.box)}>
-          <img
+          <NftImage
             alt=""
             src={nft.image}
+            sizes="212px"
             width={212}
             height={212}
             loading="lazy"
@@ -116,8 +118,11 @@ export function RelatedNfts({
           </ul>
         )}
 
+        {/* The dots row is reserved while loading, so it does not push the page when it appears. */}
+        {source.isPending && <span aria-hidden className="h-[12px]" />}
+        {/* 12px gaps (8 in the Figma): dot centers 24px apart, the minimum touch spacing. */}
         {pageCount > 1 && (
-          <div role="group" aria-label="Páginas de sugestões" className="flex h-[12px] items-center gap-[8px]">
+          <div role="group" aria-label="Páginas de sugestões" className="flex h-[12px] items-center gap-[12px]">
             {Array.from({ length: pageCount }, (_, index) => (
               <button
                 key={index}

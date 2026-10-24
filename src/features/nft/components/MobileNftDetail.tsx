@@ -3,6 +3,7 @@ import { Link, useCanGoBack, useRouter } from '@tanstack/react-router'
 import { RadioGroup } from 'radix-ui'
 import { cn } from 'cn'
 
+import { NftImage } from '@/components/common/NftImage'
 import { Skeleton } from '@/components/ui/skeleton'
 import { mulEthInt } from '@/lib/eth'
 import { formatEthLabel, formatRating } from '@/lib/format'
@@ -63,9 +64,11 @@ export function MobileNftDetail({ nft }: { nft: NftDetail }) {
               <img alt="" src={heart} className="block h-[14.235px] w-[16px] max-w-none" />
             </button>
           </div>
-          <img
+          <NftImage
             alt={nft.name}
             src={nft.images[0] ?? nft.image}
+            sizes="(min-width: 560px) 504px, calc(100vw - 56px)"
+            fetchPriority="high"
             className="block h-[356px] w-full rounded-[24px] object-cover"
           />
         </div>
@@ -80,6 +83,7 @@ export function MobileNftDetail({ nft }: { nft: NftDetail }) {
             {nft.name}
           </h1>
           <p
+            role="img"
             aria-label={`Avaliação ${formatRating(nft.rating)} de 5, ${nft.reviewCount} avaliações`}
             className="flex h-[27px] shrink-0 items-center gap-[4px] rounded-[32px] border border-primary px-[5px] text-[14px] leading-[16px]"
           >

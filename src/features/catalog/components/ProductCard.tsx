@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { cn } from 'cn'
 
+import { NftImage } from '@/components/common/NftImage'
 import { Skeleton } from '@/components/ui/skeleton'
 import { isApiError } from '@/lib/api'
 import { formatEthLabel } from '@/lib/format'
@@ -45,9 +46,10 @@ export function ProductCard({ nft, eager, firstRow }: { nft: Nft; eager?: boolea
         className="flex w-full flex-col items-start gap-[12px] outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
       >
         <span className="flex h-[300px] w-full items-start justify-center bg-surface-card px-[4px] pt-[24px]">
-          <img
+          <NftImage
             alt=""
             src={nft.image}
+            sizes="250px"
             width={250}
             height={250}
             loading={eager ? 'eager' : 'lazy'}

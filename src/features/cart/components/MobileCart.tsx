@@ -1,5 +1,6 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 
+import { NftImage } from '@/components/common/NftImage'
 import { Skeleton } from '@/components/ui/skeleton'
 import { MobileBackButton } from '@/features/nft/components/MobileNftDetail'
 import { CartNotices } from '@/features/realtime/components/CartNotices'
@@ -29,8 +30,8 @@ function MobileCartLine({ line }: { line: CartLine }) {
       <Link to="/nft/$id" params={{ id: line.nft.id }} className="absolute inset-y-0 left-0 flex w-[calc(100%-38px)] items-start">
         {/* The frame stacks the art over itself with multiply, which deepens its tones. */}
         <span className="relative size-[100px] shrink-0">
-          <img alt="" src={line.nft.image} className="absolute inset-0 size-full rounded-l-[14px] object-cover" />
-          <img alt="" src={line.nft.image} className="absolute inset-0 size-full rounded-[14px] object-cover mix-blend-multiply" />
+          <NftImage alt="" src={line.nft.image} sizes="100px" className="absolute inset-0 size-full rounded-l-[14px] object-cover" />
+          <NftImage alt="" src={line.nft.image} sizes="100px" className="absolute inset-0 size-full rounded-[14px] object-cover mix-blend-multiply" />
         </span>
         <span className="flex min-w-px flex-1 flex-col items-start pt-[13px] pl-[9px] leading-[16px]">
           <span className="w-full truncate text-[15px] font-bold text-foreground">{line.nft.name}</span>
