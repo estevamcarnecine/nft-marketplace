@@ -26,7 +26,6 @@ export function SignupForm({ onSuccess, variant = 'dialog' }: { onSuccess: () =>
       onSuccess,
       onError: (error) => {
         if (!isApiError(error)) return setError('root', { message: 'Não foi possível criar a conta. Tente novamente.' })
-        // 422 validation and 409 conflicts (e-mail or username taken) both name the field.
         const fields = FIELDS.filter((field) => error.errors?.[field])
         fields.forEach((field, index) =>
           setError(field, { type: 'server', message: error.errors?.[field] }, { shouldFocus: index === 0 }),

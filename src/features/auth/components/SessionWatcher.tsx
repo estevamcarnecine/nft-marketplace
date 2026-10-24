@@ -7,11 +7,6 @@ import { onTokenChange } from '@/lib/auth'
 
 const TOAST_ID = 'session-change'
 
-/**
- * Reacts to the session ending or changing outside the login/logout buttons: an expired token
- * (any 401 for the current token) or another tab signing in or out. Cached data belonged to the
- * previous session, so it is dropped; a private screen sends the user to sign in and come back.
- */
 export function SessionWatcher() {
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -31,7 +26,6 @@ export function SessionWatcher() {
           { id: TOAST_ID },
         )
         if (onPrivateRoute) {
-          // Leave first, so the private screen does not refetch without a session.
           void router
             .navigate({ to: '/login', search: { redirect: location.href }, replace: true })
             .then(() => queryClient.clear())
@@ -41,7 +35,6 @@ export function SessionWatcher() {
         return
       }
 
-      // Another tab signed in, possibly as someone else: nothing cached here is theirs.
       toast.info('Sua sessão foi atualizada em outra aba.', { id: TOAST_ID })
       queryClient.clear()
       void router.invalidate()

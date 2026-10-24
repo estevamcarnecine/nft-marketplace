@@ -3,7 +3,6 @@ import heroMask from '@/assets/mobile/home/hero-mask.svg'
 import arrowRight from '@/assets/mobile/home/arrow-right.svg'
 import heroDots from '@/assets/mobile/home/hero-dots.svg'
 
-/** Figma "Mobile / Início" Hero Banner (70395:240). The artwork is the same as the desktop hero's. */
 export function MobileHero() {
   function explore() {
     document.getElementById('mercado')?.scrollIntoView({
@@ -14,7 +13,6 @@ export function MobileHero() {
   return (
     <section
       aria-labelledby="mobile-hero-title"
-      // 190px tall at the frame width; narrower phones wrap the copy, so the banner may grow.
       className="relative flex min-h-[190px] w-full shrink-0 flex-col items-center justify-center overflow-clip rounded-[12px] p-[16px]"
     >
       <img alt="" src={heroMask} className="absolute inset-0 block size-full max-w-none" />

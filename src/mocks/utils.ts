@@ -27,10 +27,6 @@ export function validationError(errors: Record<string, string>) {
   return errorResponse(422, 'VALIDATION_ERROR', 'Revise os campos destacados', { errors })
 }
 
-/**
- * Every handler runs through the active scenario (latency, jitter, offline, timeout, injected
- * HTTP failures), and every mutation is persisted afterwards so a reload keeps the data.
- */
 const SESSIONLESS_KEYS = new Set(['auth.login', 'auth.signup', 'auth.logout'])
 
 export function withScenario(key: string, resolver: Resolver): HttpResponseResolver {
@@ -46,8 +42,6 @@ export function withScenario(key: string, resolver: Resolver): HttpResponseResol
         status >= 500 ? 'O serviço está temporariamente indisponível. Tente novamente.' : `Falha simulada em ${key}`,
       )
     }
-    // A bearer token that is expired, revoked or forged is rejected on public endpoints too, so a
-    // stale session never silently falls back to visitor data. Signing in and out stay open.
     if (!SESSIONLESS_KEYS.has(key) && bearerToken(info.request) && checkSession(info.request).status !== 'valid') {
       return unauthorized(info.request)
     }
@@ -109,7 +103,6 @@ export function authenticate(request: Request): StoredUser | null {
   return session.status === 'valid' ? session.user : null
 }
 
-/** 401 that tells an expired session (resume after login) apart from no session at all. */
 export function unauthorized(request?: Request) {
   if (request && checkSession(request).status === 'expired') {
     return errorResponse(401, 'SESSION_EXPIRED', 'Sua sessão expirou. Entre novamente para continuar.')

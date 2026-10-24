@@ -28,7 +28,6 @@ export function isApiError(error: unknown): error is ApiError {
 export const http = axios.create({
   baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
-  // A request that hangs is reported as a network failure instead of waiting forever.
   timeout: 10_000,
 })
 
@@ -43,14 +42,11 @@ http.interceptors.request.use(async (config) => {
 http.interceptors.response.use(
   (response) => response,
   (error: unknown) => {
-    // Cancelled requests (TanStack Query passes an AbortSignal) are not API errors.
     if (axios.isCancel(error)) return Promise.reject(error)
 
     if (axios.isAxiosError<ApiErrorBody>(error)) {
       const status = error.response?.status ?? 0
       const data = error.response?.data
-      // Only a 401 for the current token ends the session; a late answer to a request sent with an
-      // older token (previous user) must not log out whoever is signed in now.
       const sentToken = error.config?.headers.get('Authorization')
       if (status === 401 && sentToken && sentToken === `Bearer ${getToken()}`) clearToken('expired')
 

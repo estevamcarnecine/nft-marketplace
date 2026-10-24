@@ -16,7 +16,6 @@ import scan3 from '@/assets/mobile/home/scan-3.svg'
 import scan4 from '@/assets/mobile/home/scan-4.svg'
 import scan5 from '@/assets/mobile/home/scan-5.svg'
 
-// Positions are the Figma "Tab Bar" insets (414×126); each icon sits in a 44px touch target.
 const SLOT = 'absolute top-[59px] flex size-[44px] -translate-x-1/2 items-center justify-center rounded-full'
 const SCAN_PARTS: [string, string][] = [
   [scan1, 'inset-[25.48%_46.66%_73.1%_46.86%]'],
@@ -26,10 +25,6 @@ const SCAN_PARTS: [string, string][] = [
   [scan5, 'inset-[16.67%_50.31%_75.15%_47.18%]'],
 ]
 
-/**
- * Figma "Mobile / Início" Tab Bar. The raised center button opens the catalog search; the
- * favorites tab has no screen in scope, so it is marked "em breve".
- */
 export function MobileTabBar({ onSearch }: { onSearch: () => void }) {
   const location = useLocation()
   const signedIn = useToken() !== null

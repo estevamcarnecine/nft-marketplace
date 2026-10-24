@@ -7,13 +7,6 @@ import { schedulePersist } from './persistence'
 import { scenario } from './scenario'
 import { userIdForToken } from './session'
 
-/**
- * Socket.IO server simulated with MSW (`ws.link` + @mswjs/socket.io-binding): the page's
- * socket.io-client talks the real Socket.IO protocol over an intercepted WebSocket.
- * - `nft.updated` is public and goes to every connected client.
- * - `order.updated` goes only to sockets subscribed with the owner's session, so an event never
- *   reaches another user (or the previous user of the same tab after logout).
- */
 type SocketIo = ReturnType<typeof toSocketIo>
 
 interface Client {
@@ -50,9 +43,7 @@ export const realtimeHandler = link.addEventListener('connection', (connection) 
   scheduleDrop()
 })
 
-/** Closes every socket as a network drop would; socket.io-client reconnects on its own. */
 export function dropAllSockets(): void {
-  // Copied first: each close removes its client from the set.
   for (const client of [...clients]) client.io.rawClient.close(4000, 'simulated drop')
   clients.clear()
 }
@@ -60,7 +51,6 @@ export function dropAllSockets(): void {
 function deliver(targets: Iterable<Client>, event: NftUpdatedEvent | OrderUpdatedEvent): void {
   for (const client of targets) {
     client.io.client.emit(event.type, event)
-    // Scenario event:dup — the same event (same eventId) arrives twice.
     if (scenario.duplicateEvents) client.io.client.emit(event.type, event)
   }
 }
@@ -84,7 +74,6 @@ export function emitNftUpdated(nft: NftRecord): void {
   const event = nftEvent(nft)
   deliver(clients, event)
   if (scenario.staleEvents) {
-    // Scenario event:stale — an older version arrives late, with outdated data.
     const stale: NftUpdatedEvent = {
       ...nftEvent(nft, nft.version - 1),
       data: { ...event.data, price: '0.01', available: 999 },
@@ -108,7 +97,6 @@ export function emitOrderUpdated(userId: string, order: Order): void {
   )
 }
 
-/** Server-side changes used by demos and tests; the client learns about them only through the socket. */
 export const realtimeControls = {
   changePrice(nftId: string, percent: number): boolean {
     const nft = adjustNftPrice(nftId, percent)

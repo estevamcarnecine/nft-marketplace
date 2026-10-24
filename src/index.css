@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* Figma tokens (file KFjqSiJSVzMmtRR1V8F0Gt). Names mirror the Figma variables. */
 @theme {
   --font-sans: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
@@ -26,7 +25,6 @@
   --breakpoint-xl: 1440px;
 }
 
-/* shadcn/ui semantic slots, mapped onto the Figma palette. The app has a single dark theme. */
 :root {
   --background: #140d0a;
   --foreground: #f5f1eb;
@@ -102,7 +100,6 @@
   }
 }
 
-/* Skeleton shimmer: a light band sweeping over the placeholder. */
 @layer components {
   .skeleton-shimmer {
     position: relative;

@@ -44,7 +44,6 @@ test.describe('favorites', () => {
       await button.click()
       await expect(page.getByText('Adicionado aos favoritos.')).toBeVisible()
       await expect(button).toHaveAttribute('aria-pressed', 'true')
-      // The server stored it: the NFT reads back as favorited for this user.
       expect((await app.api<{ favorited: boolean }>('/nfts/nft-0042')).favorited).toBe(true)
     })
   })
@@ -55,7 +54,6 @@ test.describe('favorites', () => {
     const before = await toggle.getAttribute('aria-pressed')
     await toggle.click()
     await expect(toggle).not.toHaveAttribute('aria-pressed', before ?? 'false')
-    // Optimistic first; reload only once the server confirmed it.
     await expect(page.getByText(/(Adicionado aos|Removido dos) favoritos\./)).toBeVisible()
     await page.reload()
     await expect(page.getByRole('button', { name: /^Favorit/ }).first()).not.toHaveAttribute(

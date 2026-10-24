@@ -8,7 +8,6 @@ import hideIconPage from '@/assets/mobile/auth/hide.svg'
 const INPUT =
   'w-full overflow-clip border border-border bg-transparent px-[16px] py-[12px] leading-[16px] text-foreground outline-none placeholder:text-secondary focus:border-primary aria-invalid:border-destructive'
 
-/** `dialog`: the desktop auth modals; `page`: the full-screen mobile frames (16:1022, 16:1228). */
 export type AuthVariant = 'dialog' | 'page'
 const SIZE: Record<AuthVariant, string> = { dialog: 'h-[40px] rounded-[5px]', page: 'h-[50px] rounded-[10px]' }
 
@@ -22,7 +21,6 @@ export function FieldError({ id, message }: { id: string; message?: string }) {
 
 type AuthInputProps = ComponentProps<'input'> & { id: string; label: string; error?: string; variant?: AuthVariant }
 
-/** Figma auth input: the label is the placeholder visually, and stays available to screen readers. */
 export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(function AuthInput(
   { id, label, error, className, variant = 'dialog', ...input },
   ref,
@@ -45,7 +43,6 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(function A
   )
 })
 
-/** Password input with the Figma "Hide" toggle; the shown state uses the same stroke weight. */
 export const PasswordInput = forwardRef<HTMLInputElement, AuthInputProps & { toggle?: boolean }>(
   function PasswordInput({ id, label, error, toggle = true, variant = 'dialog', ...input }, ref) {
     const [visible, setVisible] = useState(false)

@@ -8,7 +8,6 @@ import type { CatalogSearch } from './search'
 
 export const PAGE_SIZE = 9
 
-/** Exactly what is sent to GET /nfts; also the cache key, so each combination is cached apart. */
 export function toCatalogParams(search: CatalogSearch) {
   return {
     q: search.q,
@@ -28,8 +27,6 @@ export type CatalogParams = ReturnType<typeof toCatalogParams>
 export function catalogQuery(params: CatalogParams) {
   return queryOptions({
     queryKey: ['nfts', 'list', params] as const,
-    // The signal cancels the request when the filters change before it answers; a late answer for
-    // old filters lands in its own cache entry and never replaces the current one.
     queryFn: ({ signal }) => api.get<Paginated<Nft>>('/nfts', { params, signal }),
     placeholderData: keepPreviousData,
   })
@@ -46,7 +43,6 @@ export const featuredQuery = queryOptions({
   queryFn: ({ signal }) => api.get<Nft>('/nfts/featured', { signal }),
 })
 
-/** Quick add from a catalog card: the API picks the default edition. */
 export function useQuickAddToCart() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -57,7 +53,6 @@ export function useQuickAddToCart() {
 
 type ListSnapshot = [readonly unknown[], Paginated<Nft> | undefined][]
 
-/** Optimistic favorite on every cached catalog page (and the detail, if cached), rolled back on failure. */
 export function useToggleListFavorite() {
   const queryClient = useQueryClient()
   const listKey = ['nfts', 'list'] as const

@@ -161,7 +161,6 @@ export function ProfileForm({ profile }: { profile: Profile }) {
     formState: { errors, isSubmitting },
   } = form
 
-  // A newer profile from the server (e.g. after the avatar changed) must not wipe typed edits.
   useEffect(() => {
     if (!form.formState.isDirty) reset(profileToValues(profile))
   }, [profile, form, reset])

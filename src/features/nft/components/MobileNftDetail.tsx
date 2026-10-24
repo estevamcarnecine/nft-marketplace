@@ -23,10 +23,6 @@ const ROUND = 'flex size-[35px] shrink-0 items-center justify-center rounded-[17
 const STEP =
   'relative flex h-[30px] w-[20px] items-center justify-center rounded-[20px] border border-ink bg-primary drop-shadow-[0px_4px_6px_rgba(20,13,10,0.15)] disabled:opacity-50 before:absolute before:inset-[-7px_-12px] before:content-[""]'
 
-/**
- * Back to the previous screen, or to the catalog when opened directly. The detail frame draws the
- * arrow in text-secondary; the cart and payment frames in the muted secondary tone.
- */
 export function MobileBackButton({ label = 'Voltar', tone = 'muted' }: { label?: string; tone?: 'muted' | 'light' }) {
   const router = useRouter()
   const canGoBack = useCanGoBack()
@@ -42,7 +38,6 @@ export function MobileBackButton({ label = 'Voltar', tone = 'muted' }: { label?:
   )
 }
 
-/** Figma "Mobile / Detalhes do NFT" (15:5536): hero artwork, details sheet and the fixed buy bar. */
 export function MobileNftDetail({ nft }: { nft: NftDetail }) {
   const purchase = useNftPurchase(nft)
   const { quantity, canBuy } = purchase
@@ -207,7 +202,6 @@ export function MobileNftDetail({ nft }: { nft: NftDetail }) {
   )
 }
 
-/** Same frame while loading: hero and sheet placeholders. */
 export function MobileNftDetailSkeleton() {
   return (
     <div aria-busy="true" aria-label="Carregando NFT" className="w-full">
@@ -228,7 +222,6 @@ export function MobileNftDetailSkeleton() {
   )
 }
 
-/** Not found / failure, with the back button so the screen is never a dead end. */
 export function MobileNftDetailMessage({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="mx-auto flex w-full max-w-[560px] flex-col items-start gap-[16px] px-[24px] pt-[23px]">

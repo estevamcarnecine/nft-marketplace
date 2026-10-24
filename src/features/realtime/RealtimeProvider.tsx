@@ -9,11 +9,6 @@ import { acceptEvent } from './gate'
 import { clearCartNotices } from './notices'
 import { setRealtimeConnected } from './status'
 
-/**
- * One socket for the whole app. It is bound to the current session (so order events reach only
- * their owner), rebound on login/logout, and on every reconnect the screens re-read REST to catch
- * up with whatever happened while it was down.
- */
 export function RealtimeProvider() {
   const queryClient = useQueryClient()
 
@@ -55,7 +50,6 @@ export function RealtimeProvider() {
         if (acceptEvent(event)) applyOrderUpdated(queryClient, event)
       })
       const stopTokenWatch = onTokenChange((token) => {
-        // Another user's notices must not survive a session change.
         clearCartNotices()
         subscribeSession(token)
       })

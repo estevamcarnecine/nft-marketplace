@@ -13,11 +13,6 @@ import dividerSection from '@/assets/nft-detail/divider-section.svg'
 
 const PAGE_SIZE = 5
 
-/**
- * The two carousels in the Figma differ only in card spacing: "Mais desta coleção" on the
- * detail page (image pinned 20px from the top, radius 13) and "Colecionadores também viram"
- * on the cart (image centered, radius 17, 8px text gaps).
- */
 const VARIANTS = {
   detail: { card: 'gap-[12px]', box: 'justify-center pt-[20px]', image: 'rounded-[13px]', text: '' },
   cart: { card: 'gap-[8px]', box: 'items-center justify-center', image: 'rounded-[17px]', text: 'gap-[8px]' },
@@ -74,7 +69,6 @@ export function RelatedNfts({
   variant = 'detail',
 }: {
   title: string
-  /** NFT whose collection drives the list; without it the list falls back to trending NFTs. */
   nftId?: string
   exclude?: string[]
   variant?: Variant
@@ -118,9 +112,7 @@ export function RelatedNfts({
           </ul>
         )}
 
-        {/* The dots row is reserved while loading, so it does not push the page when it appears. */}
         {source.isPending && <span aria-hidden className="h-[12px]" />}
-        {/* 12px gaps (8 in the Figma): dot centers 24px apart, the minimum touch spacing. */}
         {pageCount > 1 && (
           <div role="group" aria-label="Páginas de sugestões" className="flex h-[12px] items-center gap-[12px]">
             {Array.from({ length: pageCount }, (_, index) => (

@@ -7,7 +7,6 @@ import closeIcon from '@/assets/auth/close.svg'
 
 const TAB = 'text-[20px] leading-[16px] font-medium whitespace-nowrap'
 
-/** Geometry of the two Figma frames ("Sign In Modal" 9:115 and "Sign Up Modal" 9:1022). */
 const FRAMES = {
   login: { box: 'my-[160px] min-h-[600px]', close: 'top-[11px] right-[12px]' },
   signup: { box: 'my-[158px] min-h-[656px] overflow-clip rounded-[8px]', close: 'top-[13px] right-[13px]' },
@@ -15,10 +14,6 @@ const FRAMES = {
 
 export type AuthMode = keyof typeof FRAMES
 
-/**
- * Shell of the auth modals: a real modal dialog (focus trap, Escape, labelled) over the page,
- * which stays visible because the frames' scrim is clear.
- */
 export function AuthDialog({
   mode,
   description,
@@ -47,7 +42,6 @@ export function AuthDialog({
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 overflow-y-auto">
           <Dialog.Content
-            // Start on the first field, not on the header tabs.
             onOpenAutoFocus={(event) => {
               const field = event.currentTarget instanceof HTMLElement ? event.currentTarget.querySelector('input') : null
               if (field) {

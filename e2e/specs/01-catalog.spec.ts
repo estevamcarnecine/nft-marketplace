@@ -15,7 +15,6 @@ test.describe('catalog: search, filters, sorting, pagination and history', () =>
 
     await app.toggleFilter(/Música/)
     await app.catalogSettled()
-    // Any filter change goes back to the first page.
     await expect(page).not.toHaveURL(/page=/)
     await app.toggleFilter(/Solana/)
     await app.catalogSettled()
@@ -110,7 +109,6 @@ test.describe('catalog: search, filters, sorting, pagination and history', () =>
       await page.getByRole('checkbox', { name: /Jogos/ }).click()
       await expect.poll(() => decodeURIComponent(page.url())).toMatch(/collections=.*fotografia.*jogos/)
       await app.catalogSettled()
-      // Wait past the delayed (older) response; the grid must still show the latest request.
       await page.waitForTimeout(2_000)
       const expected = await app.api<{ items: { name: string }[] }>(
         '/nfts?collections=fotografia,jogos&page=1&pageSize=9',

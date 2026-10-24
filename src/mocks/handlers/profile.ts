@@ -17,7 +17,6 @@ import {
 import { RESERVED_USERNAMES } from '../validation'
 import { syncProfileFromDefault, upsertDefaultWallet } from '../wallet-sync'
 
-
 function emptyProfile(user: StoredUser): Profile {
   return {
     displayName: user.name,
@@ -94,7 +93,6 @@ export const profileHandlers = [
         errors.walletAddress = 'Endereço de carteira inválido'
       }
       if (
-        // A secondary delivery wallet was validated when it was registered.
         input.useAnotherWallet !== true &&
         isNetwork(network) &&
         secondaryWallet &&
@@ -129,7 +127,6 @@ export const profileHandlers = [
         avatarUrl: db.profiles.get(user.id)?.avatarUrl ?? null,
       }
       db.profiles.set(user.id, profile)
-      // The wallet fields of this form are the primary wallet.
       upsertDefaultWallet(user.id, { label: walletNickname, type: walletType, network, address: walletAddress })
       syncProfileFromDefault(user.id)
       return json({ ...(db.profiles.get(user.id) ?? profile) })

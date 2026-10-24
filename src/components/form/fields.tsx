@@ -71,7 +71,6 @@ export function SelectField<T extends string>({
   id: string
   label: string
   placeholder: string
-  /** The checkout uses an 18px arrow, the account screens a 20px one. */
   icon?: { src: string; size: string }
   className?: string
   value: T | ''

@@ -2,7 +2,6 @@ import { expect, test } from '../fixtures'
 
 const NFT_ID = 'nft-0009'
 
-/** Same formatting as src/lib/eth.ts formatEth: at most 3 decimals, at least 2. */
 function eth(price: string): string {
   const rounded = Math.round(Number(price) * 1000) / 1000
   const [whole, fraction = ''] = String(rounded).split('.')
@@ -11,8 +10,6 @@ function eth(price: string): string {
 
 test.describe('event ordering, duplicates and reconnection', () => {
   test.describe('duplicated and stale events', () => {
-    // Every event is delivered twice, and each nft.updated is followed by an older version with
-    // bogus data (price 0.01) that must be ignored.
     test.use({ scenario: 'latency:50,event:dup,event:stale' })
 
     test('apply once and never regress to an older version', async ({ app, page }) => {
@@ -23,7 +20,6 @@ test.describe('event ordering, duplicates and reconnection', () => {
 
       await app.realtime.changePrice(line.nft.id, 20)
       await expect(page.getByRole('button', { name: 'Entendi' })).toHaveCount(1)
-      // Past the stale copy's delivery (300 ms after the real one).
       await page.waitForTimeout(800)
       await expect(page.getByRole('button', { name: 'Entendi' })).toHaveCount(1)
       await expect(page.locator('main')).not.toContainText('0.01 ETH')
@@ -46,7 +42,6 @@ test.describe('event ordering, duplicates and reconnection', () => {
       NFT_ID,
     )
     await expect(page.locator('main')).toContainText(eth(price))
-    // The only request is the test's own read above.
     expect(refetches).toBe(1)
   })
 
@@ -56,7 +51,6 @@ test.describe('event ordering, duplicates and reconnection', () => {
     test('is not lost to the response that was already on its way', async ({ app, page }) => {
       await app.goto(`/nft/${NFT_ID}`)
       await app.waitForSocket()
-      // The detail request is still in flight (1.2 s latency) when the change is pushed.
       await expect(page.getByRole('heading', { level: 1 })).toHaveCount(0)
       await app.realtime.changePrice(NFT_ID, 10)
       const price = (await app.api<{ price: string }>(`/nfts/${NFT_ID}`)).price
@@ -67,7 +61,6 @@ test.describe('event ordering, duplicates and reconnection', () => {
   test('after a disconnection the page catches up through REST', async ({ app, page }) => {
     await app.goto(`/nft/${NFT_ID}`)
     await app.waitForSocket()
-    // The change happens while no socket is connected, so no event can deliver it.
     await page.evaluate((id) => {
       window.__mock.realtime.dropSockets()
       window.__mock.realtime.changePrice(id, -30)
@@ -93,7 +86,6 @@ test.describe('event ordering, duplicates and reconnection', () => {
       await expect(page.getByRole('heading', { name: 'Aguardando a confirmação da rede' })).toBeVisible()
       await app.waitForSocket((list) => list[0]?.userId === 'user_demo')
 
-      // With the socket up the receipt does not poll: the result arrives as a push.
       let polls = 0
       page.on('request', (request) => {
         if (/^\/api\/orders\/[^/]+$/.test(new URL(request.url()).pathname)) polls += 1
@@ -101,7 +93,6 @@ test.describe('event ordering, duplicates and reconnection', () => {
       await expect(page.getByRole('heading', { name: 'Seus NFTs agora estão na sua carteira' })).toBeVisible({
         timeout: 10_000,
       })
-      // One read after the push (for the settled fields), never a polling series.
       expect(polls).toBeLessThanOrEqual(1)
     })
   })

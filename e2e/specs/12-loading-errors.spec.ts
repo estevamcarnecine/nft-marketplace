@@ -1,6 +1,5 @@
 import { expect, test } from '../fixtures'
 
-// Queries retry transient failures twice, so three failures in a row reach the error state.
 test.describe('loading states, failure feedback and retry', () => {
   test.describe('slow network', () => {
     test.use({ scenario: 'latency:1500' })
@@ -31,7 +30,6 @@ test.describe('loading states, failure feedback and retry', () => {
       await app.goto('/')
       await expect(page.getByText('Não foi possível carregar os NFTs.')).toBeVisible({ timeout: 15_000 })
       await page.getByRole('button', { name: 'Tentar novamente' }).click()
-      // The refetch may not have started yet when the click returns: wait for the cards themselves.
       await expect.poll(async () => (await app.cardNames()).length).toBe(9)
     })
   })

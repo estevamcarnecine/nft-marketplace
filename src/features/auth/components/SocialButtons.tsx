@@ -13,7 +13,6 @@ import google5 from '@/assets/auth/google/part-5.svg'
 import google6 from '@/assets/auth/google/part-6.svg'
 import google7 from '@/assets/auth/google/part-7.svg'
 
-// The Google mark is exported from Figma as seven vectors; each keeps its slot from the file.
 const GOOGLE_PARTS: [string, string][] = [
   [google1, 'inset-[57.68%_17.83%_0_7.11%]'],
   [google2, 'top-[71.33%] right-[17.83%] bottom-0 left-1/2'],
@@ -36,7 +35,6 @@ function GoogleMark() {
   )
 }
 
-/** Third-party sign-in is out of scope: the buttons keep their slot but say so instead of acting. */
 function SocialButton({ icon, label }: { icon: ReactNode; label: string }) {
   return (
     <Tooltip>
@@ -61,10 +59,6 @@ function SocialButton({ icon, label }: { icon: ReactNode; label: string }) {
   )
 }
 
-/**
- * Login uses 12px gaps, sign up 16px (Figma frames 9:115 and 9:1022). The mobile screens use the
- * "Mobile Social Block": full-width buttons 16px apart, 12px below a plain divider.
- */
 export function SocialButtons({ gap = 12, variant = 'dialog' }: { gap?: 12 | 16; variant?: 'dialog' | 'page' }) {
   const page = variant === 'page'
   const spacing = page || gap === 16 ? 'gap-[16px]' : 'gap-[12px]'

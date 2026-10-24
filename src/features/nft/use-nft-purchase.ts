@@ -9,14 +9,12 @@ import { useAddToCart, useToggleFavorite } from './api'
 
 const MAX_PER_LINE = 99
 
-/** Limited editions first, largest supply first: the Figma opens on 1/50. */
 function defaultEdition(editions: NftEdition[]): NftEdition | undefined {
   const available = editions.filter((edition) => edition.available > 0)
   const limited = available.filter((edition) => edition.id !== 'open')
   return [...limited].sort((a, b) => b.supply - a.supply)[0] ?? available[0]
 }
 
-/** Edition, quantity limits, add to cart and favorite for the detail screen (desktop and mobile). */
 export function useNftPurchase(nft: NftDetail) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -39,7 +37,6 @@ export function useNftPurchase(nft: NftDetail) {
     setQuantity((current) => Math.max(1, Math.min(current, next?.available ?? 1)))
   }
 
-  /** `goToCart` is the "COMPRAR" behavior; without it the item is added and the user stays. */
   function add({ goToCart }: { goToCart: boolean }) {
     if (!edition || !canBuy) return
     addToCart.mutate(

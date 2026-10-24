@@ -1,6 +1,5 @@
 import { test as base, expect, type Page } from '@playwright/test'
 
-/** Fixture accounts (src/mocks/db.ts); both use the same password. */
 export const USERS = {
   demo: { email: 'demo@kurio.io', name: 'Demo Collector' },
   ana: { email: 'colecionador@kurio.io', name: 'Ana Colecionadora' },
@@ -33,12 +32,10 @@ export class App {
     await this.page.goto(path)
   }
 
-  /** The app switches to the mobile frames below 1280px (src/lib/use-media-query.ts). */
   get isDesktop() {
     return (this.page.viewportSize()?.width ?? 0) >= 1280
   }
 
-  /** Signs in through the real form and waits for the redirect target. */
   async login(user: UserKey = 'demo', redirect = '/') {
     await this.page.goto(`/login?redirect=${encodeURIComponent(redirect)}`)
     await this.page.locator('#login-email').fill(USERS[user].email)
@@ -48,7 +45,6 @@ export class App {
     await this.expectSignedIn(user)
   }
 
-  /** Desktop: the header account menu names the user. Mobile screens have no header; the session is checked. */
   async expectSignedIn(user?: UserKey) {
     if (this.isDesktop) {
       const name = user ? `Conta de ${USERS[user].name}` : /^Conta de/
@@ -58,7 +54,6 @@ export class App {
     }
   }
 
-  /** Desktop: header menu → Sair. Mobile: the account screen's "Sair". */
   async logout() {
     if (this.isDesktop) {
       await this.header.getByRole('button', { name: /^Conta de/ }).click()
@@ -74,17 +69,14 @@ export class App {
     return this.page.locator('header').first()
   }
 
-  /** Desktop header, or the mobile home tab bar: both name the link "Carrinho, N itens". */
   cartBadge() {
     return this.page.getByRole('link', { name: /^Carrinho, \d+ itens$/ }).first()
   }
 
-  /** The detail screen's main buy action: "COMPRAR" (desktop) or "Comprar NFT" (mobile). */
   buyButton() {
     return this.page.getByRole('button', { name: /^(COMPRAR|Comprar NFT)$/ })
   }
 
-  /** Mobile keeps filters in a sheet: open it, act, close it, so the grid is usable again. */
   async withFilters<T>(action: () => Promise<T>): Promise<T> {
     if (this.isDesktop) return action()
     await this.page.getByRole('button', { name: /^Filtros e ordenação/ }).click()
@@ -104,7 +96,6 @@ export class App {
     return this.withFilters(() => this.page.getByRole('checkbox', { name }).getAttribute('aria-checked'))
   }
 
-  /** Mobile checkout shows the collector fields in a collapsible section. */
   async openCollectorDetails() {
     if (this.isDesktop) return
     const details = this.page.locator('details', { hasText: 'Dados do colecionador' })
@@ -113,7 +104,6 @@ export class App {
     }
   }
 
-  /** Waits for the catalog grid to finish its current request. */
   async catalogSettled() {
     await expect(this.page.locator('#catalog-results')).toHaveAttribute('aria-busy', 'false')
   }
@@ -124,12 +114,10 @@ export class App {
     )
   }
 
-  /** The app paints before MSW starts; API calls (and window.__mock) are usable once it has. */
   async ready() {
     await this.page.waitForFunction(() => document.documentElement.dataset.apiReady === 'true')
   }
 
-  /** Reads server state through the app's own MSW handlers (same headers as the app). */
   async api<T>(path: string): Promise<T> {
     await this.ready()
     return this.page.evaluate(async (url) => {
@@ -149,7 +137,6 @@ export class App {
     return (await this.api<{ items: OrderSnapshot[] }>('/orders')).items
   }
 
-  /** Server-side changes delivered to the page by the mock Socket.IO server. */
   get realtime() {
     const page = this.page
     return {
@@ -165,7 +152,6 @@ export class App {
     }
   }
 
-  /** Expires every session opened so far (the next authenticated request gets 401). */
   expireSessions() {
     return this.page.evaluate(() => window.__mock.set({ sessionDeadline: Date.now() }))
   }
@@ -181,7 +167,6 @@ export class App {
 }
 
 interface Fixtures {
-  /** `?mock=` tokens for this test (src/mocks/scenario.ts); kept across reloads like the app does. */
   scenario: string
   app: App
   pageErrors: string[]
@@ -193,13 +178,11 @@ export const test = base.extend<Fixtures>({
     const errors: string[] = []
     page.on('pageerror', (error) => errors.push(String(error)))
     await provide(errors)
-    // An uncaught error in the page fails the test even when every assertion passed.
     expect(errors, 'uncaught page errors').toEqual([])
   },
   page: async ({ page, scenario }, provide) => {
     await page.addInitScript(
       ([key, value]) => {
-        // Set once per tab, before the app boots; a test may change it later with window.__mock.set.
         if (!sessionStorage.getItem(`${key}:seeded`)) {
           sessionStorage.setItem(key, value)
           sessionStorage.setItem(`${key}:seeded`, '1')

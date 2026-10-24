@@ -1,4 +1,3 @@
-// The page-side controls exposed by src/mocks/browser.ts, as the specs use them inside evaluate().
 export {}
 
 declare global {

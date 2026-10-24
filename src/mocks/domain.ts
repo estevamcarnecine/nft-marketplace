@@ -26,7 +26,6 @@ interface CouponRule {
 
 const DAY_MS = 86_400_000
 
-// Deterministic fixtures: two valid codes and one that expired before the fixture epoch.
 export const COUPONS: Record<string, CouponRule> = {
   KURIO10: { percent: 10, expiresAt: FIXTURE_EPOCH + 3650 * DAY_MS },
   BEMVINDO5: { percent: 5, expiresAt: FIXTURE_EPOCH + 3650 * DAY_MS },
@@ -45,7 +44,6 @@ export function checkCoupon(raw: string, now = Date.now()): CouponCheck {
   return { ok: true, coupon: { code, percent: rule.percent } }
 }
 
-/** The cart coupon, dropped when it is no longer valid. */
 function activeCoupon(cart: StoredCart): AppliedCoupon | null {
   if (!cart.coupon) return null
   const check = checkCoupon(cart.coupon)
@@ -119,7 +117,6 @@ export function createQuote(userId: string, promoCode: string | null): Quote {
   return quote
 }
 
-/** Everything the buyer agreed to; ids and timestamps are left out on purpose. */
 export function quoteFingerprint(quote: Quote): string {
   return JSON.stringify([
     quote.promoCode,
@@ -131,7 +128,6 @@ export function quoteFingerprint(quote: Quote): string {
   ])
 }
 
-/** Deterministic fake transaction hash, so a receipt always shows the same reference. */
 function simulatedTxHash(seed: string): string {
   let state = 2166136261
   let hex = ''
@@ -142,7 +138,6 @@ function simulatedTxHash(seed: string): string {
   return `0x${hex.slice(0, 64)}`
 }
 
-/** Removes exactly the purchased quantities from the buyer's cart, keeping anything added since. */
 function removePurchasedFromCart(userId: string, lines: QuoteLine[]): void {
   const cart = getCart(userCartKey(userId))
   for (const line of lines) {
@@ -185,7 +180,6 @@ function settleOrder(orderId: string): void {
     }
     removePurchasedFromCart(stored.userId, order.lines)
     order.txHash = simulatedTxHash(order.id)
-    // In-app simulated explorer: no real chain is involved.
     order.explorerUrl = `/explorer/tx/${order.txHash}`
   }
 
@@ -203,7 +197,6 @@ export function resumePendingOrders(): void {
   }
 }
 
-/** Payment settles asynchronously, like a transaction waiting for confirmation. */
 export function scheduleOrderProgress(orderId: string): void {
   setTimeout(() => settleOrder(orderId), scenario.orderSettleMs)
 }

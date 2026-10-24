@@ -17,10 +17,8 @@ const APPLY = 'linear-gradient(96.02deg, rgba(210, 138, 76, 0.54) 0.94%, #d28a4c
 const CHECKOUT = 'linear-gradient(108.86deg, #d28a4c 3.96%, rgba(210, 138, 76, 0.8) 121.97%)'
 const CARD = 'relative h-[100px] w-full rounded-[14px] bg-surface-card shadow-[0px_6px_20px_0px_rgba(10,6,4,0.45)]'
 const ROW = 'flex w-full items-start justify-between whitespace-nowrap text-foreground'
-// 24px visuals inside 44px touch targets.
 const HIT = 'before:absolute before:-inset-[10px] before:content-[""]'
 
-/** Figma "Mobile / Carrinho de NFTs" Item: thumbnail, name, edition, line total and quantity. */
 function MobileCartLine({ line }: { line: CartLine }) {
   const { changeQuantity, removeLine, busy, unavailable, max } = useCartLineActions(line)
   const name = `${line.nft.name} (edição ${line.edition.label})`
@@ -28,7 +26,6 @@ function MobileCartLine({ line }: { line: CartLine }) {
   return (
     <li aria-busy={busy} className={CARD} data-unavailable={unavailable || undefined}>
       <Link to="/nft/$id" params={{ id: line.nft.id }} className="absolute inset-y-0 left-0 flex w-[calc(100%-38px)] items-start">
-        {/* The frame stacks the art over itself with multiply, which deepens its tones. */}
         <span className="relative size-[100px] shrink-0">
           <NftImage alt="" src={line.nft.image} sizes="100px" className="absolute inset-0 size-full rounded-l-[14px] object-cover" />
           <NftImage alt="" src={line.nft.image} sizes="100px" className="absolute inset-0 size-full rounded-[14px] object-cover mix-blend-multiply" />
@@ -93,7 +90,6 @@ function Amount({ value, loading, className }: { value: string; loading: boolean
   return <span className={className}>{value}</span>
 }
 
-/** Figma "Payment Summary": promo code, totals from the API and the checkout button. */
 function MobileCartSummary({ cart, loading }: { cart: Cart | undefined; loading: boolean }) {
   const navigate = useNavigate()
   const coupon = useCouponForm(cart)
@@ -200,7 +196,6 @@ function MobileCartSummary({ cart, loading }: { cart: Cart | undefined; loading:
   )
 }
 
-/** Figma "Mobile / Carrinho de NFTs" (16:360). */
 export function MobileCart({ cart, status, onRetry }: { cart: Cart | undefined; status: 'pending' | 'error' | 'success'; onRetry: () => void }) {
   const lines = cart?.items ?? []
 

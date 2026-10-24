@@ -7,14 +7,12 @@ test.describe('NFT detail: direct access and missing resources', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(nft.name)
     await expect(page.getByRole('radio', { name: '1/50', exact: true })).toBeVisible()
 
-    // Edition limits: a 1/1 edition cannot go above one unit.
     await page.getByRole('radio', { name: '1/1', exact: true }).click()
     await expect(page.getByRole('button', { name: 'Aumentar quantidade' })).toBeDisabled()
     await page.getByRole('radio', { name: '1/50', exact: true }).click()
     await page.getByRole('button', { name: 'Aumentar quantidade' }).click()
     await expect(page.locator('output').first()).toHaveText('2')
 
-    // A refresh on the same URL works (no client-only state).
     await page.reload()
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(nft.name)
   })

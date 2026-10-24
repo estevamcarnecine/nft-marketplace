@@ -71,16 +71,9 @@ function writeAttempt(attempt: Attempt | null): void {
   try {
     if (attempt) sessionStorage.setItem(ATTEMPT_KEY, JSON.stringify(attempt))
     else sessionStorage.removeItem(ATTEMPT_KEY)
-  } catch {
-    // storage indisponível: a chave vive só na memória desta tentativa
-  }
+  } catch {}
 }
 
-/**
- * The idempotency key belongs to one purchase attempt: the same payload (a retry, a double
- * click, a reload after a timeout) reuses it, so the server answers with the order it already
- * created. Different content gets a new key.
- */
 function keyFor(input: CreateOrderInput): string {
   const fingerprint = JSON.stringify(input)
   const current = readAttempt()
@@ -105,7 +98,6 @@ export function useCreateOrder() {
         headers: { 'Idempotency-Key': keyFor(input) },
         timeout: ORDER_TIMEOUT_MS,
       }),
-    // Safe to retry: the same key can never create a second order.
     retry: (failureCount, error) => failureCount < 2 && isTransient(error),
     onSuccess: () => clearOrderAttempt(),
     onError: (error) => {

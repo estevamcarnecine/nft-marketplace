@@ -2,7 +2,6 @@ import { expect, test, type App } from '../fixtures'
 
 const APE = 'Emerald Ape #042'
 
-/** Builds a visitor cart through the UI: quick add from the catalog, then "COMPRAR" on a detail page. */
 async function fillGuestCart(app: App) {
   const { page } = app
   if (app.isDesktop) {
@@ -32,7 +31,6 @@ test.describe('cart', () => {
     await expect.poll(async () => (await app.cart()).items.find((line) => line.nft.name === APE)?.quantity).toBe(2)
     const cart = await app.cart()
     await expect(total(app)).toContainText(cart.total)
-    // The mobile cart screen has no header badge; the lines and totals above are what it shows.
     if (app.isDesktop) await expect(app.cartBadge()).toHaveAttribute('aria-label', `Carrinho, ${cart.count} itens`)
 
     await page.getByRole('button', { name: new RegExp(`^Remover ${APE} .*do carrinho`) }).click()
@@ -71,13 +69,11 @@ test.describe('cart', () => {
 
     await app.login('demo', '/cart')
     const merged = await app.cart()
-    // The visitor lines were carried into the account cart, which already had its own items.
     for (const line of guest.items) expect(merged.items.map((item) => item.id)).toContain(line.id)
     expect(merged.count).toBeGreaterThan(guest.count)
     const lines = page.locator('section[aria-label="Itens do carrinho"] li')
     await expect(lines).toHaveCount(merged.items.length)
 
-    // Signed-in cart persists after a refresh too.
     await page.reload()
     await expect(lines).toHaveCount(merged.items.length)
     if (app.isDesktop) await expect(app.cartBadge()).toHaveAttribute('aria-label', `Carrinho, ${merged.count} itens`)

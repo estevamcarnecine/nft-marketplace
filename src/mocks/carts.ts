@@ -2,7 +2,6 @@ import { db, findEdition, findNft, guestCartKey, parseCartKey, userCartKey, type
 import { authenticate } from './utils'
 
 export const MAX_PER_LINE = 99
-/** Visitors are identified by a random id the client keeps and sends in this header. */
 export const CART_HEADER = 'x-cart-id'
 const CART_ID = /^[a-zA-Z0-9-]{8,64}$/
 
@@ -11,7 +10,6 @@ export interface CartOwner {
   userId?: string
 }
 
-/** A signed-in request always uses the user's cart; a visitor uses the cart named in the header. */
 export function cartOwner(request: Request): CartOwner | null {
   const user = authenticate(request)
   if (user) return { key: userCartKey(user.id), userId: user.id }
@@ -32,10 +30,6 @@ export function peekCart(key: string): StoredCart {
   return db.carts.get(key) ?? { lines: new Map(), coupon: null }
 }
 
-/**
- * On login or sign-up the visitor's items join the account cart. Quantities add up but never
- * exceed the edition stock or the per-line limit; the account's coupon wins over the visitor's.
- */
 export function mergeGuestCart(guestId: string | undefined, userId: string): void {
   if (!guestId || !CART_ID.test(guestId)) return
   const guest = db.carts.get(guestCartKey(guestId))

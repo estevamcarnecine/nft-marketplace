@@ -93,7 +93,6 @@ export const catalogHandlers = [
       )
       const newSince = new Date(FIXTURE_EPOCH - NEW_WINDOW_MS).toISOString()
 
-      // Scenario "empty": a catalog with no listings, to exercise the empty state.
       const filtered = (scenario.emptyCatalog ? [] : db.nfts).filter((nft) => {
         if (tab === 'new' && nft.listedAt < newSince) return false
         if (tab === 'trending' && !trendingIds.has(nft.id)) return false
@@ -120,7 +119,6 @@ export const catalogHandlers = [
     }),
   ),
 
-  // Registered before /api/nfts/:id so "featured" is not read as an NFT id.
   http.get(
     '/api/nfts/featured',
     withScenario('catalog.featured', ({ request }) => {

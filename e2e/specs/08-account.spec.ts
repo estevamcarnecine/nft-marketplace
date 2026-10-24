@@ -17,7 +17,6 @@ test.describe('profile', () => {
       await expect(page.locator(`#${field}-error`)).toBeVisible()
     }
 
-    // 409 from the API: the e-mail of another account.
     await page.locator('#displayName').fill('Demo Collector')
     await page.locator('#username').fill('demo_collector')
     await page.locator('#newPassword').fill('')

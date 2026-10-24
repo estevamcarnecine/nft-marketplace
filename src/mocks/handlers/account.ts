@@ -47,7 +47,6 @@ async function toDataUrl(file: File): Promise<string> {
   return `data:${file.type};base64,${btoa(binary)}`
 }
 
-/** Collector profile screen: account data, avatar and password. */
 export const accountHandlers = [
   http.patch(
     '/api/profile',
@@ -90,7 +89,6 @@ export const accountHandlers = [
       const current = db.profiles.get(user.id) ?? blankProfile(user.email, user.name)
       const profile: Profile = { ...current, displayName, username, email, ensName, ensSuffix: '.eth', walletNickname }
       db.profiles.set(user.id, profile)
-      // The e-mail is also the sign-in identifier.
       user.email = email
       user.name = displayName
       return json({ ...profile })

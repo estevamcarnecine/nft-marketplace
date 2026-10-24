@@ -8,7 +8,6 @@ import { isLineUnavailable } from './availability'
 
 const MAX_PER_LINE = 99
 
-/** Quantity and removal for one cart line, shared by the desktop table and the mobile list. */
 export function useCartLineActions(line: CartLine) {
   const update = useUpdateCartLine()
   const remove = useRemoveCartLine()
@@ -36,7 +35,6 @@ export function useCartLineActions(line: CartLine) {
   }
 }
 
-/** Promo code field: applies a code, or removes the applied one; API errors stay on the field. */
 export function useCouponForm(cart: Cart | undefined) {
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)

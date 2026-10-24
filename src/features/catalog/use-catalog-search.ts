@@ -14,11 +14,6 @@ function clean(search: CatalogSearch): CatalogSearch {
   return next
 }
 
-/**
- * The catalog state lives in the URL of `/` (search, filters, sort, page), so it survives refreshes
- * and history navigation. Any filter change returns to the first page. The home page is also drawn
- * behind the auth dialogs, so the URL is read non-strictly and narrowed by the catalog schema.
- */
 export function useCatalogSearch() {
   const raw = useSearch({ strict: false })
   const search = catalogSearchSchema.parse(raw)

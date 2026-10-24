@@ -10,7 +10,6 @@ import { useCatalogSearch } from '../use-catalog-search'
 
 const HEADING = 'text-[18px] leading-[16px] font-bold whitespace-nowrap text-foreground'
 
-/** Prices travel as decimal strings; the slider works on integer hundredths (0.01 ETH steps). */
 function toHundredths(eth: string): number {
   const [whole, fraction = ''] = eth.split('.')
   return Number(whole) * 100 + Number(fraction.padEnd(2, '0').slice(0, 2))
@@ -69,7 +68,6 @@ function PriceFilter({ min, max }: { min: string; max: string }) {
     search.maxPrice ? toHundredths(search.maxPrice) : bounds[1],
   ]
   const [draft, setDraft] = useState<{ key: string; value: [number, number] }>({ key: applied.join('-'), value: applied })
-  // A new URL (history, reset) replaces whatever was being dragged.
   const value = draft.key === applied.join('-') ? draft.value : applied
 
   function apply() {
@@ -121,7 +119,6 @@ function PriceFilter({ min, max }: { min: string; max: string }) {
   )
 }
 
-/** Sidebar on desktop; inside the filters sheet on mobile, where it fills the sheet width. */
 export function FiltersPanel({ className }: { className?: string }) {
   const facets = useQuery(facetsQuery)
   const { search, update } = useCatalogSearch()

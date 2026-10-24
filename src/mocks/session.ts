@@ -1,14 +1,12 @@
 import { db, type StoredUser } from './db'
 import { scenario } from './scenario'
 
-/** Sliding session: every authenticated request extends it by this much. */
 export const SESSION_TTL_MS = 30 * 60 * 1000
 
 function toHex(buffer: ArrayBuffer): string {
   return [...new Uint8Array(buffer)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
-/** Salted SHA-256. Enough for a simulation: no password is ever stored or logged in plain text. */
 export async function hashPassword(salt: string, password: string): Promise<string> {
   const data = new TextEncoder().encode(`${salt}:${password}`)
   return toHex(await crypto.subtle.digest('SHA-256', data))
@@ -44,13 +42,11 @@ type SessionCheck =
   | { status: 'valid'; user: StoredUser; token: string; expiresAt: number }
   | { status: 'expired' | 'missing' }
 
-/** The `session:expire` scenario ends every session opened before its deadline. */
 function isExpired(createdAt: number, expiresAt: number, now: number): boolean {
   if (expiresAt <= now) return true
   return scenario.sessionDeadline !== null && now >= scenario.sessionDeadline && createdAt < scenario.sessionDeadline
 }
 
-/** Same rules as REST, for the Socket.IO `session.subscribe` handshake. */
 export function userIdForToken(token: string): string | null {
   const session = db.sessions.get(token)
   if (!session || isExpired(session.createdAt, session.expiresAt, Date.now())) return null

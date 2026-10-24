@@ -1,10 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 
-/**
- * Figma "Mobile / Login" and "Mobile / Cadastro": full screen, 40px between the logo, title, form,
- * social block and the link to the other screen. The logo goes back to the catalog.
- */
 export function MobileAuthPage({ title, footer, children }: { title: string; footer: ReactNode; children: ReactNode }) {
   return (
     <main

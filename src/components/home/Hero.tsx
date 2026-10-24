@@ -36,7 +36,6 @@ export function Hero() {
           <img alt="" src={carouselDots} className="block h-[8px] w-[40px] max-w-none" />
         </div>
 
-        {/* The largest element above the fold on desktop: fetched first. */}
         <NftImage
           alt="Macaco de óculos escuros e jaqueta verde"
           src="/nft/emerald-ape.png"

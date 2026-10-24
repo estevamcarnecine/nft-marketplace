@@ -38,7 +38,6 @@ export function FeaturedBanner() {
           <Skeleton className="h-[368px] w-full rounded-[22px]" />
         )}
       </div>
-      {/* Decorative shapes of the Figma banner. */}
       <span aria-hidden className="absolute top-[299px] left-[16px] size-[22px] rounded-[7px] border-2 border-[#46a358] opacity-20" />
       <span aria-hidden className="absolute top-[343px] left-[248px] size-[45px] rounded-[29px]" style={{ backgroundImage: ORB }} />
       <span aria-hidden className="absolute top-[105px] left-[38px] size-[15px] rounded-[29px]" style={{ backgroundImage: ORB }} />

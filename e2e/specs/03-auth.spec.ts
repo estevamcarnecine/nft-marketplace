@@ -21,7 +21,6 @@ test.describe('sign up, login, session expiry, logout and user switch', () => {
     await expect(page.locator('#signup-password-error')).toBeVisible()
     await expect(page.locator('#signup-confirm-password-error')).toBeVisible()
 
-    // The e-mail belongs to a fixture user: the API answers 409 and the field says so.
     await fill('nova_conta', USERS.demo.email, 'Senha1234', 'Senha1234')
     await submit()
     await expect(page.locator('#signup-email-error')).toBeVisible()

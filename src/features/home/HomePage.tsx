@@ -13,7 +13,6 @@ import { Blog } from './components/Blog'
 import { MobileHero } from './components/MobileHero'
 import { Promos } from './components/Promos'
 
-/** The Início screen (Figma 2:2). Also rendered behind the auth dialogs, as in the login frames. */
 function DesktopHome() {
   return (
     <PageShell active="home">
@@ -34,7 +33,6 @@ function DesktopHome() {
   )
 }
 
-/** Figma "Mobile / Início" (14:5226): search, hero, tabs, product grid and the tab bar. */
 function MobileHome() {
   const searchRef = useRef<HTMLInputElement>(null)
 
@@ -45,7 +43,6 @@ function MobileHome() {
 
   return (
     <>
-      {/* Room for the fixed tab bar. */}
       <MobileShell className="pb-[calc(150px+env(safe-area-inset-bottom))]">
         <main id="conteudo" className="flex w-full flex-col items-start gap-[16px]">
           <MobileSearchBar inputRef={searchRef} />

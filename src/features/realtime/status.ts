@@ -14,7 +14,6 @@ function subscribe(listener: () => void): () => void {
   return () => listeners.delete(listener)
 }
 
-/** Whether pushes are arriving; screens fall back to polling REST while this is false. */
 export function useRealtimeConnected(): boolean {
   return useSyncExternalStore(subscribe, () => connected)
 }

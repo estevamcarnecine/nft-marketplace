@@ -1,6 +1,5 @@
 import { dismissCartNotice, useCartNotices } from '../notices'
 
-/** Price and stock changes pushed while the cart is open; the live region announces each one. */
 export function CartNotices() {
   const notices = useCartNotices()
 

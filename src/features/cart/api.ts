@@ -10,13 +10,11 @@ export const cartQuery = queryOptions({
   queryFn: ({ signal }) => api.get<Cart>('/cart', { signal }),
 })
 
-/** Every cart mutation answers with the full cart, which replaces the cached one. */
 function useCartMutation<TInput>(request: (input: TInput) => Promise<Cart>) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: request,
     onSuccess: (cart) => queryClient.setQueryData(cartKey, cart),
-    // A rejected change (e.g. stock moved) means the cached cart may be stale.
     onError: () => void queryClient.invalidateQueries({ queryKey: cartKey }),
   })
 }

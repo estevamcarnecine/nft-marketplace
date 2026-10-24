@@ -17,7 +17,6 @@ import starEmpty from '@/assets/nft-detail/star-empty.svg'
 
 const LABEL = 'text-[15px] leading-[16px] font-bold text-foreground'
 
-
 function Rating({ rating, count }: { rating: number; count: number }) {
   const filled = Math.round(rating)
   return (

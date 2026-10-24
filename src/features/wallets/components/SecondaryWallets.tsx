@@ -74,10 +74,6 @@ function WalletRow({ wallet, onEdit }: { wallet: Wallet; onEdit: (wallet: Wallet
   )
 }
 
-/**
- * "Carteira secundária": the non-primary wallets, and where purchased NFTs go. The design's
- * "Igual à carteira principal" radio is the first option; each secondary wallet is another.
- */
 export function SecondaryWallets({
   wallets,
   profile,

@@ -17,7 +17,6 @@ export interface WalletInput {
   address: string
 }
 
-/** Wallet changes answer with the full list; the profile mirrors the primary wallet, so refresh it too. */
 function useWalletMutation<TInput>(request: (input: TInput) => Promise<{ items: Wallet[] }>) {
   const queryClient = useQueryClient()
   return useMutation({
@@ -47,7 +46,6 @@ export function useDeleteWallet() {
   return useWalletMutation((id: string) => api.delete<{ items: Wallet[] }>(`/wallets/${encodeURIComponent(id)}`))
 }
 
-/** "Carteira principal" form: the profile fields of this screen plus the primary wallet. */
 export function useSavePrimary() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -59,7 +57,6 @@ export function useSavePrimary() {
   })
 }
 
-/** Where purchased NFTs are delivered: the primary wallet (null) or a secondary one. */
 export function useSetDelivery() {
   const queryClient = useQueryClient()
   return useMutation({

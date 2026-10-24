@@ -16,7 +16,6 @@ export function isAddressFor(network: NetworkId | '', address: string): boolean 
 const network = z.union([z.enum(networkIds), z.literal('')])
 const walletType = z.union([z.enum(walletTypes), z.literal('')])
 
-/** "Carteira principal": mirrors the PUT /profile rules in `src/mocks/handlers/profile.ts`. */
 export const primaryWalletSchema = z
   .object({
     displayName: z.string().trim().min(1, REQUIRED),
@@ -68,7 +67,6 @@ export function profileToPrimary(profile: Profile): PrimaryWalletValues {
   }
 }
 
-/** Add / edit dialog for a single wallet. */
 export const walletSchema = z
   .object({
     label: z.string().trim().min(1, REQUIRED).max(40, 'Use até 40 caracteres'),

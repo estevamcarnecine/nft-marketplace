@@ -20,7 +20,6 @@ function readDraft(): CheckoutForm | null {
     if (!raw) return null
     const parsed: unknown = JSON.parse(raw)
     const result = checkoutSchema.safeParse(parsed)
-    // A draft may be incomplete; keep its values even when they do not validate yet.
     return result.success ? result.data : { ...EMPTY_CHECKOUT, ...(parsed as Partial<CheckoutForm>) }
   } catch {
     return null
@@ -31,18 +30,11 @@ function writeDraft(values: CheckoutForm | null): void {
   try {
     if (values) sessionStorage.setItem(DRAFT_KEY, JSON.stringify(values))
     else sessionStorage.removeItem(DRAFT_KEY)
-  } catch {
-    // sem armazenamento: o rascunho fica só em memória
-  }
+  } catch {}
 }
 
 const FORM_FIELDS = new Set<string>(Object.keys(EMPTY_CHECKOUT))
 
-/**
- * The whole purchase flow, shared by the desktop and mobile checkout screens: profile prefill and
- * draft, wallet connection, quote, review (blocked when a push makes it stale) and the idempotent
- * order with its error mapping.
- */
 export function useCheckoutFlow() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -60,11 +52,9 @@ export function useCheckoutFlow() {
   const [quote, setQuote] = useState<Quote | null>(null)
   const [reviewOpen, setReviewOpen] = useState(false)
   const [changedNotice, setChangedNotice] = useState<string | null>(null)
-  /** Set when a pushed price or stock change makes the open quote outdated. */
   const [staleNotice, setStaleNotice] = useState<string | null>(null)
   const hydrated = useRef(false)
 
-  // Prefill from the saved draft (session expired mid-checkout) or the collector profile.
   useEffect(() => {
     if (hydrated.current || !profile.data) return
     hydrated.current = true
@@ -80,7 +70,6 @@ export function useCheckoutFlow() {
     })
   }, [form])
 
-  // The server would refuse this quote anyway (QUOTE_CHANGED); block it before the buyer signs.
   useEffect(() => {
     if (!quote) return
     return onNftUpdated((event) => {
@@ -97,7 +86,6 @@ export function useCheckoutFlow() {
     })
   }, [quote])
 
-  /** SessionWatcher sends the buyer to sign in and back here; the draft is already saved. */
   function handleAuthError(error: ApiError) {
     return error.status === 401
   }
@@ -118,9 +106,7 @@ export function useCheckoutFlow() {
     try {
       await disconnect.mutateAsync(current.id)
       toast.success('Carteira desconectada.')
-    } catch {
-      // A sessão pode já ter expirado no servidor; para a interface ela está desconectada.
-    }
+    } catch {}
   }
 
   async function handleSubmit(values: CheckoutForm) {
@@ -244,7 +230,6 @@ export function useCheckoutFlow() {
         ? 'Enviando pedido…'
         : null
   const values = useWatch({ control: form.control })
-
 
   return {
     form,

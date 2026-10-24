@@ -4,10 +4,6 @@ import type { Profile } from '@/types'
 const REQUIRED = 'Campo obrigatório'
 const PASSWORD_RULE = 'Use ao menos 8 caracteres, com letras e números'
 
-/**
- * One "Salvar" for the whole screen: profile fields are always sent; the password block is
- * optional, but once any of its fields is filled all three are required.
- */
 export const profileFormSchema = z
   .object({
     displayName: z.string().trim().min(1, REQUIRED).max(60, 'Use até 60 caracteres'),

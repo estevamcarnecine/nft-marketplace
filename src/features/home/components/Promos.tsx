@@ -16,7 +16,6 @@ interface Promo {
   search: CatalogSearch
 }
 
-// The two cards of the Figma "Promos" row; "Explorar" opens the matching catalog view.
 const PROMOS: Promo[] = [
   {
     id: 'genesis',
@@ -68,7 +67,6 @@ export function Promos() {
             className={`absolute top-[164px] flex h-[40px] w-[140px] items-center justify-center gap-0 rounded-[6px] bg-primary ${promo.buttonLeft}`}
           >
             <span className="text-[14px] leading-[20px] font-medium whitespace-nowrap text-ink">Explorar</span>
-            {/* The Figma rotates this Iconly arrow -90° to point right. */}
             <span aria-hidden className="flex size-[18px] shrink-0 items-center justify-center">
               <img alt="" src={promoArrow} className="block h-[12.75px] w-[10.537px] max-w-none -rotate-90" />
             </span>

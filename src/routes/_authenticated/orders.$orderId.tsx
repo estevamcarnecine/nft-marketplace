@@ -10,8 +10,6 @@ export const Route = createFileRoute('/_authenticated/orders/$orderId')({
   component: OrderPage,
 })
 
-// order.updated pushes the result. Only while the socket is down is a pending order polled over
-// REST; confirmed and rejected are terminal, so nothing is refreshed after them.
 const PENDING_POLL_MS = 1500
 
 function OrderPage() {

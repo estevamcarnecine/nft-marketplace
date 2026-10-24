@@ -1,6 +1,3 @@
-// Lighthouse audit: optimized build served by `vite preview` with the default mock scenario.
-// Each page × profile runs RUNS times in a fresh Chrome profile; the median of each category is
-// reported, with LCP, CLS and TBT. Usage: `npm run lighthouse` (add `-- --no-build` to reuse dist/).
 import { spawn, execSync } from 'node:child_process'
 import { mkdir, writeFile } from 'node:fs/promises'
 import os from 'node:os'
@@ -23,9 +20,7 @@ async function waitForServer() {
   for (let attempt = 0; attempt < 60; attempt += 1) {
     try {
       if ((await fetch(BASE)).ok) return
-    } catch {
-      // not up yet
-    }
+    } catch {}
     await new Promise((resolve) => setTimeout(resolve, 500))
   }
   throw new Error(`preview server did not start on ${BASE}`)
@@ -44,7 +39,6 @@ try {
     for (const [profile, config] of Object.entries(PROFILES)) {
       const runs = []
       for (let run = 1; run <= RUNS; run += 1) {
-        // A fresh profile each run: no cache, no service worker from a previous run.
         const chrome = await chromeLauncher.launch({ chromeFlags: ['--headless=new', '--no-first-run'] })
         try {
           const result = await lighthouse(`${BASE}${page.path}`, { port: chrome.port, output: ['html', 'json'], logLevel: 'error' }, config)
@@ -104,8 +98,6 @@ try {
   if (process.platform === 'win32') {
     try {
       execSync(`for /f "tokens=5" %a in ('netstat -ano ^| findstr :${PORT} ^| findstr LISTENING') do taskkill /PID %a /F`, { stdio: 'ignore', shell: 'cmd.exe' })
-    } catch {
-      // already gone
-    }
+    } catch {}
   }
 }

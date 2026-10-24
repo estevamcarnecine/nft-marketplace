@@ -18,7 +18,6 @@ function isAddressFor(network: NetworkId | '', address: string): boolean {
   return EVM_ADDRESS.test(address)
 }
 
-/** Client mirror of the server rules in `src/mocks/validation.ts`; the API stays the authority. */
 export const checkoutSchema = z
   .object({
     displayName: z.string().trim().min(1, REQUIRED).max(60, 'Use até 60 caracteres'),
@@ -99,7 +98,6 @@ export function profileToForm(profile: Profile): CheckoutForm {
   }
 }
 
-/** Narrows a validated form into the API payload. */
 export function toCollector(values: CheckoutForm): CollectorInput | null {
   if (!values.network || !values.walletType) return null
   return {

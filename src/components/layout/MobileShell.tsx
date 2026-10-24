@@ -1,10 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from 'cn'
 
-/**
- * Mobile screen frame from the Figma (414 wide: 40 top, 24 sides). Tablets keep the same layout,
- * centered and wider; `narrow` caps form screens so lines stay readable.
- */
 export function MobileShell({
   children,
   narrow,

@@ -122,7 +122,6 @@ export const authHandlers = [
   http.post(
     '/api/auth/logout',
     withScenario('auth.logout', ({ request }) => {
-      // Idempotent: logging out an unknown or expired session still succeeds.
       const token = bearerToken(request)
       if (token) revokeSession(token)
       return new HttpResponse(null, { status: 204 })

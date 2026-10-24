@@ -41,7 +41,6 @@ interface FavoriteResponse {
   favorites: number
 }
 
-/** Optimistic favorite toggle on the detail cache, rolled back when the API rejects it. */
 export function useToggleFavorite(id: string) {
   const queryClient = useQueryClient()
   const key = nftKeys.detail(id)
@@ -82,7 +81,6 @@ export function useAddToCart() {
       queryClient.setQueryData(cartKey, cart)
     },
     onSettled: (_cart, _error, input) => {
-      // Availability may have changed either way; re-read the edition stock.
       void queryClient.invalidateQueries({ queryKey: nftKeys.detail(input.nftId) })
     },
   })

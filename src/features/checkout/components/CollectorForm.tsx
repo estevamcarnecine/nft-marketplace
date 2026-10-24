@@ -56,7 +56,6 @@ function EnsSuffixField() {
   )
 }
 
-/** `stacked`: one column, for the mobile checkout's collapsible section (its summary is the title). */
 export function CollectorForm({ stacked = false }: { stacked?: boolean }) {
   const {
     register,

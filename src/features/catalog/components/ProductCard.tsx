@@ -26,7 +26,6 @@ export function ProductCardSkeleton() {
   )
 }
 
-/** The Figma spaces the first row 12px between name and price, the others 6px. */
 export function ProductCard({ nft, eager, firstRow }: { nft: Nft; eager?: boolean; firstRow?: boolean }) {
   const quickAdd = useQuickAddToCart()
   const favorite = useCardFavorite(nft)
@@ -74,7 +73,6 @@ export function ProductCard({ nft, eager, firstRow }: { nft: Nft; eager?: boolea
         </span>
       </Link>
 
-      {/* Hover actions from the Figma "Marketplace Page"; also revealed by keyboard focus. */}
       <div
         className={cn(
           'absolute top-[258px] left-[67px] flex h-[35px] w-[125px] items-center justify-between',

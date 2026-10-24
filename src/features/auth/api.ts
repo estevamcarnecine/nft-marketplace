@@ -13,7 +13,6 @@ export const loginSchema = z.object({
 
 export type LoginForm = z.infer<typeof loginSchema>
 
-/** Mirrors the sign-up rules in `src/mocks/handlers/auth.ts`; the API stays the authority. */
 export const signupSchema = z
   .object({
     username: z
@@ -38,7 +37,6 @@ export const signupSchema = z
 
 export type SignupForm = z.infer<typeof signupSchema>
 
-/** Only same-origin paths are accepted as a post-login destination (no open redirects). */
 export function safeRedirect(target: string | undefined): string {
   return target && target.startsWith('/') && !target.startsWith('//') ? target : '/'
 }
@@ -49,9 +47,7 @@ function useStartSession<TInput>(request: (input: TInput) => Promise<AuthRespons
     mutationFn: request,
     onSuccess: ({ token }) => {
       setToken(token)
-      // The visitor cart was merged into the account; the next visitor starts a new one.
       rotateGuestCartId()
-      // Cached data belonged to the visitor (or another user): drop it, never show it.
       queryClient.clear()
     },
   })
@@ -64,7 +60,6 @@ export function useLogin() {
 }
 
 export function useSignup() {
-  // The confirmation is checked on the client only; the API receives the chosen password once.
   return useStartSession(({ username, email, password }: SignupForm) =>
     api.post<AuthResponse>('/auth/signup', { username, email, password, guestCartId: getGuestCartId() }),
   )

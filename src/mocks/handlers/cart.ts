@@ -42,7 +42,6 @@ export const cartHandlers = [
     '/api/cart',
     withScenario('cart.get', ({ request }) => {
       const owner = cartOwner(request)
-      // A visitor that never added anything simply has an empty cart.
       return respond(owner ?? { key: 'guest:none' })
     }),
   ),
@@ -55,7 +54,6 @@ export const cartHandlers = [
 
       const body = await readJson(request)
       const nftId = str(body.nftId)
-      // Quick add from a catalog card sends no edition: the default one is used.
       const editionId = body.editionId === undefined ? null : parseEditionId(body.editionId)
       const quantity = parseQuantity(body.quantity, 1)
 

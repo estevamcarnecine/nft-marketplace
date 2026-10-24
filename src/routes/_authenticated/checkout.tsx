@@ -24,7 +24,6 @@ function CheckoutPage() {
   )
 }
 
-/** Figma "Desktop / Pagamento" (11:2862). */
 function DesktopCheckout({ flow }: { flow: CheckoutFlow }) {
   const { form, profile, cart, session, busyLabel, walletError } = flow
 

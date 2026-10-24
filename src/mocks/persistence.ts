@@ -10,10 +10,6 @@ import {
   type StoredWalletSession,
 } from './db'
 
-/**
- * The mock "server" keeps its state in localStorage, so refreshes keep data like a real backend.
- * Bump the version whenever fixtures or the snapshot shape change: older snapshots are discarded.
- */
 const STORAGE_KEY = 'kurio.mockdb'
 const VERSION = 5
 
@@ -30,7 +26,6 @@ interface Snapshot {
   orders: StoredOrder[]
   idempotency: [string, { fingerprint: string; orderId: string }][]
   walletSessions: [string, StoredWalletSession][]
-  /** Catalog fixtures are deterministic; only what changes over time is stored. */
   nfts: { id: string; price: string; favorites: number; version: number; editions: [EditionId, number][] }[]
 }
 
@@ -60,7 +55,6 @@ function snapshot(): Snapshot {
 
 let pending = false
 
-/** Coalesces the writes of one tick (a request may mutate several collections). */
 export function schedulePersist(): void {
   if (pending) return
   pending = true
@@ -78,7 +72,6 @@ function isSnapshot(value: unknown): value is Snapshot {
   return typeof value === 'object' && value !== null && (value as { version?: unknown }).version === VERSION
 }
 
-/** Restores the saved state over fresh fixtures. Returns false when there is nothing usable. */
 export function loadPersisted(): boolean {
   let parsed: unknown
   try {
@@ -118,12 +111,9 @@ export function loadPersisted(): boolean {
   return true
 }
 
-/** Restores the known fixture baseline and forgets everything saved. */
 export function resetMockData(): void {
   try {
     localStorage.removeItem(STORAGE_KEY)
-  } catch {
-    // sem armazenamento: nada salvo para apagar
-  }
+  } catch {}
   resetDb()
 }

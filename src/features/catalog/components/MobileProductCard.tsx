@@ -10,10 +10,6 @@ import heartBadge from '@/assets/mobile/home/card-heart.svg'
 
 const BOX = 'linear-gradient(139.55deg, #241612 12%, #2f1d15 106.59%)'
 
-/**
- * Figma "Mobile / Início" product card (P-1…P-4). In the two-column phone grid the right column
- * sits 32px lower and swaps the box padding (20 top / 12 bottom), as in the frame.
- */
 export function MobileProductCard({ nft, eager }: { nft: Nft; eager?: boolean }) {
   const favorite = useCardFavorite(nft)
 
@@ -49,7 +45,6 @@ export function MobileProductCard({ nft, eager }: { nft: Nft; eager?: boolean })
         disabled={favorite.pending}
         aria-pressed={nft.favorited}
         aria-label={nft.favorited ? `Remover ${nft.name} dos favoritos` : `Favoritar ${nft.name}`}
-        // Over the art's top-right corner; 44px touch target around the 28px badge.
         className="absolute top-[4px] right-[2px] flex size-[44px] items-center justify-center rounded-full disabled:opacity-60 max-md:group-even/card:top-[12px]"
       >
         <img

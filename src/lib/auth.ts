@@ -2,7 +2,6 @@ import { useSyncExternalStore } from 'react'
 
 const TOKEN_KEY = 'nft.token'
 
-/** Why the session token changed; `external` is another tab logging in or out. */
 export type TokenChangeReason = 'login' | 'logout' | 'expired' | 'external'
 
 type TokenListener = (token: string | null, reason: TokenChangeReason) => void
@@ -12,7 +11,6 @@ function notify(token: string | null, reason: TokenChangeReason): void {
   for (const listener of listeners) listener(token, reason)
 }
 
-/** Login, logout, an expired session or another tab changing it; returns the unsubscribe function. */
 export function onTokenChange(listener: TokenListener): () => void {
   listeners.add(listener)
   return () => listeners.delete(listener)
@@ -35,9 +33,7 @@ export function getToken(): string | null {
 export function setToken(token: string): void {
   try {
     localStorage.setItem(TOKEN_KEY, token)
-  } catch {
-    // storage indisponível, ignora
-  }
+  } catch {}
   notify(token, 'login')
 }
 
@@ -45,9 +41,7 @@ export function clearToken(reason: 'logout' | 'expired' = 'logout'): void {
   const had = getToken() !== null
   try {
     localStorage.removeItem(TOKEN_KEY)
-  } catch {
-    // storage indisponível, ignora
-  }
+  } catch {}
   if (had) notify(null, reason)
 }
 
@@ -59,7 +53,6 @@ function subscribe(listener: () => void): () => void {
   return onTokenChange(listener)
 }
 
-/** The current token, re-rendering on login, logout, expiry and changes from other tabs. */
 export function useToken(): string | null {
   return useSyncExternalStore(subscribe, getToken)
 }

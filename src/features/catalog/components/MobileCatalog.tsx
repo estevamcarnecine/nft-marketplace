@@ -17,7 +17,6 @@ const FILTER_BUTTON = 'linear-gradient(137.05deg, rgba(210, 138, 76, 0.45) 24.6%
 const GRID = 'grid w-full grid-cols-2 gap-x-[16px] gap-y-[24px] md:grid-cols-3 lg:grid-cols-4 max-md:pb-[32px]'
 const PANEL_BUTTON = 'rounded-[6px] bg-primary px-[20px] py-[10px] text-[14px] leading-[20px] font-bold text-ink'
 
-/** Figma "Search Bar": the search field and the filters button that opens the filters sheet. */
 export function MobileSearchBar({ inputRef }: { inputRef?: Ref<HTMLInputElement> }) {
   const { search, update } = useCatalogSearch()
   const [term, setTerm] = useState(search.q ?? '')
@@ -101,7 +100,6 @@ export function MobileSearchBar({ inputRef }: { inputRef?: Ref<HTMLInputElement>
   )
 }
 
-/** Figma "Tabs" + "Product Grid" for phones; tablets get more columns, without the stagger. */
 export function MobileCatalog() {
   const { search, update, reset } = useCatalogSearch()
   const list = useQuery(catalogQuery(toCatalogParams(search)))
@@ -129,7 +127,6 @@ export function MobileCatalog() {
               aria-selected={selected}
               aria-controls="catalog-results"
               onClick={() => update({ tab: item.id === 'all' ? undefined : item.id, sort: undefined })}
-              // The frame puts 4px after the first tab and 16px between the others.
               className={cn('flex flex-col gap-[4px] pb-[2px] first:-mr-[12px]', selected ? 'font-bold text-text-accent' : 'text-foreground')}
             >
               {item.label}

@@ -6,7 +6,6 @@ import { queryClient } from '@/lib/queryClient'
 import { sessionQuery } from '@/lib/session'
 
 export const Route = createFileRoute('/_authenticated')({
-  // A token alone is not a session: it may have expired or been revoked, so ask the API.
   beforeLoad: async ({ location }) => {
     const toLogin = () => redirect({ to: '/login', search: { redirect: location.href } })
     if (!isAuthenticated()) throw toLogin()
@@ -18,7 +17,6 @@ export const Route = createFileRoute('/_authenticated')({
         queryClient.clear()
         throw toLogin()
       }
-      // A transient failure should not log the user out; the page handles its own errors.
     }
   },
   component: () => <Outlet />,

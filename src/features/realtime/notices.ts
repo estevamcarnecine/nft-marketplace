@@ -1,7 +1,6 @@
 import { useSyncExternalStore } from 'react'
 
 export interface CartNotice {
-  /** One notice per NFT and kind: a newer change replaces the previous message. */
   id: string
   message: string
 }

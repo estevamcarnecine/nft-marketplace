@@ -31,7 +31,6 @@ export function useUploadAvatar() {
   return useProfileMutation((file: File) => {
     const body = new FormData()
     body.append('avatar', file)
-    // Let the browser set the multipart boundary.
     return api.put<Profile>('/profile/avatar', body, { headers: { 'Content-Type': undefined } })
   })
 }
@@ -47,7 +46,6 @@ export function useChangePassword() {
   })
 }
 
-/** Ends the session and drops every cached response, so nothing private outlives it. */
 export function useLogout() {
   const queryClient = useQueryClient()
   return useMutation({

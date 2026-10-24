@@ -16,7 +16,6 @@ import {
   withScenario,
 } from '../utils'
 
-/** Simulated wallet connection: stands in for a browser extension or WalletConnect handshake. */
 export const walletSessionHandlers = [
   http.post(
     '/api/wallet-sessions',

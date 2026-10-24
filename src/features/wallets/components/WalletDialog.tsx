@@ -15,7 +15,6 @@ const FIELDS: FieldPath<WalletFormValues>[] = ['label', 'type', 'network', 'addr
 
 export type WalletDialogMode = { kind: 'create'; primary: boolean } | { kind: 'edit'; wallet: Wallet }
 
-/** Add / edit a wallet. No frame exists for it; it reuses the wallets screen fields. */
 export function WalletDialog({ mode, onClose, onSaved }: { mode: WalletDialogMode; onClose: () => void; onSaved: (message: string) => void }) {
   const create = useCreateWallet()
   const update = useUpdateWallet()

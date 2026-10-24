@@ -1,35 +1,20 @@
-/**
- * Deterministic network and business scenarios, chosen with `?mock=a,b,c` (kept for the browser
- * tab in sessionStorage, so they survive reloads) or `window.__mock.set()`. `?mock=reset` restores
- * the fixtures; `?mock=none` clears the scenario. Tokens are documented in README.md.
- */
 export interface Scenario {
   latencyMs: number
-  /** Seeded variable latency added on top of `latencyMs`. */
   jitter: [number, number] | null
-  /** Catalog list requests alternate slow/fast, so an older request can resolve after a newer one. */
   outOfOrder: boolean
-  /** Handler keys (or `*`) answered with a network error. */
   offline: string[]
-  /** Handler keys whose response arrives after the client gives up. */
   timeouts: string[]
   ticks: boolean
   emptyCatalog: boolean
   priceChangeOnNextOrder: boolean
   soldOutOnNextOrder: boolean
-  /** The next order is created, but its response only arrives after the client timeout. */
   orderTimeout: boolean
   orderOutcome: 'confirmed' | 'rejected'
-  /** Time from order creation to the simulated payment result. */
   orderSettleMs: number
   walletReject: boolean
-  /** Sessions opened before this instant are expired (scenario `session:expire[:ms]`). */
   sessionDeadline: number | null
-  /** The server closes every socket this long after the first connection (`socket:drop[:ms]`). */
   socketDropAfterMs: number | null
-  /** Every event is delivered twice with the same eventId (`event:dup`). */
   duplicateEvents: boolean
-  /** Every nft.updated is followed by an older copy that must be ignored (`event:stale`). */
   staleEvents: boolean
   failures: Record<string, { status: number; times: number }>
 }
@@ -68,9 +53,7 @@ export function resetScenario(): void {
   Object.assign(scenario, defaults())
   try {
     sessionStorage.removeItem(STORAGE_KEY)
-  } catch {
-    // sem armazenamento: o cenário vale só para esta página
-  }
+  } catch {}
 }
 
 export function takeFailure(key: string): number | null {
@@ -96,7 +79,6 @@ export function isTimedOut(key: string): boolean {
   return matches(scenario.timeouts, key)
 }
 
-// Seeded jitter: the same scenario produces the same sequence of delays on every run.
 let jitterState = 7
 function nextJitter(): number {
   jitterState = (jitterState * 1103515245 + 12345) % 2147483648
@@ -170,7 +152,6 @@ function apply(raw: string): void {
       case 'session': {
         const value = Number(b ?? 0)
         if (a === 'expire') scenario.sessionDeadline = Date.now() + (Number.isFinite(value) ? value : 0)
-        // Saved form of `session:expire`: the absolute deadline, so a reload does not move it.
         if (a === 'expireat' && Number.isFinite(value)) scenario.sessionDeadline = value
         break
       }
@@ -196,21 +177,17 @@ function apply(raw: string): void {
   }
 }
 
-/** Reads `?mock=` (or the tab's saved scenario) and applies it. Returns true when a reset was asked. */
 export function applyScenarioFromUrl(search: string): boolean {
   const raw = new URLSearchParams(search).get('mock')
   if (raw === 'reset' || raw === 'none') {
     resetScenario()
     return raw === 'reset'
   }
-  // Relative deadlines are pinned when chosen, so reloading the page keeps the same instant.
   let tokens = raw?.replace(/session:expire(?::(\d+))?/g, (_match, ms?: string) => `session:expireat:${Date.now() + Number(ms ?? 0)}`) ?? null
   try {
     if (tokens) sessionStorage.setItem(STORAGE_KEY, tokens)
     else tokens = sessionStorage.getItem(STORAGE_KEY)
-  } catch {
-    // sem armazenamento: só o parâmetro da URL vale
-  }
+  } catch {}
   if (tokens) apply(tokens)
   return false
 }

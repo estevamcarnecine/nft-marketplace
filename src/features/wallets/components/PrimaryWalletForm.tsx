@@ -13,7 +13,6 @@ import { primaryWalletSchema, profileToPrimary, type PrimaryWalletValues } from 
 import arrowDown20 from '@/assets/account/arrow-down-20.svg'
 import arrowDownEns from '@/assets/account/arrow-down.svg'
 
-// In this frame each label sits 4px closer to its input than on the profile screen.
 const FIELD = 'w-[417px] max-xl:w-full [&>:first-child]:-mb-[4px]'
 const ARROW = { src: arrowDown20, size: 'size-[20px]' }
 const FIELDS: FieldPath<PrimaryWalletValues>[] = [
@@ -40,7 +39,6 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
     formState: { errors, isDirty, isSubmitting },
   } = useForm<PrimaryWalletValues>({ resolver: zodResolver(primaryWalletSchema), defaultValues: profileToPrimary(profile) })
 
-  // Adding a new primary wallet (or editing it in the list) changes the profile on the server.
   useEffect(() => {
     if (!isDirty) reset(profileToPrimary(profile))
   }, [profile, isDirty, reset])
@@ -54,7 +52,6 @@ export function PrimaryWalletForm({ profile, onAdd }: { profile: Profile; onAdd:
         network: values.network,
         walletType: values.walletType,
         referralCode: values.referralCode.toUpperCase(),
-        // A secondary delivery wallet is chosen below; this field is only an ENS or extra address.
         secondaryWallet: profile.useAnotherWallet ? profile.secondaryWallet : values.secondaryWallet,
       })
       reset(profileToPrimary(saved))

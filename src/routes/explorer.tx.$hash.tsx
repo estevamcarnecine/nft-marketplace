@@ -11,7 +11,6 @@ export const Route = createFileRoute('/explorer/tx/$hash')({
   component: ExplorerPage,
 })
 
-/** Stand-in for Etherscan & co.: transactions in this demo are simulated, never on a real chain. */
 function ExplorerPage() {
   const { hash } = Route.useParams()
   const tx = useQuery(explorerTxQuery(hash))

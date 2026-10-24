@@ -7,22 +7,18 @@ import { Footer } from './Footer'
 import { Header, type HeaderSection } from './Header'
 import { MobileShell } from './MobileShell'
 
-/** Desktop screen frame from the Figma: 1200 content column, 24 top/bottom, 96 between sections. */
 export function PageShell({
   active,
   footer = true,
   children,
 }: {
   active: HeaderSection
-  /** The account frames (perfil, carteiras) end without the footer. */
   footer?: boolean
   children: ReactNode
 }) {
   const desktop = useIsDesktop()
 
   if (!desktop) {
-    // Screens without a mobile frame (explorer, not found): the mobile frames' back button and the
-    // wordmark, which leads home.
     return (
       <MobileShell narrow className="gap-[24px]">
         <header className="relative flex h-[35px] w-full items-center">

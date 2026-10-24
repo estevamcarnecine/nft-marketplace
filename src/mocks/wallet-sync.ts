@@ -2,10 +2,6 @@ import { WALLET_TYPES } from '@/types'
 import type { NetworkId, Profile, Wallet, WalletType } from '@/types'
 import { db, nextId } from './db'
 
-/**
- * The primary (default) wallet and the wallet fields of the profile describe the same thing:
- * the wallets screen edits both, checkout prefills from the profile. These helpers keep them equal.
- */
 export function syncProfileFromDefault(userId: string): void {
   const profile = db.profiles.get(userId)
   if (!profile) return
@@ -20,7 +16,6 @@ export function syncProfileFromDefault(userId: string): void {
         walletAddress: primary.address,
       }
     : { ...profile, walletNickname: '', walletType: '', network: '', walletAddress: '' }
-  // A delivery wallet that no longer exists falls back to the primary one.
   if (next.useAnotherWallet && !wallets.some((wallet) => !wallet.isDefault && wallet.address === next.secondaryWallet)) {
     next.useAnotherWallet = false
     next.secondaryWallet = ''

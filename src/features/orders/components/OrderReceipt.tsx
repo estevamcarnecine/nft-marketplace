@@ -162,7 +162,6 @@ export function OrderReceipt({
   return (
     <Dialog.Root open onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
-        {/* The Figma scrim is opaque ink; it also scrolls when the receipt is taller than the window. */}
         <Dialog.Overlay className="fixed inset-0 z-50 overflow-y-auto bg-ink">
           <Dialog.Content
             aria-describedby="order-receipt-summary"

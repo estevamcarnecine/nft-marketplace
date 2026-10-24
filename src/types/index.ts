@@ -41,7 +41,6 @@ export interface Nft {
   collection: CollectionId
   network: NetworkId
   price: string
-  /** Price before a markdown, shown struck through next to the current price. */
   compareAtPrice: string | null
   supply: number
   available: number
@@ -50,7 +49,6 @@ export interface Nft {
   favorites: number
   views: number
   favorited: boolean
-  /** Grows on every price or stock change; real-time events carry the same counter. */
   version: number
 }
 
@@ -151,7 +149,6 @@ export interface OrderWallet {
   address: string
 }
 
-/** Collector data sent with an order: the "Perfil do colecionador" fields of the payment screen. */
 export interface CollectorInput {
   displayName: string
   username: string
@@ -167,7 +164,6 @@ export interface CollectorInput {
   note: string
 }
 
-/** A simulated wallet connection; orders must be signed by a connected wallet. */
 export interface WalletSession {
   id: string
   type: WalletType
@@ -185,7 +181,6 @@ export interface CreateOrderInput {
 export interface Order {
   id: string
   status: OrderStatus
-  /** 1 while pending, 2 once settled; matches the version of order.updated events. */
   version: number
   quoteId: string
   lines: QuoteLine[]
@@ -194,7 +189,6 @@ export interface Order {
   networkFee: string
   total: string
   wallet: OrderWallet
-  /** Where the NFTs are delivered: the paying wallet, or the secondary one when chosen. */
   recipient: string
   email: string
   note: string
@@ -205,7 +199,6 @@ export interface Order {
   updatedAt: string
 }
 
-/** Public view of a simulated on-chain transaction, as a block explorer would show it. */
 export interface ExplorerTransaction {
   hash: string
   network: NetworkId
@@ -226,7 +219,6 @@ export interface User {
 
 export interface AuthResponse {
   token: string
-  /** Sliding expiry: each authenticated request extends it. */
   expiresAt: string
   user: User
 }
@@ -250,9 +242,7 @@ export interface Profile {
   ensSuffix: '.eth'
   referralCode: string
   note: string
-  /** "Apelido da carteira" on the collector profile screen. */
   walletNickname: string
-  /** Data URL of the uploaded avatar, or null for the placeholder. */
   avatarUrl: string | null
 }
 
@@ -273,11 +263,6 @@ export interface ApiErrorBody {
   quote?: Quote
 }
 
-/**
- * Every Socket.IO event uses one envelope: a stable `eventId` (duplicates carry the same id), the
- * affected resource and its `version`, which only grows. REST responses carry the same version, so
- * the client can drop an event that is older than what it already has.
- */
 export interface RealtimeEvent<TType extends string, TKind extends string, TData> {
   eventId: string
   type: TType

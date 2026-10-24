@@ -6,7 +6,6 @@ import { isAuthenticated } from '@/lib/auth'
 import type { Nft } from '@/types'
 import { useToggleListFavorite } from './api'
 
-/** Favorite toggle shared by the desktop and mobile cards: visitors are sent to sign in and back. */
 export function useCardFavorite(nft: Nft) {
   const navigate = useNavigate()
   const location = useLocation()

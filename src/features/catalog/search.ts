@@ -6,7 +6,6 @@ const collectionIds = COLLECTIONS.map((collection) => collection.id) as [Collect
 const networkIds = NETWORKS.map((network) => network.id) as [NetworkId, ...NetworkId[]]
 const ethAmount = z.string().regex(/^\d+(\.\d{1,18})?$/)
 
-/** Catalog state that lives in the URL of `/`. Invalid values are dropped instead of failing the route. */
 export const catalogSearchSchema = z.object({
   q: z.string().trim().min(1).optional().catch(undefined),
   tab: z.enum(CATALOG_TABS).optional().catch(undefined),

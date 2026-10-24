@@ -5,10 +5,6 @@ import { errorResponse, json, withScenario } from '../utils'
 
 const GENESIS_BLOCK = 21_400_000
 
-/**
- * Simulated block explorer. Like a real chain, a confirmed transaction is public, so this
- * exposes only on-chain facts (addresses, value, time), never the buyer's account data.
- */
 export const explorerHandlers = [
   http.get(
     '/api/explorer/tx/:hash',

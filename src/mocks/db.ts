@@ -15,12 +15,10 @@ import type {
   WalletSession,
 } from '@/types'
 
-/** Passwords are kept as salted SHA-256 hashes (see `src/mocks/session.ts`), never in plain text. */
 export interface StoredUser extends User {
   salt: string
   passwordHash: string
 }
-/** A cart belongs to a signed-in user (`user:<id>`) or to a visitor (`guest:<cart id>`). */
 export interface StoredCart {
   lines: Map<string, number>
   coupon: string | null
@@ -60,7 +58,6 @@ interface SpecialNft {
   noun: string
   number: number
   price: string
-  /** Price before the current markdown, shown struck through (Neon Vessel in the Figma). */
   compareAtPrice?: string
   image: string
   collectionName: string
@@ -87,11 +84,6 @@ const KURIO_LEGENDS = {
 
 export const ARTWORKS = ['/nft/emerald-ape.png', '/nft/cosmic-bloom.png', '/nft/ivory-baron.png', '/nft/golden-beat.png']
 
-/**
- * The NFTs shown in the Figma file, in the home grid order: they are listed first, so the default
- * "Listados recentemente" sort reproduces the frame. Their category comes from the shuffled slots,
- * which keeps the collection counts of the Filters panel.
- */
 const SPECIAL_NFTS: SpecialNft[] = [
   {
     ...KURIO_APES,
@@ -120,10 +112,8 @@ const SPECIAL_NFTS: SpecialNft[] = [
   { ...KURIO_APES, adjective: 'Golden', noun: 'Signal', number: 160, price: '0.39', image: '/nft/golden-beat.png', attributes: ['Fones', 'Dourado', 'Incomum'], rating: 4.0, reviewCount: 4 },
 ]
 
-/** The cheapest and the most expensive listing: the price range of the Filters panel (0,02 – 12,30). */
 const PRICE_OVERRIDES: Record<number, string> = { 9: '0.02', 10: '12.30' }
 
-/** The NFT promoted in the "NFT EM DESTAQUE" banner (its artwork is the one in the frame). */
 export const FEATURED_NFT_ID = 'nft-0009'
 
 const ADJECTIVES = ['Amber', 'Crimson', 'Cobalt', 'Onyx', 'Golden', 'Silver', 'Rustic', 'Neon', 'Velvet', 'Copper']
@@ -141,7 +131,6 @@ const EDITION_SPECS: { id: EditionId; label: string; supply: number }[] = [
 const DEMO_ADDRESS = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
 const COLLECTOR_ADDRESS = '0x8Ba1f109551bD432803012645Ac136ddd64DBA72'
 
-// Fixed reference time so listing dates, and the visual baselines built on them, are stable.
 export const FIXTURE_EPOCH = Date.parse('2026-10-20T12:00:00.000Z')
 
 function mulberry32(seed: number): () => number {
@@ -181,7 +170,6 @@ function createEditions(special: boolean, rng: () => number): NftEdition[] {
       available: spec.id === '1-50' ? 30 : spec.id === '1-10' ? 7 : spec.supply,
     }))
   }
-  // Every NFT offers at least one limited edition; some editions are sold out.
   const offered = EDITION_SPECS.filter((_spec, index) => index === 2 || rng() < 0.55)
   return offered.map((spec) => ({
     ...spec,
@@ -217,7 +205,6 @@ function createNfts(): NftRecord[] {
     const collectionLabel = COLLECTIONS.find((c) => c.id === collection)?.label ?? collection
     const networkLabel = NETWORKS.find((n) => n.id === network)?.label ?? network
     const name = `${adjective} ${noun} #${String(number % 1000).padStart(3, '0')}`
-    // Real Figma artwork everywhere: the listed NFTs cycle through the four exported images.
     const image = special?.image ?? ARTWORKS[number % ARTWORKS.length]
     const collectionName = special?.collectionName ?? `Kurio ${collectionLabel}`
     const creator = special?.creator ?? pick(CREATORS, rng)
@@ -279,7 +266,6 @@ function createState() {
     id: 'user_demo',
     name: 'Demo Collector',
     email: 'demo@kurio.io',
-    // Kurio@2026
     salt: 'b7c1e2a94f0d3e58',
     passwordHash: '169e9d5c144737fc4106c7d440ae57979b3359f94803a6d6f0173a8e86f1f70d',
   }
@@ -287,7 +273,6 @@ function createState() {
     id: 'user_ana',
     name: 'Ana Colecionadora',
     email: 'colecionador@kurio.io',
-    // Kurio@2026
     salt: '4e9a0c7d21f6b83a',
     passwordHash: '87f3b9cb12dd49945dde729417e69ada70adce9f8573477ec6af40bbf5bc7bd6',
   }
@@ -346,7 +331,6 @@ function createState() {
 
   return {
     nfts: createNfts(),
-    // The demo collector starts with the cart of the Figma frame; everyone else starts empty.
     carts: new Map<string, StoredCart>([
       [
         userCartKey(demo.id),
@@ -373,7 +357,6 @@ function createState() {
     favorites: new Map<string, Set<string>>([[collector.id, new Set(['nft-0042', 'nft-0088'])]]),
     quotes: new Map<string, StoredQuote>(),
     orders: [] as StoredOrder[],
-    /** `${userId}:${key}` → fingerprint of the request body and the order it created. */
     idempotency: new Map<string, { fingerprint: string; orderId: string }>(),
     walletSessions: new Map<string, StoredWalletSession>(),
     sequence: 1,
@@ -402,14 +385,12 @@ export function findEdition(nft: NftRecord, editionId: EditionId): NftEdition | 
   return nft.editions.find((edition) => edition.id === editionId)
 }
 
-/** Edition used by quick actions: the largest limited edition in stock, else any in stock. */
 export function defaultEdition(nft: NftRecord): NftEdition | undefined {
   const inStock = nft.editions.filter((edition) => edition.available > 0)
   const limited = inStock.filter((edition) => edition.id !== 'open').sort((a, b) => b.supply - a.supply)
   return limited[0] ?? inStock[0]
 }
 
-/** Keeps the NFT-level stock equal to the sum of its editions after a change. */
 export function syncAvailability(nft: NftRecord): void {
   nft.available = nft.editions.reduce((total, edition) => total + edition.available, 0)
   nft.version += 1

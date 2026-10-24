@@ -1,7 +1,5 @@
 import { expect, test } from '../fixtures'
 
-// Changes are made on the mock server (window.__mock.realtime) and reach the page only as
-// Socket.IO events through socket.io-client; nothing here touches the React Query cache.
 test.describe('price and availability changes over Socket.IO', () => {
   test('the cart reports a price change and updates the summary @main', async ({ app, page }) => {
     await app.login('demo', '/cart')

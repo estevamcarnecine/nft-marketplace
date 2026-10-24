@@ -12,11 +12,6 @@ import { AccountSidebar, type AccountSection } from './AccountSidebar'
 
 const TAB = 'flex h-[40px] items-center rounded-[20px] border px-[16px] text-[14px] leading-[16px] whitespace-nowrap'
 
-/**
- * The account screens. Desktop: the Figma frames (sidebar + content). Below 1280px there are no
- * frames, so the sidebar becomes a header with the two in-scope sections and "Sair", in the
- * mobile frames' language (back button, pill controls).
- */
 export function AccountLayout({ active, children }: { active: AccountSection; children: ReactNode }) {
   const desktop = useIsDesktop()
   const navigate = useNavigate()

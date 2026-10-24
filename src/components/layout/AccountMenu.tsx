@@ -17,10 +17,6 @@ import userIcon from '@/assets/account/user.svg'
 const ITEM =
   'cursor-pointer rounded-[3px] px-[10px] py-[8px] text-[14px] leading-[20px] text-foreground focus:bg-surface-dark focus:text-text-accent'
 
-/**
- * Signed-in replacement for the header's "Entrar" button (no Figma frame shows this state): same
- * 100×35 slot and style, opening the account shortcuts and logout.
- */
 export function AccountMenu() {
   const navigate = useNavigate()
   const onPrivateRoute = useRouterState({
@@ -30,8 +26,6 @@ export function AccountMenu() {
   const logout = useLogout()
   const user = session.data?.user
 
-  // Logging out swaps this menu for the "Entrar" button, unmounting it before the request settles;
-  // per-call mutate callbacks would never run, so the follow-up waits on the promise instead.
   async function handleLogout() {
     await logout.mutateAsync().catch(() => undefined)
     toast.success('Você saiu da sua conta.')
@@ -47,7 +41,6 @@ export function AccountMenu() {
         <span
           aria-hidden
           className="size-[20px] bg-ink"
-          // Quoted: Vite inlines small SVGs as data URIs, which break an unquoted url().
           style={{ mask: `url("${userIcon}") center / 18px 18px no-repeat` }}
         />
         <span className="text-[16px] leading-[normal] font-medium whitespace-nowrap text-ink">Conta</span>

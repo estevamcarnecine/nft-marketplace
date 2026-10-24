@@ -112,7 +112,6 @@ export const walletHandlers = [
         return errorResponse(409, 'WALLET_EXISTS', message, { errors: { address: message } })
       }
 
-      // A delivery choice follows the wallet when its address is edited.
       const profile = db.profiles.get(user.id)
       if (profile?.useAnotherWallet && profile.secondaryWallet === target.address) {
         db.profiles.set(user.id, { ...profile, secondaryWallet: result.value.address })

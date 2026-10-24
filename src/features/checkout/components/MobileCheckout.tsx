@@ -20,9 +20,7 @@ import walletIcon from '@/assets/mobile/checkout/wallet.svg'
 const CONFIRM = 'linear-gradient(108.48deg, #d28a4c 3.96%, rgba(210, 138, 76, 0.8) 121.97%)'
 const SECTION = 'text-[16px] leading-[16px] font-bold whitespace-nowrap text-foreground'
 
-/** WalletConnect and MetaMask show their initial in the circle; Coinbase uses the wallet glyph. */
 const OPTION_MARK: Record<WalletType, string | null> = { walletconnect: 'W', metamask: 'M', coinbase: null }
-/** The frame's order. */
 const OPTION_ORDER: WalletType[] = ['walletconnect', 'metamask', 'coinbase']
 const OPTIONS = OPTION_ORDER.map((id) => WALLET_TYPES.find((type) => type.id === id)).filter((type) => type !== undefined)
 
@@ -30,11 +28,6 @@ function networkLabel(id: string): string {
   return NETWORKS.find((network) => network.id === id)?.label ?? id
 }
 
-/**
- * Figma "Mobile / Pagamento" (16:748): saved wallets, wallet app, total and "Confirmar compra".
- * The collector data the order needs is prefilled from the profile and editable in the collapsible
- * section below (approved deviation: the frame has no slot for it).
- */
 export function MobileCheckout({ flow }: { flow: CheckoutFlow }) {
   const { form, profile, cart, walletError, busyLabel } = flow
   const wallets = useQuery(walletsQuery)
@@ -44,8 +37,6 @@ export function MobileCheckout({ flow }: { flow: CheckoutFlow }) {
   const [address, network, walletType] = useWatch({ control: form.control, name: ['walletAddress', 'network', 'walletType'] })
   const hasErrors = Object.keys(errors).length > 0
 
-  // Errors must never hide inside a closed section: it stays open while any field is invalid, and
-  // each failed submit focuses the first invalid field.
   const open = detailsOpen || hasErrors
   useEffect(() => {
     if (!hasErrors) return

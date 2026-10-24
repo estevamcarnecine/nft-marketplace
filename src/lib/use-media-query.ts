@@ -1,9 +1,5 @@
 import { useSyncExternalStore } from 'react'
 
-/**
- * Below this width the app uses the mobile frames (centered and wider on tablets): the desktop
- * frames need the 1200px column plus gutters. Tablet sizes have no frames of their own.
- */
 export const DESKTOP_QUERY = '(min-width: 1280px)'
 
 export function useMediaQuery(query: string): boolean {

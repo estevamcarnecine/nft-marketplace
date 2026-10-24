@@ -4,7 +4,6 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import searchIcon from '@/assets/header/search.svg'
 
-/** Header search: the Figma only has the icon, so it opens a field that searches the catalog. */
 export function SearchDialog() {
   const navigate = useNavigate()
   const current = useSearch({ strict: false })

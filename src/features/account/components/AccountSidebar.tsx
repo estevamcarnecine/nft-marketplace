@@ -22,7 +22,6 @@ export type AccountSection = 'profile' | 'wallets'
 
 const LABEL = 'text-[15px] leading-[45px] whitespace-nowrap text-text-accent'
 
-/** Iconly glyphs keep the inner slot they have inside their Figma frame. */
 function Icon({ src, box, inset }: { src: string; box: string; inset?: string }) {
   return (
     <span aria-hidden className={cn('relative shrink-0', box)}>
@@ -33,7 +32,6 @@ function Icon({ src, box, inset }: { src: string; box: string; inset?: string })
   )
 }
 
-// The two account frames swap the icon of the active item for its highlighted variant.
 const SECTION_ICONS: Record<AccountSection, (active: boolean) => ReactNode> = {
   profile: (active) => <Icon src={active ? userIcon : userIconInactive} box="size-[18px]" />,
   wallets: (active) => (
@@ -54,9 +52,7 @@ function Row({ active, wide, icon, children }: { active?: boolean; wide?: boolea
     <span
       className={cn(
         'flex w-full items-center',
-        // "Dados do perfil" is spaced wider than the other items in both frames.
         wide ? 'gap-[16px]' : 'gap-[12px]',
-        // Figma strokes inside: the 6px marker does not push the content, so it eats into the padding.
         active ? 'border-l-6 border-primary pr-[16px] pl-[10px]' : 'px-[16px]',
       )}
     >

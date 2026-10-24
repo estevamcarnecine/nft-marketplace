@@ -1,5 +1,3 @@
-// Responsive AVIF/WebP variants of the Figma artwork in public/nft (the PNGs stay as the fallback).
-// Run with `npm run images` after adding or replacing an artwork; the output is committed.
 import { mkdir, readdir } from 'node:fs/promises'
 import path from 'node:path'
 import sharp from 'sharp'

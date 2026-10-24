@@ -65,7 +65,6 @@ export const checkoutHandlers = [
       const fingerprint = JSON.stringify([str(body.quoteId), str(body.walletSessionId), body.collector ?? null])
       const attempt = db.idempotency.get(`${user.id}:${key}`)
       if (attempt) {
-        // Same attempt (e.g. a retry after a timeout): return the order it already created.
         if (attempt.fingerprint !== fingerprint) {
           return errorResponse(
             409,
@@ -117,7 +116,6 @@ export const checkoutHandlers = [
         }
       }
       if (scenario.soldOutOnNextOrder) {
-        // Someone else bought the last units of the first edition in the cart.
         scenario.soldOutOnNextOrder = false
         const first = buildCart(owner).items[0]
         const nft = first && findNft(first.nft.id)
@@ -142,7 +140,6 @@ export const checkoutHandlers = [
         }
       }
 
-      // Revalidate price, availability, coupon and fees: any difference needs a new confirmation.
       const fresh = createQuote(user.id, stored.quote.promoCode)
       const expired = new Date(stored.quote.expiresAt).getTime() < Date.now()
       if (expired || quoteFingerprint(fresh) !== quoteFingerprint(stored.quote)) {
@@ -183,8 +180,6 @@ export const checkoutHandlers = [
       scheduleOrderProgress(order.id)
 
       if (scenario.orderTimeout) {
-        // The order exists, but this response arrives after the client gave up; its retry
-        // with the same Idempotency-Key must recover this very order.
         scenario.orderTimeout = false
         schedulePersist()
         await delay(TIMEOUT_DELAY_MS)

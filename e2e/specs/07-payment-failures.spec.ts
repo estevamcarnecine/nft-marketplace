@@ -39,8 +39,6 @@ test.describe('payment failures', () => {
   })
 
   test.describe('timeout', () => {
-    // The order is created, but its response arrives after the client's 10 s timeout. The client
-    // retries with the same Idempotency-Key and must land on that same order.
     test.use({ scenario: 'latency:50,ordertimeout,orderdelay:500' })
 
     test('recovers the order created by the timed-out request', async ({ app, page }) => {

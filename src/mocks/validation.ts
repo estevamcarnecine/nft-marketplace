@@ -15,7 +15,6 @@ export function isStrongPassword(password: string): boolean {
   return password.length >= 8 && /[a-z]/i.test(password) && /\d/.test(password)
 }
 
-/** Server-side rules for the "Perfil do colecionador" block of the payment screen. */
 export function validateCollector(raw: unknown): Validation<CollectorInput> {
   const input = isRecord(raw) ? raw : {}
   const displayName = str(input.displayName)

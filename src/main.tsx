@@ -27,10 +27,6 @@ async function enableMocking(): Promise<void> {
   }
 }
 
-// The mocks start first, then the app chunk loads and renders. Rendering earlier (in parallel with
-// the mock bundle) measured worse on the Lighthouse mobile profile: both downloads share the
-// throttled link and the first paint waits for the route chunk anyway. `apiReady`
-// (src/lib/api-ready.ts) still guards every request and the socket.
 void enableMocking()
   .finally(markApiReady)
   .then(() => import('./router'))

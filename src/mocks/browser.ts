@@ -10,9 +10,7 @@ declare global {
     __mock?: {
       scenario: typeof scenario
       set: typeof setScenario
-      /** Restores the fixture baseline and clears the scenario. */
       reset: () => void
-      /** Server-side price/stock changes and socket drops, delivered to the page over Socket.IO. */
       realtime: typeof realtimeControls
     }
   }
@@ -27,12 +25,10 @@ function dropResetParam(): void {
 export async function startMocks(): Promise<void> {
   if (applyScenarioFromUrl(window.location.search)) {
     resetMockData()
-    // A later reload must not wipe the data again.
     dropResetParam()
   } else {
     loadPersisted()
   }
-  // Orders that were pending when the page closed keep settling after a reload.
   resumePendingOrders()
 
   window.__mock = {

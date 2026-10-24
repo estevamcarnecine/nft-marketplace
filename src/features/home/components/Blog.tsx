@@ -1,6 +1,5 @@
 import { ComingSoon } from '@/components/common/ComingSoon'
 
-// Editorial content is out of scope: the "Diário da Cunhagem" cards are shown, "Ler mais" is not live.
 const POSTS = [
   {
     date: '12 de setembro',
