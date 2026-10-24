@@ -96,7 +96,10 @@ test.describe('sign up, login, session expiry, logout and user switch', () => {
       await expect(page).toHaveURL(/\/orders\/order_/)
       const orderPath = new URL(page.url()).pathname
 
+      await expect(page.getByRole('dialog')).toBeVisible()
       await page.keyboard.press('Escape')
+      await expect(page.getByRole('dialog')).toHaveCount(0)
+      await expect(page).toHaveURL(/\/$/)
       await app.logout()
       await app.login('ana', '/')
       await app.goto(orderPath)
